@@ -1,0 +1,598 @@
+{% extends "base.html" %}
+
+{% block title %}Invoice Details{% endblock %}
+
+{% block content %}
+<br><br><br><br><br><br><br>
+
+<!-- Section Title -->
+<div class="container section-title" data-aos="fade-up">
+    <h2>Invoice Details</h2>
+    <p>Detailed invoice view with treatments, payments, and current invoice status.</p>
+</div>
+<!-- End Section Title -->
+
+
+<section id="invoice-detail-section" class="section">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="add-patient-wrapper">
+
+            <div class="add-patient-header text-center" data-aos="fade-up" data-aos-delay="100">
+                <h2>Invoice {{ invoice.invoice_number }}</h2>
+                <p>Generated from appointment treatments.</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show text-center mb-4" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <!-- Invoice Main Info -->
+            <div class="patient-info-grid mb-4">
+
+                <div class="patient-info-box">
+                    <span class="info-label">Invoice Number</span>
+                    <p>{{ invoice.invoice_number }}</p>
+                </div>
+
+                <div class="patient-info-box">
+                    <span class="info-label">Patient</span>
+                    <p>
+                        {{ patient.first_name }} {{ patient.last_name }}
+                        <br>
+                        <small>{{ patient.phone or 'No phone number' }}</small>
+                    </p>
+                </div>
+
+                <div class="patient-info-box">
+                    <span class="info-label">Appointment Date</span>
+                    <p>
+                        {{ appointment.appointment_date.strftime('%Y-%m-%d %H:%M') if appointment.appointment_date else 'No date' }}
+                    </p>
+                </div>
+
+                <div class="patient-info-box">
+                    <span class="info-label">Appointment Status</span>
+                    <p>
+                        <span class="appointment-status
+                            {% if appointment.status == 'Done' %}status-done
+                            {% elif appointment.status == 'Cancelled' %}status-cancelled
+                            {% elif appointment.status == 'Pending' %}status-pending
+                            {% else %}status-scheduled{% endif %}">
+                            {{ appointment.status }}
+                        </span>
+                    </p>
+                </div>
+
+                <div class="patient-info-box">
+                    <span class="info-label">Invoice Total</span>
+                    <p>{{ invoice.total_amount | format_price }} {{ currency_symbol }}</p>
+                </div>
+
+                <div class="patient-info-box">
+                    <span class="info-label">Total Payments</span>
+                    <p>{{ invoice.total_paid | format_price }} {{ currency_symbol }}</p>
+                </div>
+
+                <div class="patient-info-box">
+                    <span class="info-label">Outstanding / Credit</span>
+                    <p>
+                        {% if invoice.credit > 0 %}
+                            <span class="credit-amount">
+                                {{ invoice.credit | format_price }} {{ currency_symbol }}
+                                <span class="credit-badge">Credit</span>
+                            </span>
+                        {% elif invoice.outstanding_amount > 0 %}
+                            <span class="remaining-due">
+                                {{ invoice.outstanding_amount | format_price }} {{ currency_symbol }}
+                                <span class="due-badge">Due</span>
+                            </span>
+                        {% else %}
+                            <span class="remaining-clear">
+                                0 {{ currency_symbol }}
+                                <span class="paid-badge">Paid</span>
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="patient-info-box">
+                    <span class="info-label">Invoice Status</span>
+                    <p>
+                        {% if invoice.status == 'Credit' %}
+                            <span class="credit-badge">Credit</span>
+                        {% elif invoice.status == 'Paid' %}
+                            <span class="paid-badge">Paid</span>
+                        {% elif invoice.status == 'Partially Paid' %}
+                            <span class="due-badge">Partial</span>
+                        {% else %}
+                            <span class="due-badge">Unpaid</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="patient-info-box text-center d-flex flex-column align-items-center justify-content-center">
+                    <span class="info-label mb-2">Invoice Summary</span>
+                    <canvas id="invoice-qrcode" style="width: 90px; height: 90px;"></canvas>
+                </div>
+
+            </div>
+            <!-- /Invoice Main Info -->
+
+
+            <!-- Invoice Items -->
+            <div class="container section-title" style="margin-top: 35px;" data-aos="fade-up">
+                <h2>Invoice Items</h2>
+                <p>Treatments included in this invoice.</p>
+            </div>
+
+            <div class="appointments-table-wrapper table-responsive mb-4">
+                <table class="table appointments-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Treatment Date</th>
+                            <th>Procedure Type</th>
+                            <th>Tooth</th>
+                            <th>Notes</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for treatment in treatments %}
+                        <tr>
+                            <td>
+                                <strong>{{ loop.index }}</strong>
+                            </td>
+
+                            <td>
+                                {{ treatment.treatment_date.strftime('%Y-%m-%d %H:%M') if treatment.treatment_date else 'No date' }}
+                            </td>
+
+                            <td>
+                                <span class="procedure-badge">
+                                    {{ treatment.procedure_type or 'General Treatment' }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if treatment.tooth_number %}
+                                    <span class="tooth-badge">
+                                        {{ treatment.tooth_number }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if treatment.notes %}
+                                    {{ treatment.notes }}
+                                {% else %}
+                                    <span class="text-muted">No notes available</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <span class="price-badge">
+                                    {{ treatment.total_cost | format_price }} {{ currency_symbol }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th colspan="5" class="text-end">Subtotal</th>
+                            <th>
+                                <span class="price-badge">
+                                    {{ invoice.subtotal | format_price }} {{ currency_symbol }}
+                                </span>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="5" class="text-end">Discount {% if invoice.discount_type == 'percentage' %}({{ "{:,.0f}".format(invoice.discount) }}%){% endif %}</th>
+                            <th>
+                                <span class="price-badge text-danger">
+                                    - {{ invoice.discount_amount | format_price }} {{ currency_symbol }}
+                                </span>
+                                {% if current_user.role in ('admin', 'receptionist') %}
+                                <button type="button" class="btn btn-sm btn-outline-secondary ms-2 p-1 py-0" data-bs-toggle="collapse" data-bs-target="#edit-discount-form" title="Edit Discount">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                {% endif %}
+                            </th>
+                        </tr>
+                        <!-- Collapsible Edit Discount Form -->
+                        <tr class="collapse" id="edit-discount-form">
+                            <td colspan="6" class="bg-light p-3">
+                                <form method="POST" action="{{ url_for('invoices.update_invoice_discount', invoice_id=invoice.id) }}" class="d-flex align-items-center justify-content-end gap-2">
+                                    <label for="discount" class="form-label mb-0 fw-semibold">Discount:</label>
+                                    <div class="input-group input-group-sm rounded-3 overflow-hidden" style="width: 220px;">
+                                        <input type="number" step="any" min="0" name="discount" class="form-control border-end-0" value="{{ invoice.discount }}" required>
+                                        <select name="discount_type" class="form-select border-start-0 bg-light" style="max-width: 90px;">
+                                            <option value="value" {% if invoice.discount_type == 'value' %}selected{% endif %}>{{ currency_symbol }}</option>
+                                            <option value="percentage" {% if invoice.discount_type == 'percentage' %}selected{% endif %}>%</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-primary rounded-pill px-3">Apply</button>
+                                </form>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th colspan="5" class="text-end">Invoice Total</th>
+                            <th>
+                                <span class="price-badge">
+                                    {{ invoice.total_amount | format_price }} {{ currency_symbol }}
+                                </span>
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <!-- /Invoice Items -->
+
+
+            <!-- Payment Allocations -->
+            <div class="container section-title" style="margin-top: 35px;" data-aos="fade-up">
+                <h2>Payment Allocations</h2>
+                <p>Payments allocated to this invoice.</p>
+            </div>
+
+            {% if invoice.payment_allocations %}
+            <div class="appointments-table-wrapper table-responsive mb-4">
+                <table class="table appointments-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Payment Date</th>
+                            <th>Payment Amount</th>
+                            <th>Allocated Amount</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for allocation in invoice.payment_allocations %}
+                        <tr>
+                            <td>
+                                <strong>PAY-{{ allocation.payment.id }}</strong>
+                            </td>
+
+                            <td>
+                                {{ allocation.payment.payment_date.strftime('%Y-%m-%d %H:%M') if allocation.payment.payment_date else 'No date' }}
+                            </td>
+
+                            <td>
+                                <span class="price-badge">
+                                    {{ allocation.payment.amount | format_price }} {{ currency_symbol }}
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="remaining-clear">
+                                    {{ allocation.amount | format_price }} {{ currency_symbol }}
+                                    <span class="paid-badge">Allocated</span>
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if allocation.payment.notes %}
+                                    {{ allocation.payment.notes }}
+                                {% else %}
+                                    <span class="text-muted">No notes available</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            <!-- /Payment Allocations -->
+
+
+            <!-- Invoice Actions -->
+            <div class="action-buttons justify-content-center gap-3 mt-4 d-print-none">
+
+                <a href="{{ url_for('invoices.invoices') }}" class="btn-outline-main px-4">
+                    Back to Invoices
+                </a>
+
+                <a href="{{ url_for('appointments.view_appointment', appointment_id=appointment.id) }}" class="btn-outline-main px-4">
+                    View Appointment
+                </a>
+
+                {% if current_user.role in ('admin', 'doctor') %}
+                <a href="{{ url_for('treatments.appointment_session', appointment_id=appointment.id) }}" class="btn btn-primary px-4">
+                    Open Session
+                </a>
+                {% endif %}
+
+                {% if current_user.role in ('admin', 'receptionist') %}
+                <a href="{{ url_for('payments.add_patient_payment', patient_id=patient.id, invoice_id=invoice.id) }}" class="btn btn-primary px-4">
+                    Add Payment
+                </a>
+                {% endif %}
+
+                <button onclick="window.print()" class="btn btn-success px-4 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-printer"></i>
+                    <span>Print Invoice</span>
+                </button>
+
+                <button id="download-pdf-btn" class="btn btn-danger px-4 d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-pdf"></i>
+                    <span>Download PDF</span>
+                </button>
+
+            </div>
+            <!-- /Invoice Actions -->
+
+        </div>
+
+    </div>
+</section>
+
+<!-- Print Only Invoice Layout -->
+<div class="d-none d-print-block container mt-4" id="invoice-print-area" dir="{% if current_lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+    <div class="print-header d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h1 class="clinic-name-print mb-1 fw-bold text-main">{{ clinic_name }}</h1>
+            <p class="mb-1"><i class="bi bi-geo-alt"></i> {{ clinic_address }}</p>
+            <p class="mb-1"><i class="bi bi-phone"></i> {{ clinic_phone }}</p>
+            <p class="mb-0"><i class="bi bi-envelope"></i> {{ clinic_email }}</p>
+        </div>
+        <div class="text-end">
+            <h2 class="text-uppercase fw-bold text-primary mb-2">Invoice</h2>
+            <h5 class="text-muted mb-3">Invoice Number: {{ invoice.invoice_number }}</h5>
+            <p class="mb-1"><strong>Date:</strong> {{ invoice.issue_date.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p class="mb-0"><strong>Status:</strong> 
+                {% if invoice.status == 'Paid' %}Paid
+                {% elif invoice.status == 'Partially Paid' %}Partially Paid
+                {% else %}Unpaid{% endif %}
+            </p>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <!-- Bill To -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <h5 class="text-uppercase text-secondary fw-semibold mb-2">Bill To:</h5>
+            <h4 class="mb-1 fw-bold">{{ patient.first_name }} {{ patient.last_name }}</h4>
+            {% if patient.phone %}<p class="mb-1"><strong>Phone:</strong> {{ patient.phone }}</p>{% endif %}
+            {% if patient.email %}<p class="mb-0"><strong>Email:</strong> {{ patient.email }}</p>{% endif %}
+        </div>
+    </div>
+
+    <!-- Items Table -->
+    <table class="table table-bordered print-table mb-4">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 8%">#</th>
+                <th>Treatment / Procedure</th>
+                <th style="width: 15%">Tooth</th>
+                <th>Notes</th>
+                <th style="width: 20%" class="text-end">Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for treatment in treatments %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><strong>{{ treatment.procedure_type or 'General Treatment' }}</strong></td>
+                <td>{{ treatment.tooth_number or 'N/A' }}</td>
+                <td>{{ treatment.notes or '' }}</td>
+                <td class="text-end">{{ treatment.total_cost | format_price }} {{ currency_symbol }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" class="text-end fw-semibold">Subtotal</td>
+                <td class="text-end">{{ invoice.subtotal | format_price }} {{ currency_symbol }}</td>
+            </tr>
+            {% if invoice.discount_amount > 0 %}
+            <tr>
+                <td colspan="4" class="text-end fw-semibold text-danger">Discount {% if invoice.discount_type == 'percentage' %}({{ "{:,.0f}".format(invoice.discount) }}%){% endif %}</td>
+                <td class="text-end text-danger">- {{ invoice.discount_amount | format_price }} {{ currency_symbol }}</td>
+            </tr>
+            {% endif %}
+
+            <tr class="table-light">
+                <td colspan="4" class="text-end fw-bold fs-5">Total Amount</td>
+                <td class="text-end fw-bold fs-5">{{ invoice.total_amount | format_price }} {{ currency_symbol }}</td>
+            </tr>
+            <tr>
+                <td colspan="4" class="text-end fw-semibold text-success">Total Paid</td>
+                <td class="text-end text-success">{{ invoice.total_paid | format_price }} {{ currency_symbol }}</td>
+            </tr>
+            {% if invoice.outstanding_amount > 0 %}
+            <tr class="table-danger-light">
+                <td colspan="4" class="text-end fw-bold text-danger">Remaining Balance Due</td>
+                <td class="text-end fw-bold text-danger">{{ invoice.outstanding_amount | format_price }} {{ currency_symbol }}</td>
+            </tr>
+            {% endif %}
+        </tfoot>
+    </table>
+
+    <!-- Installments / Payment Allocations History -->
+    {% if invoice.payment_allocations %}
+    <div class="mb-4">
+        <h5 class="text-uppercase text-secondary fw-semibold mb-2">Installment / Payment History</h5>
+        <table class="table table-sm table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Receipt #</th>
+                    <th>Date Paid</th>
+                    <th class="text-end">Amount Paid</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for allocation in invoice.payment_allocations %}
+                <tr>
+                    <td>PAY-{{ allocation.payment.id }}</td>
+                    <td>{{ allocation.payment.payment_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="text-end">{{ allocation.amount | format_price }} {{ currency_symbol }}</td>
+                    <td>{{ allocation.payment.notes or '' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Footer Section with QR Code -->
+    <div class="d-flex justify-content-between align-items-end mt-5 pt-4 border-top">
+        <div class="text-center" style="width: 150px;">
+            <canvas id="print-invoice-qrcode" style="width: 130px; height: 130px;"></canvas>
+            <div class="text-muted small mt-1">Invoice Summary</div>
+        </div>
+        <div class="text-center pe-4">
+            <div class="mb-5 text-muted">Authorized Signature & Seal</div>
+            <div style="border-bottom: 1px solid #000; width: 200px;"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+<style>
+@media print {
+    /* Hide screen elements */
+    #header, #footer, .topbar, #scroll-top, .section-title, .action-buttons, .btn, .collapse, .alert, .mobile-nav-toggle, #invoice-detail-section {
+        display: none !important;
+    }
+    
+    body {
+        background-color: #fff !important;
+        color: #000 !important;
+        font-size: 11pt !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    #invoice-print-area {
+        display: block !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 10px !important;
+    }
+    
+    /* Style tweaks for print */
+    .table {
+        border-color: #333 !important;
+    }
+    .table th {
+        background-color: #f8f9fa !important;
+        color: #000 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .table-light {
+        background-color: #f8f9fa !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .text-primary {
+        color: #0d6efd !important;
+    }
+    .text-danger {
+        color: #dc3545 !important;
+    }
+    .text-success {
+        color: #198754 !important;
+    }
+    .table-danger-light {
+        background-color: #fdf2f2 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Download PDF handler
+    const downloadBtn = document.getElementById("download-pdf-btn");
+    if (downloadBtn) {
+        downloadBtn.addEventListener("click", function() {
+            const element = document.getElementById('invoice-print-area');
+            const opt = {
+                margin:       10,
+                filename:     'Invoice_' + '{{ invoice.invoice_number }}' + '.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Clone the printable area to avoid mutating the live DOM
+            const clone = element.cloneNode(true);
+            clone.classList.remove('d-none', 'd-print-block');
+            
+            // Apply clean white background style to the clone so it looks like a paper invoice
+            clone.style.padding = '30px';
+            clone.style.background = '#ffffff';
+            clone.style.color = '#333333';
+            clone.style.width = '790px'; // standard width for crisp scaling
+            
+            // Force light theme colors on clone (to prevent dark theme issues)
+            clone.setAttribute('data-bs-theme', 'light');
+            
+            // Temporary container to render properly (offscreen)
+            const tempDiv = document.createElement('div');
+            tempDiv.style.position = 'absolute';
+            tempDiv.style.left = '-9999px';
+            tempDiv.style.top = '-9999px';
+            tempDiv.appendChild(clone);
+            document.body.appendChild(tempDiv);
+            
+            // Generate and save
+            html2pdf().set(opt).from(clone).save().then(() => {
+                document.body.removeChild(tempDiv);
+            });
+        });
+    }
+    // QR Code inputs
+    const clinicName = "{{ clinic_name | escape }}";
+    const issueDateISO = "{{ invoice.issue_date.isoformat() }}";
+    const totalAmount = "{{ invoice.total_amount }}";
+    const invoiceNum = "{{ invoice.invoice_number }}";
+    
+    const qrValue = `Clinic: ${clinicName}\nInvoice: ${invoiceNum}\nDate: ${issueDateISO}\nTotal: ${totalAmount} {{ currency_symbol }}`;
+    
+    // Render on-screen QR Code
+    const canvasScreen = document.getElementById("invoice-qrcode");
+    if (canvasScreen) {
+        new QRious({
+            element: canvasScreen,
+            value: qrValue,
+            size: 150
+        });
+    }
+    
+    // Render printable QR Code
+    const canvasPrint = document.getElementById("print-invoice-qrcode");
+    if (canvasPrint) {
+        new QRious({
+            element: canvasPrint,
+            value: qrValue,
+            size: 150
+        });
+    }
+});
+</script>
+{% endblock %}

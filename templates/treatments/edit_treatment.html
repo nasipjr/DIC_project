@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{ 'View Treatment' if mode|default('edit') == 'view' else 'Edit Treatment' }}
+{% endblock %}
+
+{% block content %}
+{% set current_mode = mode|default('edit') %}
+{% set is_locked = current_mode == 'view' or treatment.appointment.status != 'Scheduled' %}
+
+<br><br><br><br><br><br>
+
+<section id="add-patient-page" class="section">
+    <div class="container" data-aos="fade-up">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="add-patient-wrapper">
+
+                    <div class="add-patient-header text-center" data-aos="fade-up" data-aos-delay="100">
+                        <h2>
+                            {{ 'View Treatment' if is_locked else 'Edit Treatment' }}
+                        </h2>
+
+                        <p>
+                            {% if treatment.appointment.status == 'Done' %}
+                            This appointment session is done. Treatment is read-only.
+                            {% elif treatment.appointment.status == 'Cancelled' %}
+                            This appointment is cancelled. Treatment is read-only.
+                            {% elif current_mode == 'view' %}
+                            View treatment information without editing.
+                            {% else %}
+                            Update the treatment information.
+                            {% endif %}
+                        </p>
+                    </div>
+
+                    <div class="add-patient-icon" data-aos="zoom-in" data-aos-delay="200">
+                        <i class="bi {{ 'bi-eye' if is_locked else 'bi-clipboard2-pulse' }}"></i>
+                    </div>
+
+                    {% if error_message %}
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <!-- Appointment Context -->
+                    <div class="patient-info-grid mb-4">
+                        <div class="patient-info-box">
+                            <span class="info-label">Patient</span>
+                            <p>{{ treatment.appointment.patient.first_name }} {{ treatment.appointment.patient.last_name
+                                }}</p>
+                        </div>
+
+                        <div class="patient-info-box">
+                            <span class="info-label">Appointment</span>
+                            <p>
+                                {{ treatment.appointment.appointment_date.strftime('%Y-%m-%d %H:%M') if
+                                treatment.appointment.appointment_date else 'No date' }}
+                            </p>
+                        </div>
+
+                        <div class="patient-info-box">
+                            <span class="info-label">Appointment Reason</span>
+                            <p>{{ treatment.appointment.reason or 'No reason provided' }}</p>
+                        </div>
+
+                        <div class="patient-info-box">
+                            <span class="info-label">Session Status</span>
+                            <p>
+                                <span class="appointment-status
+                                    {% if treatment.appointment.status == 'Done' %}status-done
+                                    {% elif treatment.appointment.status == 'Cancelled' %}status-cancelled
+                                    {% elif treatment.appointment.status == 'Pending' %}status-pending
+                                    {% else %}status-scheduled{% endif %}">
+                                    {{ treatment.appointment.status }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <form id="add-patient-form" method="POST" data-aos="fade-up" data-aos-delay="300"
+                        class="{% if is_locked %}readonly-form{% endif %}">
+
+                        <fieldset {% if is_locked %}disabled{% endif %}>
+                            <div class="row gy-4">
+
+                                <div class="col-md-12">
+                                    <label class="form-label">Treatment Date</label>
+                                    <div class="form-control readonly-status-field">
+                                        {{ treatment.appointment.appointment_date.strftime('%Y-%m-%d %H:%M') if
+                                        treatment.appointment.appointment_date else 'No date' }}
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label for="procedure_type" class="form-label">Procedure Type</label>
+
+                                    <select id="procedure_type" name="procedure_type" class="form-select"
+                                        data-prices='{{ treatment_prices|tojson }}' required>
+                                        <option value="">Select a Procedure Type</option>
+
+                                        <option value="Check-up" {% if treatment.procedure_type=='Check-up' %}selected{%
+                                            endif %}>
+                                            Check-up
+                                        </option>
+
+                                        <option value="Cleaning" {% if treatment.procedure_type=='Cleaning' %}selected{%
+                                            endif %}>
+                                            Cleaning
+                                        </option>
+
+                                        <option value="Filling" {% if treatment.procedure_type=='Filling' %}selected{%
+                                            endif %}>
+                                            Filling
+                                        </option>
+
+                                        <option value="Root Canal" {% if treatment.procedure_type=='Root Canal'
+                                            %}selected{% endif %}>
+                                            Root Canal
+                                        </option>
+
+                                        <option value="Extraction" {% if treatment.procedure_type=='Extraction'
+                                            %}selected{% endif %}>
+                                            Extraction
+                                        </option>
+
+                                        <option value="Crown / Bridge" {% if treatment.procedure_type=='Crown / Bridge'
+                                            %}selected{% endif %}>
+                                            Crown / Bridge
+                                        </option>
+
+                                        <option value="Braces / Orthodontics" {% if
+                                            treatment.procedure_type=='Braces / Orthodontics' %}selected{% endif %}>
+                                            Braces / Orthodontics
+                                        </option>
+
+                                        <option value="Whitening" {% if treatment.procedure_type=='Whitening'
+                                            %}selected{% endif %}>
+                                            Whitening
+                                        </option>
+
+                                        <option value="Emergency Pain" {% if treatment.procedure_type=='Emergency Pain'
+                                            %}selected{% endif %}>
+                                            Emergency Pain
+                                        </option>
+
+                                        <option value="Follow-up" {% if treatment.procedure_type=='Follow-up'
+                                            %}selected{% endif %}>
+                                            Follow-up
+                                        </option>
+                                    </select>
+                                </div>
+
+                            <style>
+                            .odontogram-wrapper {
+                                background: var(--surface-color);
+                                border: 1px solid color-mix(in srgb, var(--accent-color), transparent 88%);
+                                border-radius: 16px;
+                                padding: 20px;
+                            }
+                            .tooth-btn {
+                                width: 34px;
+                                height: 34px;
+                                padding: 0 !important;
+                                font-weight: 700;
+                                border-radius: 8px;
+                                font-size: 0.85rem;
+                                display: inline-flex;
+                                align-items: center;
+                                justify-content: center;
+                                transition: all 0.2s ease;
+                                border: 2px solid color-mix(in srgb, var(--accent-color), transparent 85%);
+                                background: transparent;
+                                color: var(--default-color);
+                            }
+                            .tooth-btn:hover:not(:disabled) {
+                                background: color-mix(in srgb, var(--accent-color), transparent 90%);
+                                border-color: var(--accent-color);
+                                color: var(--accent-color);
+                            }
+                            .tooth-btn.active {
+                                background: var(--accent-color) !important;
+                                border-color: var(--accent-color) !important;
+                                color: #ffffff !important;
+                                box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+                            }
+                            .tooth-btn:disabled {
+                                opacity: 0.8;
+                                cursor: not-allowed;
+                            }
+                            </style>
+
+<div class="col-md-12">
+                                <label for="tooth_number" class="form-label fw-bold">Location / Irrigation Zone / قطاع الري أو الموقع</label>
+                                <input type="text" id="tooth_number" name="tooth_number" class="form-control settings-input"
+                                    value="{{ treatment.tooth_number or '' }}" placeholder="e.g. Zone A, Backyard, Greenhouse, Block 3" {% if is_locked %}readonly{% endif %}>
+                            </div>
+                            </div>
+
+                                <div class="col-12">
+                                    <label for="notes" class="form-label">Notes</label>
+                                    <textarea id="notes" name="notes" class="form-control" rows="5"
+                                        placeholder="Add treatment notes">{{ treatment.notes or '' }}</textarea>
+                                </div>
+                                <div class="col-md-12">
+                                    <label class="form-label">Procedure Price</label>
+                                    <div id="procedure_price_display" class="form-control readonly-status-field">
+                                        {{ (treatment.total_cost or 0) | format_price }} {{ currency_symbol }}
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </fieldset>
+
+                        <div class="col-12 text-center pt-4">
+                            {% if not is_locked %}
+                            <button type="submit" class="save-patient-btn">
+                                Save Changes
+                            </button>
+                            {% endif %}
+
+                            {% if current_mode == 'view' and treatment.appointment.status == 'Scheduled' %}
+                            <a href="{{ url_for('treatments.edit_treatment', treatment_id=treatment.id) }}"
+                                class="btn-primary px-4">
+                                Edit Treatment
+                            </a>
+                            {% endif %}
+
+                            <a href="{{ url_for('treatments.appointment_session', appointment_id=treatment.appointment.id) }}"
+                                class="btn-outline-main px-4 ms-2">
+                                Back to Session
+                            </a>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const procedureSelect = document.getElementById('procedure_type');
+    const priceDisplay = document.getElementById('procedure_price_display');
+    const toothInput = document.getElementById('tooth_number');
+    const toothButtons = document.querySelectorAll('.tooth-btn');
+
+    if (procedureSelect && priceDisplay) {
+        const prices = JSON.parse(procedureSelect.dataset.prices || '{}');
+
+        function updateProcedurePrice() {
+            const selectedProcedure = procedureSelect.value;
+
+            if (!selectedProcedure || prices[selectedProcedure] === undefined) {
+                priceDisplay.textContent = 'Select a procedure type to show price';
+                return;
+            }
+
+            const priceNum = parseFloat(prices[selectedProcedure]);
+            priceDisplay.textContent = priceNum.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0}) + ' {{ currency_symbol }}';
+        }
+
+        procedureSelect.addEventListener('change', updateProcedurePrice);
+        updateProcedurePrice();
+    }
+
+    if (toothInput && toothButtons.length > 0) {
+        // Pre-select active teeth on page load
+        function initActiveTeeth() {
+            let val = toothInput.value;
+            let activeTeeth = val.split(',')
+                .map(t => t.trim())
+                .filter(t => t !== '');
+                
+            toothButtons.forEach(btn => {
+                if (activeTeeth.includes(btn.dataset.tooth)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+        initActiveTeeth();
+
+        toothButtons.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (this.disabled) return;
+                const toothNum = this.dataset.tooth;
+                
+                let selectedTeeth = toothInput.value.split(',')
+                    .map(t => t.trim())
+                    .filter(t => t !== '');
+                    
+                const index = selectedTeeth.indexOf(toothNum);
+                if (index > -1) {
+                    selectedTeeth.splice(index, 1);
+                    this.classList.remove('active');
+                } else {
+                    selectedTeeth.push(toothNum);
+                    this.classList.add('active');
+                }
+                
+                selectedTeeth.sort((a, b) => parseInt(a) - parseInt(b));
+                toothInput.value = selectedTeeth.join(', ');
+            });
+        });
+
+        toothInput.addEventListener('input', function() {
+            let val = this.value;
+            let typedTeeth = val.split(',')
+                .map(t => t.trim())
+                .filter(t => t !== '');
+                
+            toothButtons.forEach(btn => {
+                if (typedTeeth.includes(btn.dataset.tooth)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        });
+    }
+});
+</script>
+
+{% endblock %}

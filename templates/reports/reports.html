@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+
+{% block title %}Reports Dashboard{% endblock %}
+
+{% block content %}
+<br><br><br><br><br><br><br>
+
+<!-- Section Title -->
+<div class="container section-title" data-aos="fade-up">
+    <h2>Reports & Statistics</h2>
+    <p>Comprehensive financial and operational analysis for your clinic.</p>
+</div>
+<!-- End Section Title -->
+
+<section id="reports-dashboard-section" class="find-a-doctor section">
+    <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <!-- KPI Cards Grid -->
+        <div class="row g-4 mb-5">
+            <!-- Total Billed Card -->
+            <div class="col-xl-five col-md-6">
+                <div class="kpi-card billing-card h-100 p-4 border-0 rounded-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="kpi-icon-wrapper rounded-3 bg-primary bg-opacity-10 text-primary p-3">
+                            <i class="bi bi-receipt-cutoff fs-3"></i>
+                        </div>
+                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-1">Invoiced</span>
+                    </div>
+                    <h5 class="text-secondary mb-1">Total Invoiced</h5>
+                    <h2 class="mb-0 fw-bold">{{ total_invoiced | format_price }} {{ currency_symbol }}</h2>
+                </div>
+            </div>
+
+            <!-- Total Paid Card -->
+            <div class="col-xl-five col-md-6">
+                <div class="kpi-card revenue-card h-100 p-4 border-0 rounded-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="kpi-icon-wrapper rounded-3 bg-success bg-opacity-10 text-success p-3">
+                            <i class="bi bi-wallet2 fs-3"></i>
+                        </div>
+                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-1">Revenue</span>
+                    </div>
+                    <h5 class="text-secondary mb-1">Total Payments</h5>
+                    <h2 class="mb-0 fw-bold text-success">{{ total_payments | format_price }} {{ currency_symbol }}</h2>
+                </div>
+            </div>
+
+            <!-- Total Outstanding Card -->
+            <div class="col-xl-five col-md-6">
+                <div class="kpi-card debt-card h-100 p-4 border-0 rounded-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="kpi-icon-wrapper rounded-3 bg-danger bg-opacity-10 text-danger p-3">
+                            <i class="bi bi-exclamation-triangle fs-3"></i>
+                        </div>
+                        <span
+                            class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-1">Outstanding</span>
+                    </div>
+                    <h5 class="text-secondary mb-1">Outstanding Debt</h5>
+                    <h2 class="mb-0 fw-bold text-danger">{{ total_outstanding | format_price }} {{ currency_symbol }}</h2>
+                </div>
+            </div>
+
+            <!-- Clinic Credit Card -->
+            <div class="col-xl-five col-md-6">
+                <div class="kpi-card credit-card h-100 p-4 border-0 rounded-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="kpi-icon-wrapper rounded-3 bg-teal bg-opacity-10 text-teal p-3" style="background-color: rgba(13, 148, 136, 0.1); color: #0d9488;">
+                            <i class="bi bi-piggy-bank fs-3"></i>
+                        </div>
+                        <span class="badge bg-teal bg-opacity-10 text-teal rounded-pill px-3 py-1" style="background-color: rgba(13, 148, 136, 0.1); color: #0d9488;">Credit</span>
+                    </div>
+                    <h5 class="text-secondary mb-1">Clinic Credit</h5>
+                    <h2 class="mb-0 fw-bold" style="color: #0d9488;">{{ total_credit | format_price }} {{ currency_symbol }}</h2>
+                </div>
+            </div>
+
+            <!-- Total Patients Card -->
+            <div class="col-xl-five col-md-6">
+                <div class="kpi-card patients-card h-100 p-4 border-0 rounded-4 shadow-sm">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="kpi-icon-wrapper rounded-3 bg-info bg-opacity-10 text-info p-3">
+                            <i class="bi bi-people fs-3"></i>
+                        </div>
+                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-1">Patients</span>
+                    </div>
+                    <h5 class="text-secondary mb-1">Total Patients</h5>
+                    <h2 class="mb-0 fw-bold text-info">{{ total_patients }}</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row g-4 mb-5">
+            <!-- Monthly Revenue & Billing Chart -->
+            <div class="col-lg-8">
+                <div class="card chart-card border-0 rounded-4 shadow-sm p-4 h-100">
+                    <h4 class="card-title fw-bold mb-4">Monthly Financial Performance (Last 6 Months)</h4>
+                    <div class="chart-container" style="position: relative; height:320px;">
+                        <canvas id="monthlyFinancialsChart"
+                                data-labels='{{ monthly_labels | tojson }}'
+                                data-billed='{{ monthly_billed | tojson }}'
+                                data-paid='{{ monthly_paid | tojson }}'></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointment Status Chart -->
+            <div class="col-lg-4">
+                <div class="card chart-card border-0 rounded-4 shadow-sm p-4 h-100">
+                    <h4 class="card-title fw-bold mb-4">Appointment Statuses</h4>
+                    <div class="chart-container d-flex justify-content-center align-items-center"
+                        style="position: relative; height:320px;">
+                        <canvas id="appointmentStatusChart"
+                                data-labels='{{ appointment_status_labels | tojson }}'
+                                data-values='{{ appointment_status_values | tojson }}'></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <!-- Top Procedures Chart -->
+            <div class="col-lg-6">
+                <div class="card chart-card border-0 rounded-4 shadow-sm p-4 h-100">
+                    <h4 class="card-title fw-bold mb-4">Top 5 Procedure Types (by Volume)</h4>
+                    <div class="chart-container" style="position: relative; height:300px;">
+                        <canvas id="topProceduresChart"
+                                data-labels='{{ procedure_labels | tojson }}'
+                                data-counts='{{ procedure_values_counts | tojson }}'></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patient Demographics (Gender) Chart -->
+            <div class="col-lg-6">
+                <div class="card chart-card border-0 rounded-4 shadow-sm p-4 h-100">
+                    <h4 class="card-title fw-bold mb-4">Patient Gender Demographics</h4>
+                    <div class="chart-container d-flex justify-content-center align-items-center"
+                        style="position: relative; height:300px;">
+                        <canvas id="genderDemographicsChart"
+                                data-labels='{{ gender_labels | tojson }}'
+                                data-values='{{ gender_values | tojson }}'></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Debtors Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card table-card border-0 rounded-4 shadow-sm p-4 mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                        <div>
+                            <h4 class="fw-bold mb-1">Top Patient Outstanding Balances</h4>
+                            <p class="text-secondary mb-0">Follow up with patients having outstanding dental invoices.
+                            </p>
+                        </div>
+                        <i class="bi bi-shield-exclamation text-danger fs-2"></i>
+                    </div>
+
+                    {% if top_debtors %}
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Patient Name</th>
+                                    <th>Phone</th>
+                                    <th class="text-end">Total Billed</th>
+                                    <th class="text-end">Total Paid</th>
+                                    <th class="text-end text-danger">Outstanding Balance</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for debtor in top_debtors %}
+                                <tr>
+                                    <td>
+                                        <strong class="text-body">{{ debtor.name }}</strong>
+                                    </td>
+                                    <td>{{ debtor.phone }}</td>
+                                    <td class="text-end">{{ debtor.total_billed | format_price }} {{ currency_symbol }}</td>
+                                    <td class="text-end text-success">{{ debtor.total_paid | format_price }} {{ currency_symbol }}</td>
+                                    <td class="text-end"><strong class="text-danger">{{
+                                            debtor.outstanding | format_price }} {{ currency_symbol }}</strong></td>
+                                    <td class="text-center">
+                                        <a href="{{ url_for('patients.patient_detail', patient_id=debtor.id) }}"
+                                            class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                                            Patient Details
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-check-circle-fill text-success fs-1"></i>
+                        <h5 class="mt-3">All clear! No patients have outstanding balances.</h5>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+        const textColor = isDark ? '#e2e8f0' : '#475569';
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+        const isArabic = document.documentElement.getAttribute('lang') === 'ar';
+
+        // 1. Monthly Financials (Bar Chart)
+        const monthlyCanvas = document.getElementById('monthlyFinancialsChart');
+        const monthlyLabels = JSON.parse(monthlyCanvas.getAttribute('data-labels'));
+        const monthlyBilled = JSON.parse(monthlyCanvas.getAttribute('data-billed'));
+        const monthlyPaid = JSON.parse(monthlyCanvas.getAttribute('data-paid'));
+
+        // Translate English months if Arabic
+        const monthsAr = {
+            "Jan": "كانون الثاني", "Feb": "شباط", "Mar": "آذار",
+            "Apr": "نيسان", "May": "أيار", "Jun": "حزيران",
+            "Jul": "تموز", "Aug": "آب", "Sep": "أيلول",
+            "Oct": "تشرين الأول", "Nov": "تشرين الثاني", "Dec": "كانون الأول"
+        };
+        const monthlyLabelsMapped = monthlyLabels.map(l => {
+            const trimmed = l.trim();
+            return isArabic && monthsAr[trimmed] ? monthsAr[trimmed] : l;
+        });
+
+        const monthlyCtx = monthlyCanvas.getContext('2d');
+        new Chart(monthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: monthlyLabelsMapped,
+                datasets: [
+                    {
+                        label: isArabic ? 'المبلغ المفوتر' : 'Invoiced Amount',
+                        data: monthlyBilled,
+                        backgroundColor: 'rgba(13, 110, 253, 0.75)',
+                        borderColor: 'rgb(13, 110, 253)',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    },
+                    {
+                        label: isArabic ? 'المدفوعات المستلمة' : 'Payments Received',
+                        data: monthlyPaid,
+                        backgroundColor: 'rgba(25, 135, 84, 0.75)',
+                        borderColor: 'rgb(25, 135, 84)',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: {
+                            color: textColor,
+                            callback: function (value) { return value.toLocaleString('de-DE') + ' {{ currency_symbol }}'; }
+                        }
+                    },
+                    x: {
+                        grid: { color: gridColor },
+                        ticks: { color: textColor }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: textColor }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                return context.dataset.label + ': ' + context.raw.toLocaleString('de-DE') + ' {{ currency_symbol }}';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Appointment Status (Doughnut Chart)
+        const statusCanvas = document.getElementById('appointmentStatusChart');
+        const statusLabels = JSON.parse(statusCanvas.getAttribute('data-labels'));
+        const statusValues = JSON.parse(statusCanvas.getAttribute('data-values'));
+
+        const statusLabelsMapped = statusLabels.map(l => {
+            if (l === 'Scheduled') return isArabic ? 'مجدول' : 'Scheduled';
+            if (l === 'Done') return isArabic ? 'منجز' : 'Done';
+            if (l === 'Cancelled') return isArabic ? 'ملغى' : 'Cancelled';
+            return l;
+        });
+
+        const statusCtx = statusCanvas.getContext('2d');
+        new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: statusLabelsMapped,
+                datasets: [{
+                    data: statusValues,
+                    backgroundColor: [
+                        'rgba(13, 110, 253, 0.8)',   // Scheduled - Blue
+                        'rgba(25, 135, 84, 0.8)',    // Done - Green
+                        'rgba(220, 53, 69, 0.8)'     // Cancelled - Red
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: textColor }
+                    }
+                }
+            }
+        });
+
+        // 3. Top Procedures (Horizontal Bar Chart)
+        const proceduresCanvas = document.getElementById('topProceduresChart');
+        const proceduresLabels = JSON.parse(proceduresCanvas.getAttribute('data-labels'));
+        const proceduresCounts = JSON.parse(proceduresCanvas.getAttribute('data-counts'));
+
+        const proceduresCtx = proceduresCanvas.getContext('2d');
+        new Chart(proceduresCtx, {
+            type: 'bar',
+            data: {
+                labels: proceduresLabels,
+                datasets: [{
+                    label: isArabic ? 'عدد الإجراءات المعالجة' : 'Procedure Count',
+                    data: proceduresCounts,
+                    backgroundColor: 'rgba(13, 202, 240, 0.8)',
+                    borderColor: 'rgb(13, 202, 240)',
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        grid: { color: gridColor },
+                        ticks: {
+                            color: textColor,
+                            stepSize: 1
+                        }
+                    },
+                    y: {
+                        grid: { color: gridColor },
+                        ticks: { color: textColor }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: textColor }
+                    }
+                }
+            }
+        });
+
+        // 4. Gender Demographics (Pie Chart)
+        const genderCanvas = document.getElementById('genderDemographicsChart');
+        const genderLabels = JSON.parse(genderCanvas.getAttribute('data-labels'));
+        const genderValues = JSON.parse(genderCanvas.getAttribute('data-values'));
+
+        const genderLabelsMapped = genderLabels.map(g => {
+            if (g === 'Male') return isArabic ? 'ذكر' : 'Male';
+            if (g === 'Female') return isArabic ? 'أنثى' : 'Female';
+            if (g === 'Not specified') return isArabic ? 'غير محدد' : 'Not specified';
+            return g;
+        });
+
+        const genderCtx = genderCanvas.getContext('2d');
+        new Chart(genderCtx, {
+            type: 'pie',
+            data: {
+                labels: genderLabelsMapped,
+                datasets: [{
+                    data: genderValues,
+                    backgroundColor: [
+                        'rgba(13, 110, 253, 0.75)',  // Male - Blue
+                        'rgba(244, 63, 94, 0.75)',   // Female - Pink
+                        'rgba(108, 117, 125, 0.75)'  // Not specified
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: textColor }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    @media (min-width: 1200px) {
+        .col-xl-five {
+            flex: 0 0 20% !important;
+            max-width: 20% !important;
+        }
+    }
+
+    /* Dashboard KPI Card Styling */
+    .kpi-card {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        background: var(--surface-color);
+        border: 1px solid color-mix(in srgb, var(--default-color), transparent 92%) !important;
+    }
+
+    .kpi-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .kpi-icon-wrapper {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Charts and Table Cards styling */
+    .chart-card,
+    .table-card {
+        background: var(--surface-color);
+        border: 1px solid color-mix(in srgb, var(--default-color), transparent 92%) !important;
+        transition: box-shadow 0.25s ease;
+    }
+
+    .chart-card:hover,
+    .table-card:hover {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06) !important;
+    }
+
+    /* Outstanding amounts color enhancements */
+    .credit-amount {
+        color: #198754;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}

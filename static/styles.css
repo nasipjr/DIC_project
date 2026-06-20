@@ -1,0 +1,2535 @@
+/***** Section *****/
+/***** End Section *****/
+
+.custom-btn-position {
+  margin-left: 100px;
+}
+
+.appointment-card .appointment-meta {
+  margin-top: 18px;
+}
+
+.appointment-card .appointment-meta p {
+  margin-bottom: 10px;
+  color: color-mix(in srgb, var(--default-color), transparent 15%);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.appointment-status {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.status-scheduled {
+  background: color-mix(in srgb, var(--accent-color), transparent 85%);
+  color: #7fd3ff;
+}
+
+.status-done {
+  background: rgba(25, 135, 84, 0.18);
+  color: #57d38c;
+}
+
+.status-cancelled {
+  background: rgba(220, 53, 69, 0.18);
+  color: #ff7b88;
+}
+
+.btn-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.done-btn {
+  background: rgba(25, 135, 84, 0.15);
+  color: #57d38c;
+  border-color: rgba(25, 135, 84, 0.35);
+}
+
+.done-btn:hover {
+  background: rgba(25, 135, 84, 0.25);
+  color: #7ff0ae;
+}
+
+.cancel-btn {
+  background: rgba(255, 193, 7, 0.12);
+  color: #ffd666;
+  border-color: rgba(255, 193, 7, 0.25);
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffe28a;
+}
+
+.delete-btn {
+  background: rgba(220, 53, 69, 0.15);
+  color: #ff7b88;
+  border-color: rgba(220, 53, 69, 0.35);
+}
+
+.delete-btn:hover {
+  background: rgba(220, 53, 69, 0.25);
+  color: #ff9aa5;
+}
+
+.action-buttons .btn {
+  font-family: var(--default-font);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 12px;
+  min-width: 90px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.patient-detail-card {
+  padding: 2.25rem;
+}
+
+.patient-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.patient-info-box {
+  background: color-mix(in srgb, var(--surface-color), transparent 8%);
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 92%);
+  border-radius: 18px;
+  padding: 1rem 1.1rem;
+}
+
+.patient-info-box .info-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.patient-info-box p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--default-color), transparent 15%);
+}
+
+.patient-main-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn-outline-main,
+.btn-delete-soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
+  padding: 12px 20px;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-main {
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 45%);
+  color: var(--accent-color);
+  background: transparent;
+}
+
+.btn-outline-main:hover {
+  background: color-mix(in srgb, var(--accent-color), transparent 88%);
+  color: #7fd3ff;
+}
+
+.btn-delete-soft {
+  border: 1px solid rgba(220, 53, 69, 0.35);
+  color: #ff7b88;
+  background: rgba(220, 53, 69, 0.12);
+}
+
+.btn-delete-soft:hover {
+  background: rgba(220, 53, 69, 0.2);
+  color: #ff9aa5;
+}
+
+.small-section-title {
+  padding-bottom: 30px;
+}
+
+.small-section-title h2 {
+  font-size: 28px;
+  margin-bottom: 12px;
+  padding-bottom: 14px;
+}
+
+.appointment-card .appointment-meta,
+.treatment-card .treatment-meta {
+  margin-top: 18px;
+}
+
+.appointment-card .appointment-meta p,
+.treatment-card .treatment-meta p {
+  margin-bottom: 10px;
+  color: color-mix(in srgb, var(--default-color), transparent 15%);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.appointment-status {
+  display: inline-block;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.status-scheduled {
+  background: color-mix(in srgb, var(--accent-color), transparent 85%);
+  color: #7fd3ff;
+}
+
+.status-done {
+  background: rgba(25, 135, 84, 0.18);
+  color: #57d38c;
+}
+
+.status-cancelled {
+  background: rgba(220, 53, 69, 0.18);
+  color: #ff7b88;
+}
+
+.status-pending {
+  background: rgba(255, 193, 7, 0.18);
+  color: #d09600;
+}
+
+[data-bs-theme="dark"] .status-pending {
+  color: #ffd043;
+}
+
+.btn-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 90px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.action-btn {
+  font-family: var(--default-font);
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 90px;
+  text-align: center;
+}
+
+.done-btn {
+  background: rgba(25, 135, 84, 0.15);
+  color: #57d38c;
+  border-color: rgba(25, 135, 84, 0.35);
+}
+
+.done-btn:hover {
+  background: rgba(25, 135, 84, 0.25);
+  color: #7ff0ae;
+}
+
+.cancel-btn {
+  background: rgba(255, 193, 7, 0.12);
+  color: #ffd666;
+  border-color: rgba(255, 193, 7, 0.25);
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffe28a;
+}
+
+.delete-btn {
+  background: rgba(220, 53, 69, 0.15);
+  color: #ff7b88;
+  border-color: rgba(220, 53, 69, 0.35);
+}
+
+.delete-btn:hover {
+  background: rgba(220, 53, 69, 0.25);
+  color: #ff9aa5;
+}
+
+.treatment-icon-box {
+  width: 72px;
+  height: 72px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--accent-color), transparent 88%);
+  color: var(--accent-color);
+  font-size: 28px;
+}
+
+.financial-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.financial-card {
+  background: var(--surface-color);
+  border-radius: 22px;
+  padding: 2rem 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 92%);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--default-color), transparent 94%);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.financial-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px color-mix(in srgb, var(--default-color), transparent 88%);
+}
+
+.financial-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-color), transparent 88%);
+  color: var(--accent-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.financial-card h4 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.financial-card p {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.status-indicator.pending {
+  background-color: #ffc107;
+}
+
+@media (max-width: 991px) {
+
+  .patient-info-grid,
+  .financial-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .patient-main-actions {
+    flex-direction: column;
+  }
+
+  .btn-outline-main,
+  .btn-delete-soft,
+  .patient-main-actions .btn-primary {
+    width: 100%;
+  }
+}
+
+
+/* 🔽 Empty state تحسين */
+.empty-box h4 {
+  font-size: 20px;
+  /* كان كبير */
+  font-weight: 600;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+.empty-box p {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 18px;
+}
+
+/* 🔥 زر Add احترافي */
+.empty-btn {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+
+  background: transparent;
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+
+  transition: all 0.3s ease;
+}
+
+/* hover */
+.empty-btn:hover {
+  background: var(--accent-color);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 123, 255, 0.25);
+}
+
+/* 🔥 Custom select style */
+.form-select {
+  background-color: var(--surface-color);
+  border: 1px solid #ced4da;
+  color: var(--default-color);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+
+  /* remove default arrow */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  /* custom arrow */
+  background-image: url("data:image/svg+xml,%3Csvg fill='%233c4049' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+
+  transition: all 0.3s ease;
+}
+
+/* focus */
+.form-select:focus {
+  border-color: #4da3ff;
+  box-shadow: 0 0 0 2px rgba(77, 163, 255, 0.2);
+  outline: none;
+}
+
+/* option style matching light theme */
+.form-select option {
+  background: var(--surface-color);
+  color: var(--default-color);
+}
+
+/*  Empty state for home page */
+
+.home-empty-state {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 38px 28px;
+  text-align: center;
+
+  background: color-mix(in srgb, var(--surface-color), transparent 92%);
+  border: 1px dashed color-mix(in srgb, var(--accent-color), transparent 35%);
+  border-radius: 22px;
+
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+}
+
+.home-empty-icon {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--accent-color), transparent 86%);
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 50%);
+  color: var(--accent-color);
+}
+
+.home-empty-icon i {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.home-empty-state h4 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--heading-color);
+}
+
+.home-empty-state p {
+  margin: 0;
+  font-size: 15px;
+  color: color-mix(in srgb, var(--default-color), transparent 35%);
+}
+
+/* 🔽 تحسينات عامة *
+/* Patient Detail Tabs */
+.patient-detail-tabs {
+  gap: 28px;
+  margin-bottom: 28px;
+}
+
+.patient-detail-tabs .nav-item {
+  flex: 1;
+  max-width: 360px;
+}
+
+.patient-detail-tabs .nav-link {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 18px;
+  transition: all 0.25s ease;
+}
+
+.patient-detail-tabs .nav-link .section-title {
+  margin-bottom: 0;
+  padding: 18px 14px;
+  border-radius: 18px;
+  transition: all 0.25s ease;
+}
+
+.patient-detail-tabs .nav-link h2 {
+  color: var(--heading-color);
+  transition: all 0.25s ease;
+}
+
+.patient-detail-tabs .nav-link p {
+  color: var(--default-color) !important;
+  opacity: 0.8;
+  transition: all 0.25s ease;
+}
+
+/* Hover */
+.patient-detail-tabs .nav-link:hover .section-title {
+  background: color-mix(in srgb, var(--accent-color), transparent 92%);
+}
+
+/* Active tab */
+.patient-detail-tabs .nav-link.active .section-title {
+  background: color-mix(in srgb, var(--accent-color), transparent 86%);
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 55%);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+.patient-detail-tabs .nav-link.active h2 {
+  color: var(--accent-color);
+}
+
+.patient-detail-tabs .nav-link.active p {
+  color: var(--default-color) !important;
+  opacity: 0.9;
+}
+
+/* remove default bootstrap active bg */
+.patient-detail-tabs .nav-link.active,
+.patient-detail-tabs .show>.nav-link {
+  background: transparent !important;
+}
+
+/* Fix patient tabs underline:
+   show the blue underline only under the active tab */
+.patient-detail-tabs .section-title h2::before,
+.patient-detail-tabs .section-title h2::after {
+  display: none;
+}
+
+.patient-detail-tabs .nav-link.active .section-title h2::after {
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--accent-color);
+  position: absolute;
+  bottom: 0;
+}
+
+.patient-detail-tabs .nav-item:nth-child(1) .nav-link.active .section-title h2::after {
+  left: 50%;
+  right: auto;
+  transform: translateX(-120%);
+}
+
+.patient-detail-tabs .nav-item:nth-child(2) .nav-link.active .section-title h2::after {
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+
+.patient-detail-tabs .nav-item:nth-child(3) .nav-link.active .section-title h2::after {
+  left: auto;
+  right: 50;
+  transform: translateX(-120%);
+}
+
+/* Delete Patient Page */
+.delete-patient-card {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 42px 34px;
+  border-radius: 28px;
+}
+
+.delete-warning-icon {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: rgba(220, 53, 69, 0.12);
+  border: 1px solid rgba(220, 53, 69, 0.28);
+  color: #ff6b7a;
+}
+
+.delete-warning-icon i {
+  font-size: 34px;
+}
+
+.delete-patient-box {
+  padding: 24px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--surface-color), transparent 8%);
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+}
+
+.delete-patient-box p {
+  margin-bottom: 10px;
+  color: color-mix(in srgb, var(--default-color), transparent 28%);
+  font-size: 15px;
+}
+
+.delete-patient-box h4 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--heading-color);
+}
+
+
+/* Appointments Table */
+.appointments-table-wrapper {
+  background: var(--surface-color);
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 18px 45px color-mix(in srgb, var(--default-color), transparent 92%);
+}
+
+.appointments-table {
+  margin-bottom: 0;
+  color: var(--default-color);
+}
+
+.appointments-table thead th {
+  border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 82%);
+  color: var(--heading-color);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 16px 14px;
+}
+
+.appointments-table tbody td {
+  padding: 18px 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 92%);
+  vertical-align: middle;
+}
+
+.appointments-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.appointments-table tbody tr:hover {
+  background: color-mix(in srgb, var(--accent-color), transparent 94%);
+}
+
+.appointments-table small {
+  color: color-mix(in srgb, var(--default-color), transparent 35%);
+}
+
+.appointments-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.table-action-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.view-btn {
+  color: #7fd3ff;
+  background: rgba(13, 110, 253, 0.12);
+  border-color: rgba(13, 110, 253, 0.25);
+}
+
+.edit-btn {
+  color: #ffd666;
+  background: rgba(255, 193, 7, 0.12);
+  border-color: rgba(255, 193, 7, 0.25);
+}
+
+.delete-table-btn {
+  color: #ff7b88;
+  background: rgba(220, 53, 69, 0.12);
+  border-color: rgba(220, 53, 69, 0.25);
+}
+
+.table-action-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Edit Appointment Page */
+.readonly-form .form-control,
+.readonly-form .form-select {
+  background: color-mix(in srgb, var(--surface-color), white 6%);
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+.readonly-form textarea {
+  resize: none;
+}
+
+.appointments-table thead th a i {
+  margin-left: 6px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.appointments-table thead th a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Edit Patient Page */
+.readonly-form .form-control,
+.readonly-form .form-select,
+.readonly-form textarea {
+  background: color-mix(in srgb, var(--surface-color), white 6%);
+  opacity: 0.85;
+  cursor: not-allowed;
+}
+
+.readonly-form textarea {
+  resize: none;
+}
+
+/* Home Page */
+.appointments-filter-bar {
+  background: var(--surface-color);
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  border-radius: 18px;
+  padding: 18px;
+}
+
+.appointments-table-wrapper {
+  background: var(--surface-color);
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 88%);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 18px 45px color-mix(in srgb, var(--default-color), transparent 92%);
+}
+
+.appointments-table {
+  margin-bottom: 0;
+  color: var(--default-color);
+}
+
+.appointments-table thead th {
+  border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 82%);
+  color: var(--heading-color);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 16px 14px;
+}
+
+.appointments-table thead th a {
+  color: var(--heading-color);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.appointments-table thead th a:hover {
+  color: var(--accent-color);
+}
+
+.appointments-table thead th a i {
+  margin-left: 6px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.appointments-table tbody td {
+  padding: 18px 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 92%);
+  vertical-align: middle;
+}
+
+.appointments-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.appointments-table tbody tr:hover {
+  background: color-mix(in srgb, var(--accent-color), transparent 94%);
+}
+
+.appointments-table small {
+  color: color-mix(in srgb, var(--default-color), transparent 35%);
+}
+
+/* patients action add appointment */
+.appointment-table-btn {
+  color: #7ff0ae;
+  background: rgba(25, 135, 84, 0.12);
+  border-color: rgba(25, 135, 84, 0.25);
+}
+
+.appointment-table-btn:hover {
+  background: rgba(25, 135, 84, 0.2);
+  color: #9ff7c4;
+}
+
+/* Treatment */
+.appointment-table-btn {
+  color: #7ff0ae;
+  background: rgba(25, 135, 84, 0.12);
+  border-color: rgba(25, 135, 84, 0.25);
+}
+
+.appointment-table-btn:hover {
+  background: rgba(25, 135, 84, 0.2);
+  color: #9ff7c4;
+}
+
+/* Session page buttons */
+
+.btn-session-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--accent-color);
+  background: var(--accent-color);
+  color: var(--contrast-color);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-session-primary:hover {
+  background: color-mix(in srgb, var(--accent-color), black 10%);
+  color: var(--contrast-color);
+  transform: translateY(-1px);
+}
+
+.session-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.session-action-form {
+  margin: 0;
+  width: 100%;
+}
+
+.session-action-btn {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.btn-end-session {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(220, 53, 69, 0.45);
+  color: #ff7b88;
+  background: rgba(220, 53, 69, 0.14);
+  transition: all 0.3s ease;
+}
+
+.btn-end-session:hover {
+  background: rgba(220, 53, 69, 0.24);
+  color: #ff9aa5;
+}
+
+@media (max-width: 768px) {
+  .session-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* delete patient button */
+.patient-delete-action {
+  grid-column: 1 / -1;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.patient-delete-action .btn-delete-soft {
+  width: 50%;
+  max-width: 520px;
+}
+
+/* Financial edit for loans */
+.remaining-due {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffd666;
+  font-weight: 700;
+}
+
+.remaining-clear {
+  color: #57d38c;
+  font-weight: 700;
+}
+
+.due-badge {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(255, 193, 7, 0.14);
+  color: #ffd666;
+  border: 1px solid rgba(255, 193, 7, 0.28);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.paid-badge {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(25, 135, 84, 0.16);
+  color: #57d38c;
+  border: 1px solid rgba(25, 135, 84, 0.3);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.financial-card.remaining-warning {
+  border-color: rgba(255, 193, 7, 0.45);
+  background: rgba(255, 193, 7, 0.06);
+}
+
+.financial-card.remaining-warning .financial-icon {
+  background: rgba(255, 193, 7, 0.14);
+  color: #ffd666;
+}
+
+.financial-card.remaining-warning p {
+  color: #ffd666;
+}
+
+.financial-card.remaining-clear-card {
+  border-color: rgba(25, 135, 84, 0.35);
+  background: rgba(25, 135, 84, 0.05);
+}
+
+.financial-card.remaining-clear-card .financial-icon {
+  background: rgba(25, 135, 84, 0.16);
+  color: #57d38c;
+}
+
+.financial-card.remaining-clear-card p {
+  color: #57d38c;
+}
+
+.financial-card-note {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--default-color), transparent 30%);
+}
+
+/* Dashboard */
+.dashboard-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 520px;
+}
+
+.dashboard-stat-card {
+  padding: 16px 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(13, 110, 253, 0.08);
+  background: rgba(13, 110, 253, 0.03);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.01);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dashboard-stat-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(13, 110, 253, 0.2);
+  background: rgba(13, 110, 253, 0.05);
+  box-shadow: 0 10px 24px rgba(13, 110, 253, 0.06);
+}
+
+.dashboard-stat-card h3 {
+  margin: 0;
+  color: var(--accent-color, #0d6efd);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.dashboard-stat-card p {
+  margin: 8px 0 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--default-color, #475569);
+  opacity: 0.8;
+}
+
+.hero-actions .btn {
+  min-width: 165px;
+  border-radius: 999px;
+  padding: 13px 22px;
+  font-weight: 700;
+  transition: all 0.25s ease;
+}
+
+.hero-actions .btn-outline-primary {
+  border-color: var(--accent-color, #0d6efd);
+  color: var(--accent-color, #0d6efd);
+  background: transparent;
+}
+
+.hero-actions .btn-outline-primary:hover {
+  background: rgba(13, 110, 253, 0.08);
+  color: var(--accent-color, #0d6efd);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .dashboard-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-actions .btn {
+    width: 100%;
+  }
+}
+
+.hero-visual {
+  position: relative;
+  min-height: 430px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-visual .main-image {
+  width: 100%;
+  max-width: 620px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.hero-visual .main-image img {
+  width: 100%;
+  height: 430px;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-visual .appointment-card {
+  position: absolute;
+  top: 48px;
+  right: 42px;
+  z-index: 2;
+}
+
+.hero-visual .appointment-card small {
+  display: block;
+  margin-top: 6px;
+  font-size: 11px;
+  opacity: 0.85;
+}
+
+.hero-visual .appointment-card {
+  position: absolute;
+  top: 34px;
+  right: 38px;
+  z-index: 3;
+  min-width: 190px;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: rgba(12, 18, 24, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+  text-align: center;
+}
+
+.hero-visual .appointment-card h6 {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.hero-visual .appointment-card h3 {
+  color: #66e0ff;
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.hero-visual .appointment-card small {
+  display: block;
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Today's Appointments */
+.empty-state-card {
+  padding: 45px 30px;
+  border-radius: 24px;
+  border: 1px solid rgba(102, 224, 255, 0.18);
+  background: rgba(102, 224, 255, 0.045);
+}
+
+.empty-state-card i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(102, 224, 255, 0.12);
+  color: #66e0ff;
+  font-size: 26px;
+  margin-bottom: 18px;
+}
+
+.empty-state-card h4 {
+  margin-bottom: 8px;
+  font-weight: 800;
+}
+
+.empty-state-card p {
+  margin-bottom: 0;
+  color: color-mix(in srgb, var(--default-color), transparent 30%);
+}
+
+/*credit badge*/
+
+.credit-badge {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: rgba(25, 135, 84, 0.16);
+  color: #57d38c;
+  border: 1px solid rgba(25, 135, 84, 0.3);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.credit-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #57d38c;
+  font-weight: 700;
+}
+
+/*reset button invoices*/
+.reset-filter-btn {
+  min-width: 86px;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 700;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  background: transparent;
+}
+
+.reset-filter-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
+/*patient detailes/ financial summary two tables*/
+.financial-details-stack {
+  width: 100%;
+}
+
+.financial-detail-card {
+  padding: 22px 24px;
+  border-radius: 22px;
+  border: 1px solid rgba(102, 224, 255, 0.14);
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.financial-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.financial-table-header h4 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--heading-color);
+}
+
+.financial-table-header p {
+  margin: 0;
+  font-size: 13px;
+  color: color-mix(in srgb, var(--default-color), transparent 28%);
+}
+
+.financial-detail-card .appointments-table {
+  margin-bottom: 0;
+}
+
+.financial-detail-card .empty-box {
+  margin-top: 10px;
+}
+
+/* ==========================================
+   PREMIUM PAGINATION BUTTONS GLOBAL OVERRIDES
+   ========================================== */
+.pagination {
+  display: flex;
+  gap: 8px !important;
+  /* Separated button elements */
+  margin: 0 !important;
+}
+
+.pagination .page-item {
+  border: none !important;
+  margin: 0 !important;
+}
+
+.pagination .page-link {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 40px !important;
+  height: 40px !important;
+  padding: 0 14px !important;
+  border-radius: 10px !important;
+  /* Soft premium corners */
+  font-size: 0.88rem !important;
+  font-weight: 700 !important;
+  color: var(--accent-color) !important;
+  background-color: var(--surface-color) !important;
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 82%) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+.pagination .page-link:hover {
+  background-color: color-mix(in srgb, var(--accent-color), transparent 92%) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent-color), transparent 82%) !important;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--contrast-color) !important;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-color), transparent 70%) !important;
+  transform: none !important;
+}
+
+.pagination .page-item.disabled .page-link,
+.pagination .page-item.disabled span.page-link {
+  background-color: color-mix(in srgb, var(--default-color), transparent 95%) !important;
+  border-color: color-mix(in srgb, var(--default-color), transparent 90%) !important;
+  color: color-mix(in srgb, var(--default-color), transparent 60%) !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* Fix Bootstrap focus ring */
+.pagination .page-link:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color), transparent 85%) !important;
+  outline: none !important;
+}
+
+/* ==========================================
+   PREMIUM GLOBAL BUTTONS UNIFICATION
+   ========================================== */
+.btn,
+.btn-primary,
+.btn-outline-main,
+.btn-delete-soft,
+.empty-btn,
+.done-btn,
+.cancel-btn,
+.delete-btn,
+.reset-filter-btn,
+.btn-status,
+.action-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 22px !important;
+  border-radius: 12px !important;
+  /* Soft premium corners matching pagination */
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  font-family: var(--default-font), sans-serif !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03) !important;
+  cursor: pointer !important;
+  text-decoration: none !important;
+  gap: 8px !important;
+  /* Spacing between icon and text */
+}
+
+/* Primary Button Style (Active/Filled Pagination style) */
+.btn-primary,
+.btn-teal {
+  background-color: var(--accent-color) !important;
+  border: 1px solid var(--accent-color) !important;
+  color: var(--contrast-color) !important;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color), transparent 75%) !important;
+}
+
+.btn-primary:hover,
+.btn-teal:hover {
+  background-color: color-mix(in srgb, var(--accent-color), transparent 10%) !important;
+  border-color: color-mix(in srgb, var(--accent-color), transparent 10%) !important;
+  color: var(--contrast-color) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent-color), transparent 60%) !important;
+}
+
+.btn-primary:active,
+.btn-teal:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--accent-color), transparent 60%) !important;
+}
+
+/* Outline Secondary / Default Button Style (Inactive Pagination style) */
+.btn-outline-secondary,
+.btn-outline-light,
+.btn-outline-main,
+.empty-btn,
+.reset-filter-btn {
+  color: var(--accent-color) !important;
+  background-color: var(--surface-color) !important;
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 82%) !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03) !important;
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-light:hover,
+.btn-outline-main:hover,
+.empty-btn:hover,
+.reset-filter-btn:hover {
+  background-color: color-mix(in srgb, var(--accent-color), transparent 92%) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent-color), transparent 82%) !important;
+}
+
+.btn-outline-secondary:active,
+.btn-outline-light:active,
+.btn-outline-main:active,
+.empty-btn:active,
+.reset-filter-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* Outline Primary Button Style */
+.btn-outline-primary {
+  color: var(--accent-color) !important;
+  background-color: transparent !important;
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 50%) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: color-mix(in srgb, var(--accent-color), transparent 92%) !important;
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--accent-color), transparent 82%) !important;
+}
+
+.btn-outline-primary:active {
+  transform: translateY(0) !important;
+}
+
+/* Danger Button Style */
+.btn-outline-danger,
+.btn-danger,
+.btn-delete-soft,
+.delete-btn {
+  color: #ff7b88 !important;
+  background-color: rgba(220, 53, 69, 0.12) !important;
+  border: 1px solid rgba(220, 53, 69, 0.35) !important;
+}
+
+.btn-outline-danger:hover,
+.btn-danger:hover,
+.btn-delete-soft:hover,
+.delete-btn:hover {
+  background-color: rgba(220, 53, 69, 0.22) !important;
+  border-color: #ff7b88 !important;
+  color: #ff9aa5 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(220, 53, 69, 0.25) !important;
+}
+
+.btn-outline-danger:active,
+.btn-danger:active,
+.btn-delete-soft:active,
+.delete-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* Warning/Cancel Button Style */
+.cancel-btn {
+  background-color: rgba(255, 193, 7, 0.12) !important;
+  border: 1px solid rgba(255, 193, 7, 0.25) !important;
+  color: #ffd666 !important;
+}
+
+.cancel-btn:hover {
+  background-color: rgba(255, 193, 7, 0.2) !important;
+  border-color: #ffd666 !important;
+  color: #ffe28a !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(255, 193, 7, 0.15) !important;
+}
+
+.cancel-btn:active {
+  transform: translateY(0) !important;
+}
+
+/* Small Buttons */
+.btn-sm {
+  padding: 6px 14px !important;
+  font-size: 0.82rem !important;
+  border-radius: 8px !important;
+}
+
+/* ==========================================
+   PREMIUM CUSTOM CSS TOOLTIP STYLING
+   ========================================== */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 130%;
+  /* Position above the element */
+  left: 50%;
+  transform: translate(-50%, 8px) scale(0.9);
+  background-color: var(--accent-color);
+  color: var(--contrast-color);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--default-font), sans-serif;
+  white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 99999;
+}
+
+[data-tooltip]::before {
+  content: "";
+  position: absolute;
+  bottom: 112%;
+  /* Arrow positioned right below tooltip body */
+  left: 50%;
+  transform: translate(-50%, 4px) scale(0.9);
+  border-width: 6px 6px 0;
+  border-style: solid;
+  border-color: var(--accent-color) transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 99999;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0) scale(1);
+}
+
+
+/* ==========================================
+   PREMIUM SETTINGS DASHBOARD STYLING
+   ========================================== */
+#settings-section {
+  background: #f4f8ff;
+  /* Matches light-background */
+  padding: 60px 0;
+}
+
+/* Nav Card containing Tab buttons */
+.settings-nav-card {
+  background: var(--surface-color) !important;
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  border-radius: 22px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--default-color), transparent 96%);
+}
+
+/* Nav Buttons */
+.settings-nav-item {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 12px !important;
+  color: var(--default-color) !important;
+  padding: 14px 18px !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  text-align: left !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+  width: 100% !important;
+}
+
+.settings-nav-item i {
+  font-size: 1.2rem;
+  color: color-mix(in srgb, var(--default-color), transparent 40%);
+  transition: color 0.3s ease;
+}
+
+.settings-nav-item:hover {
+  background: color-mix(in srgb, var(--accent-color), transparent 94%) !important;
+  color: var(--accent-color) !important;
+}
+
+.settings-nav-item:hover i {
+  color: var(--accent-color);
+}
+
+.settings-nav-item.active {
+  background: var(--accent-color) !important;
+  color: var(--contrast-color) !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-color), transparent 75%) !important;
+}
+
+.settings-nav-item.active i {
+  color: var(--contrast-color) !important;
+}
+
+/* Settings Content Card on the right */
+.settings-content-card {
+  background: var(--surface-color) !important;
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%);
+  border-radius: 22px;
+  padding: 30px !important;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--default-color), transparent 96%);
+}
+
+/* Tab Headers */
+.settings-tab-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid color-mix(in srgb, var(--default-color), transparent 92%);
+}
+
+.settings-tab-icon {
+  width: 48px;
+  height: 48px;
+  background: color-mix(in srgb, var(--accent-color), transparent 92%);
+  border: 1px solid color-mix(in srgb, var(--accent-color), transparent 85%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: var(--accent-color);
+}
+
+.settings-tab-header h4 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--heading-color);
+}
+
+.settings-tab-header p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--default-color), transparent 30%);
+}
+
+/* Inputs & Labels */
+.settings-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--heading-color);
+  margin-bottom: 8px;
+}
+
+.settings-input {
+  background: var(--surface-color) !important;
+  border: 1.5px solid color-mix(in srgb, var(--default-color), transparent 82%) !important;
+  border-radius: 10px !important;
+  color: var(--default-color) !important;
+  padding: 10px 14px !important;
+  font-size: 0.92rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.settings-input:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color), transparent 85%) !important;
+  outline: none !important;
+}
+
+select.settings-input option {
+  background-color: var(--surface-color) !important;
+  color: var(--default-color) !important;
+}
+
+/* Custom hints */
+.settings-hint {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--default-color), transparent 35%);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.settings-hint-inline {
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--default-color), transparent 35%);
+  font-weight: normal;
+}
+
+/* Tables in settings */
+.settings-table {
+  margin-bottom: 0;
+}
+
+.settings-table thead th {
+  border-bottom: 2px solid color-mix(in srgb, var(--default-color), transparent 90%) !important;
+  color: var(--heading-color) !important;
+  font-size: 0.82rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  font-weight: 700 !important;
+  padding: 12px 10px !important;
+}
+
+.settings-table tbody td {
+  padding: 12px 10px !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--default-color), transparent 94%) !important;
+  color: var(--default-color) !important;
+  vertical-align: middle !important;
+}
+
+.settings-table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* Input group */
+.settings-input-group {
+  background: transparent !important;
+  border: none !important;
+}
+
+.settings-input-group .settings-input {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.settings-input-group .input-group-text {
+  background: color-mix(in srgb, var(--default-color), transparent 96%) !important;
+  border: 1.5px solid color-mix(in srgb, var(--default-color), transparent 82%) !important;
+  border-left: none !important;
+  border-top-right-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
+  color: var(--default-color) !important;
+  font-size: 0.92rem !important;
+}
+
+/* User Account styling */
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.avatar-admin {
+  background: rgba(23, 92, 221, 0.08);
+  color: var(--accent-color);
+  border: 1px solid rgba(23, 92, 221, 0.25);
+}
+
+.avatar-doctor {
+  background: rgba(25, 135, 84, 0.08);
+  color: #198754;
+  border: 1px solid rgba(25, 135, 84, 0.25);
+}
+
+.avatar-receptionist {
+  background: rgba(108, 117, 125, 0.08);
+  color: #6c757d;
+  border: 1px solid rgba(108, 117, 125, 0.25);
+}
+
+.avatar-patient {
+  background: rgba(111, 66, 193, 0.08);
+  color: #6f42c1;
+  border: 1px solid rgba(111, 66, 193, 0.25);
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.role-admin {
+  background: rgba(23, 92, 221, 0.08);
+  color: var(--accent-color);
+  border: 1px solid rgba(23, 92, 221, 0.25);
+}
+
+.role-doctor {
+  background: rgba(25, 135, 84, 0.08);
+  color: #198754;
+  border: 1px solid rgba(25, 135, 84, 0.25);
+}
+
+.role-receptionist {
+  background: rgba(108, 117, 125, 0.08);
+  color: #6c757d;
+  border: 1px solid rgba(108, 117, 125, 0.25);
+}
+
+.role-patient {
+  background: rgba(111, 66, 193, 0.08);
+  color: #6f42c1;
+  border: 1px solid rgba(111, 66, 193, 0.25);
+}
+
+.active-user-badge {
+  font-size: 0.8rem;
+  color: color-mix(in srgb, var(--default-color), transparent 40%);
+  font-weight: 600;
+}
+
+/* Settings Modals */
+.settings-modal {
+  background: var(--surface-color) !important;
+  border: 1px solid color-mix(in srgb, var(--default-color), transparent 85%) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+}
+
+.settings-modal label {
+  color: var(--heading-color) !important;
+}
+
+.settings-modal .btn-close-white {
+  filter: none !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .settings-nav-card {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .settings-nav-item {
+    flex: 1 1 auto;
+    text-align: center;
+    justify-content: center;
+    padding: 10px 15px !important;
+  }
+}
+
+/* Topbar Logout Button */
+.topbar-logout-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 4px 12px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  border-radius: 6px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  transition: all 0.25s ease !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  gap: 4px !important;
+  cursor: pointer !important;
+}
+
+.topbar-logout-btn:hover {
+  background: rgba(220, 53, 69, 0.2) !important;
+  border-color: rgba(220, 53, 69, 0.45) !important;
+  color: #ff9aa5 !important;
+}
+
+/* Redesigned Footer Overrides */
+.footer-16 {
+  background: radial-gradient(circle at 80% 20%, #032128 0%, #010f12 100%) !important;
+  border-top: 2px solid rgba(23, 92, 221, 0.2) !important;
+  box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.2) !important;
+  padding-top: 80px !important;
+}
+
+.footer-16 .logo .sitename {
+  font-weight: 700 !important;
+  letter-spacing: 0.5px !important;
+  background: linear-gradient(135deg, #ffffff 60%, var(--accent-color) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.footer-logo-glow {
+  text-shadow: 0 0 10px rgba(23, 92, 221, 0.5);
+  animation: pulse-logo 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse-logo {
+
+  0%,
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 2px rgba(23, 92, 221, 0.4));
+  }
+
+  50% {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 8px rgba(23, 92, 221, 0.8));
+  }
+}
+
+.footer-16 .brand-description {
+  font-size: 0.92rem !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+  margin-top: 15px !important;
+}
+
+.footer-social-links {
+  margin-top: 25px !important;
+}
+
+.footer-social-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 1.1rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none !important;
+}
+
+.footer-social-icon-btn:hover {
+  background: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  color: #ffffff !important;
+  transform: translateY(-4px);
+  box-shadow: 0 6px 15px rgba(23, 92, 221, 0.5) !important;
+}
+
+.footer-16 .nav-column h6 {
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+  color: #ffffff !important;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 25px !important;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.footer-16 .nav-column h6::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 35px;
+  height: 2px;
+  background-color: var(--accent-color);
+  border-radius: 2px;
+}
+
+.footer-16 .footer-nav a {
+  color: rgba(255, 255, 255, 0.8) !important;
+  font-weight: 400 !important;
+  font-size: 0.9rem !important;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.25s ease !important;
+  text-decoration: none !important;
+}
+
+.footer-16 .footer-nav a:hover {
+  color: var(--accent-color) !important;
+  transform: translateX(5px) !important;
+}
+
+.footer-16 .footer-nav a span {
+  color: rgba(255, 255, 255, 0.8) !important;
+  transition: all 0.25s ease !important;
+}
+
+.footer-16 .footer-nav a:hover span {
+  color: var(--accent-color) !important;
+}
+
+.footer-16 .footer-nav span,
+.footer-16 .footer-nav div {
+  font-size: 0.9rem !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.footer-16 .text-muted {
+  color: rgba(255, 255, 255, 0.65) !important;
+}
+
+.footer-16 .footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 25px 0 !important;
+  margin-top: 50px !important;
+}
+
+.footer-16 .footer-bottom .copyright p {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 0.85rem !important;
+}
+
+.footer-16 .footer-bottom .copyright strong {
+  color: #ffffff !important;
+}
+
+/* Dashboard Live Clinic Activity Improvements */
+.clinic-status-card {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(248, 250, 252, 0.7);
+  border: 1px solid rgba(13, 110, 253, 0.06);
+  backdrop-filter: blur(4px);
+  transition: all 0.3s ease;
+}
+
+.clinic-status-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.04);
+}
+
+.stat-grid-item {
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: all 0.25s ease;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.stat-grid-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.stat-grid-item.scheduled {
+  background: rgba(13, 110, 253, 0.02);
+  border-color: rgba(13, 110, 253, 0.08);
+}
+
+.stat-grid-item.scheduled strong {
+  color: #175cdd;
+}
+
+.stat-grid-item.completed {
+  background: rgba(16, 185, 129, 0.02);
+  border-color: rgba(16, 185, 129, 0.08);
+}
+
+.stat-grid-item.completed strong {
+  color: #10b981;
+}
+
+.stat-grid-item.revenue {
+  background: rgba(111, 66, 193, 0.02);
+  border-color: rgba(111, 66, 193, 0.08);
+}
+
+.stat-grid-item.revenue strong {
+  color: #6f42c1;
+}
+
+.stat-grid-item.collected {
+  background: rgba(25, 135, 84, 0.02);
+  border-color: rgba(25, 135, 84, 0.08);
+}
+
+.stat-grid-item.collected strong {
+  color: #198754;
+}
+
+.btn-xs {
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  border-radius: 6px;
+}
+
+/* Glassmorphic Streamlined Sticky Header & Topbar Overrides */
+.header {
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-bottom: 1px solid rgba(13, 110, 253, 0.08) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.02) !important;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    backdrop-filter 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.header .topbar {
+  background: linear-gradient(90deg, rgba(23, 92, 221, 0.92), rgba(16, 185, 129, 0.92)) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  height: 42px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Scrolled state transitions */
+.scrolled .header {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 10px 30px rgba(13, 110, 253, 0.05) !important;
+  border-bottom: 1px solid rgba(13, 110, 253, 0.1) !important;
+}
+
+.scrolled .header .topbar {
+  height: 0 !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Streamlined branding padding transition */
+.header .branding {
+  padding: 10px 0 !important;
+  transition: padding 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.scrolled .header .branding {
+  padding: 6px 0 !important;
+}
+
+/* Desktop Navbar links glassmorphic styling */
+@media (min-width: 1200px) {
+  .navmenu a {
+    padding: 6px 14px !important;
+    border-radius: 8px;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    transition: all 0.22s ease !important;
+  }
+
+  .navmenu a:hover,
+  .navmenu a.active {
+    background: rgba(13, 110, 253, 0.06) !important;
+    color: #175cdd !important;
+  }
+}
+
+/* Calendar Page Specific Glassmorphic Header Overrides (Highly Transparent Navbar Bar Only) */
+body.calendar-page .header {
+  background: rgba(255, 255, 255, 0.22) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.01) !important;
+  border-bottom: 1px solid rgba(13, 110, 253, 0.05) !important;
+}
+
+body.calendar-page.scrolled .header {
+  background: rgba(255, 255, 255, 0.01) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 10px 30px rgba(13, 110, 253, 0.02) !important;
+}
+
+/* ────────────────────────────────────────────────────────── */
+/* ═════════════════════ DARK MODE THEME ════════════════════ */
+/* ────────────────────────────────────────────────────────── */
+[data-bs-theme="dark"] {
+  --background-color: #05140e !important;
+  --default-color: #e0ede9 !important;
+  --heading-color: #ffffff !important;
+  --accent-color: #34d399 !important;
+  --surface-color: #0c261c !important;
+  --contrast-color: #ffffff !important;
+  
+  --nav-color: #e0ede9 !important;
+  --nav-hover-color: #34d399 !important;
+  --nav-mobile-background-color: #0c261c !important;
+  --nav-dropdown-background-color: #0c261c !important;
+  --nav-dropdown-color: #e0ede9 !important;
+  --nav-dropdown-hover-color: #34d399 !important;
+}
+
+/* Dark mode specific component adjustments */
+[data-bs-theme="dark"] body {
+  background-color: #05140e !important;
+  color: #e0ede9 !important;
+}
+
+[data-bs-theme="dark"] #settings-section {
+  background: #091e16 !important; /* dark background for settings container */
+}
+
+[data-bs-theme="dark"] .light-background {
+  --background-color: #091e16 !important;
+  --surface-color: #0c261c !important;
+  background-color: #091e16 !important;
+}
+
+/* Header & Glassmorphic navbar overrides for dark mode */
+[data-bs-theme="dark"] .header {
+  background: rgba(12, 38, 28, 0.75) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] body.calendar-page .header {
+  background: rgba(12, 38, 28, 0.28) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+[data-bs-theme="dark"] body.calendar-page.scrolled .header {
+  background: rgba(15, 23, 42, 0.38) !important;
+}
+
+/* Form inputs styling inside settings / patient forms in dark mode */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .settings-input,
+[data-bs-theme="dark"] select,
+[data-bs-theme="dark"] textarea {
+  background-color: #0f172a !important;
+  color: #f1f5f9 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .settings-input:focus {
+  background-color: #0f172a !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+}
+
+/* Tables style in dark mode */
+[data-bs-theme="dark"] .table,
+[data-bs-theme="dark"] th,
+[data-bs-theme="dark"] td {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .settings-table th {
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .settings-nav-item:not(.active) i {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+[data-bs-theme="dark"] .settings-nav-item:not(.active):hover {
+  background: rgba(59, 130, 246, 0.12) !important;
+  color: #3b82f6 !important;
+}
+
+/* Card buttons theme overrides for Dark Mode setting active selection */
+[data-bs-theme="dark"] .theme-selector-btn {
+  background-color: #0f172a;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .theme-selector-btn:hover {
+  background-color: #1e293b;
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #e2e8f0;
+}
+
+/* Dynamic Analytics Tab Styling overrides */
+[data-bs-theme="dark"] .card-tab-btn:not(.active) {
+  background-color: #1e293b !important;
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] .card-tab-btn:not(.active):hover {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+/* Patient cards and lists dark adjustments */
+[data-bs-theme="dark"] .patient-card,
+[data-bs-theme="dark"] .patient-detail-card,
+[data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .settings-nav-card,
+[data-bs-theme="dark"] .settings-content-card,
+[data-bs-theme="dark"] .live-activity-card,
+[data-bs-theme="dark"] #add-patient-page .add-patient-wrapper {
+  background-color: #1e293b !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-bs-theme="dark"] #add-patient-page .add-patient-header h2,
+[data-bs-theme="dark"] #add-patient-form .form-label,
+[data-bs-theme="dark"] #add-patient-page label {
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] #add-patient-page .add-patient-header p {
+  color: #94a3b8 !important;
+}
+
+[data-bs-theme="dark"] #add-patient-form .readonly-status-field {
+  background-color: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #e2e8f0 !important;
+}
+
+/* SweetAlert dark theme integration */
+[data-bs-theme="dark"] .swal2-popup {
+  background-color: #1e293b !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .swal2-title {
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .swal2-html-container {
+  color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .swal2-loading {
+  background-color: transparent !important;
+}
+
+/* Flatpickr Calendar theme integration for dark mode */
+[data-bs-theme="dark"] .flatpickr-calendar {
+  background: #1e293b !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-day {
+  color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-day.flatpickr-disabled {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-current-month,
+[data-bs-theme="dark"] .flatpickr-month,
+[data-bs-theme="dark"] .flatpickr-weekday {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Flatpickr Time Picker theme integration for dark mode */
+[data-bs-theme="dark"] .flatpickr-time {
+  border-top-color: rgba(255, 255, 255, 0.1) !important;
+  background: #1e293b !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-time input,
+[data-bs-theme="dark"] .flatpickr-time .flatpickr-am-pm,
+[data-bs-theme="dark"] .flatpickr-time .flatpickr-time-separator {
+  color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-time input:hover,
+[data-bs-theme="dark"] .flatpickr-time .flatpickr-am-pm:hover,
+[data-bs-theme="dark"] .flatpickr-time input:focus,
+[data-bs-theme="dark"] .flatpickr-time .flatpickr-am-pm:focus {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-time .numInputWrapper span.arrowUp:after {
+  border-bottom-color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .flatpickr-time .numInputWrapper span.arrowDown:after {
+  border-top-color: #ffffff !important;
+}
+
+
+/* Custom dark mode improvements for the dashboard visualizer card and KPI cards */
+[data-bs-theme="dark"] .hero-visual .main-image {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-bs-theme="dark"] .stat-grid-item {
+  background: #0f172a !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .stat-grid-item.scheduled {
+  background: rgba(13, 110, 253, 0.08) !important;
+  border-color: rgba(13, 110, 253, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .stat-grid-item.scheduled strong {
+  color: #60a5fa !important;
+}
+
+[data-bs-theme="dark"] .stat-grid-item.completed {
+  background: rgba(16, 185, 129, 0.08) !important;
+  border-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .stat-grid-item.completed strong {
+  color: #34d399 !important;
+}
+
+[data-bs-theme="dark"] .stat-grid-item.revenue {
+  background: rgba(139, 92, 246, 0.08) !important;
+  border-color: rgba(139, 92, 246, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .stat-grid-item.revenue strong {
+  color: #a78bfa !important;
+}
+
+[data-bs-theme="dark"] .stat-grid-item.collected {
+  background: rgba(25, 135, 84, 0.08) !important;
+  border-color: rgba(25, 135, 84, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .stat-grid-item.collected strong {
+  color: #4ade80 !important;
+}
+
+/* ────────────────────────────────────────────────────────── */
+/* ════════════════════ ARABIC LOCALIZATION ═════════════════ */
+/* ────────────────────────────────────────────────────────── */
+html[lang="ar"],
+html[lang="ar"] body,
+html[lang="ar"] h1,
+html[lang="ar"] h2,
+html[lang="ar"] h3,
+html[lang="ar"] h4,
+html[lang="ar"] h5,
+html[lang="ar"] h6 {
+  font-family: "Cairo", sans-serif !important;
+}
+
+html[lang="ar"] .custom-btn-position {
+  margin-left: 0;
+  margin-right: 100px;
+}
+
+html[lang="ar"] .ms-auto {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
+
+html[lang="ar"] .me-auto {
+  margin-right: 0 !important;
+  margin-left: auto !important;
+}
+
+/* Adjust FullCalendar custom borders in RTL */
+html[lang="ar"] .fc-list-event-dot {
+  margin-right: 0 !important;
+  margin-left: 12px !important;
+}
+
+html[lang="ar"] .fc-list-event.event-status-scheduled {
+  border-left: none !important;
+  border-right: 6px solid #0284c7 !important;
+}
+
+html[lang="ar"] .fc-list-event.event-status-completed {
+  border-left: none !important;
+  border-right: 6px solid #0d9488 !important;
+}
+
+html[lang="ar"] .fc-list-event.event-status-cancelled {
+  border-left: none !important;
+  border-right: 6px solid #e11d48 !important;
+}
+
+/* Prevents fixed header/navbar from blocking hero section content on short/mobile viewports */
+.hero {
+  align-items: stretch !important;
+  padding-top: 140px !important;
+  padding-bottom: 60px !important;
+}
+
+.hero .container {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
+/* Adjust footer column lines for RTL (Arabic mode) */
+html[lang="ar"] .footer-16 .nav-column h6::after {
+  left: auto !important;
+  right: 0 !important;
+}
+
+/* Empty box dark theme adjustment */
+#patient-search-empty .empty-box {
+  background: var(--surface-color) !important;
+  border-color: color-mix(in srgb, var(--default-color), transparent 90%) !important;
+  color: var(--default-color) !important;
+}
+
+#patient-search-empty .empty-box h4 {
+  color: var(--heading-color) !important;
+}
+
+#patient-search-empty .empty-box p {
+  color: color-mix(in srgb, var(--default-color), transparent 30%) !important;
+}
+
+/* Ensure phone numbers and numeric IDs/values do not get visually reversed/inverted in RTL (Arabic) mode */
+input[type="tel"],
+input[id*="phone"],
+input[name*="phone"],
+input[id*="whatsapp"],
+input[name*="whatsapp"],
+input[id*="mobile"],
+input[name*="mobile"] {
+  direction: ltr !important;
+  text-align: left;
+}
+
+html[lang="ar"] input[type="tel"],
+html[lang="ar"] input[id*="phone"],
+html[lang="ar"] input[name*="phone"],
+html[lang="ar"] input[id*="whatsapp"],
+html[lang="ar"] input[name*="whatsapp"],
+html[lang="ar"] input[id*="mobile"],
+html[lang="ar"] input[name*="mobile"] {
+  direction: ltr !important;
+  text-align: right !important;
+}

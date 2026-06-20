@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Add Payment{% endblock %}
+
+{% block content %}
+<br><br><br><br><br><br>
+
+<section id="add-patient-page" class="section">
+    <div class="container" data-aos="fade-up">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="add-patient-wrapper">
+
+                    <div class="add-patient-header text-center" data-aos="fade-up" data-aos-delay="100">
+                        <h2>Add Payment</h2>
+                        <p>Add a new payment without changing the medical treatment details.</p>
+                    </div>
+
+                    <div class="add-patient-icon" data-aos="zoom-in" data-aos-delay="200">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+
+                    {% if error_message %}
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    <div class="patient-info-grid mb-4">
+                        <div class="patient-info-box">
+                            <span class="info-label">Patient</span>
+                            <p>
+                                {{ treatment.appointment.patient.first_name }}
+                                {{ treatment.appointment.patient.last_name }}
+                            </p>
+                        </div>
+
+                        <div class="patient-info-box">
+                            <span class="info-label">Procedure Type</span>
+                            <p>{{ treatment.procedure_type or 'General Treatment' }}</p>
+                        </div>
+
+                        <div class="patient-info-box">
+                            <span class="info-label">Total Cost</span>
+                            <p>{{ treatment.total_cost }}</p>
+                        </div>
+
+                        <div class="patient-info-box">
+                            <span class="info-label">Already Paid</span>
+                            <p>{{ treatment.paid_amount }}</p>
+                        </div>
+
+                        <div class="patient-info-box">
+                            <span class="info-label">Remaining Amount</span>
+                            <p>{{ remaining_amount }}</p>
+                        </div>
+
+                        <div class="patient-info-box">
+                            <span class="info-label">Appointment Status</span>
+                            <p>
+                                <span class="appointment-status
+                                    {% if treatment.appointment.status == 'Done' %}status-done
+                                    {% elif treatment.appointment.status == 'Cancelled' %}status-cancelled
+                                    {% else %}status-scheduled{% endif %}">
+                                    {{ treatment.appointment.status }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <form id="add-patient-form" method="POST" data-aos="fade-up" data-aos-delay="300">
+                        <div class="row gy-4">
+
+                            <div class="col-md-12">
+                                <label for="payment_amount" class="form-label">New Payment Amount</label>
+                                <input type="number" step="0.01" min="0.01" max="{{ remaining_amount }}"
+                                    id="payment_amount" name="payment_amount" class="form-control"
+                                    placeholder="Enter new payment amount" required>
+                            </div>
+
+                            <div class="action-buttons justify-content-center gap-3">
+                                <button type="submit" class="btn btn-primary px-4">
+                                    Save Payment
+                                </button>
+
+                                <a href="{{ url_for('treatments.appointment_session', appointment_id=treatment.appointment_id) }}"
+                                    class="btn-outline-main px-4">
+                                    Cancel
+                                </a>
+                            </div>
+                        </div>
+
+                </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+{% endblock %}

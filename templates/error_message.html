@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title or 'Action Not Allowed' }}{% endblock %}
+
+{% block content %}
+<br><br><br><br><br><br><br>
+
+<section id="error-message-page" class="section">
+    <div class="container" data-aos="fade-up">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+
+                <div class="doctor-profile delete-patient-card text-center" data-aos="zoom-in" data-aos-delay="100">
+
+                    <div class="delete-warning-icon">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+
+                    <div class="section-title small-section-title mb-4">
+                        <h2>{{ title or 'Action Not Allowed' }}</h2>
+                        <p>{{ message or 'This action cannot be completed.' }}</p>
+                    </div>
+
+                    <div class="action-buttons justify-content-center gap-3">
+                        {% if back_url %}
+                            <a href="{{ back_url }}" class="btn-outline-main px-4">
+                                Back
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('dashboard.home') }}" class="btn-outline-main px-4">
+                                Back to Home
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

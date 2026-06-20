@@ -1,0 +1,209 @@
+{% if patients %}
+<div class="appointments-table-wrapper table-responsive">
+    <table class="table appointments-table align-middle">
+        <thead>
+            <tr>
+                <th>
+                    <a class="patients-ajax-link"
+                        href="{{ url_for('patients.patients_table', search=search_query, sort='id', order='asc' if sort_by != 'id' or order == 'desc' else 'desc') }}">
+                        ID
+                        {% if sort_by == 'id' %}
+                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a class="patients-ajax-link"
+                        href="{{ url_for('patients.patients_table', search=search_query, sort='first_name', order='asc' if sort_by != 'first_name' or order == 'desc' else 'desc') }}">
+                        First Name
+                        {% if sort_by == 'first_name' %}
+                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a class="patients-ajax-link"
+                        href="{{ url_for('patients.patients_table', search=search_query, sort='last_name', order='asc' if sort_by != 'last_name' or order == 'desc' else 'desc') }}">
+                        Last Name
+                        {% if sort_by == 'last_name' %}
+                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a class="patients-ajax-link"
+                        href="{{ url_for('patients.patients_table', search=search_query, sort='phone', order='asc' if sort_by != 'phone' or order == 'desc' else 'desc') }}">
+                        Phone
+                        {% if sort_by == 'phone' %}
+                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a class="patients-ajax-link"
+                        href="{{ url_for('patients.patients_table', search=search_query, sort='email', order='asc' if sort_by != 'email' or order == 'desc' else 'desc') }}">
+                        Email
+                        {% if sort_by == 'email' %}
+                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a class="patients-ajax-link"
+                        href="{{ url_for('patients.patients_table', search=search_query, sort='city', order='asc' if sort_by != 'city' or order == 'desc' else 'desc') }}">
+                        City
+                        {% if sort_by == 'city' %}
+                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a class="patients-ajax-link"
+                        href="{{ url_for('patients.patients_table', search=search_query, sort='date_of_birth', order='asc' if sort_by != 'date_of_birth' or order == 'desc' else 'desc') }}">
+                        Date of Birth
+                        {% if sort_by == 'date_of_birth' %}
+                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for patient in patients %}
+            <tr>
+                <td>{{ patient.id }}</td>
+
+                <td>
+                    <strong>{{ patient.first_name }}</strong>
+                </td>
+
+                <td>
+                    <strong>{{ patient.last_name }}</strong>
+                </td>
+
+                <td>
+                    {{ patient.phone or 'No phone' }}
+                </td>
+
+                <td>
+                    {{ patient.email or 'No email' }}
+                </td>
+
+                <td>
+                    {{ patient.city or 'No city' }}
+                </td>
+
+                <td>
+                    {{ patient.date_of_birth.strftime('%Y-%m-%d') if patient.date_of_birth else 'No date' }}
+                </td>
+
+                <td class="text-center">
+                    <div class="appointments-actions">
+                        <a href="{{ url_for('patients.patient_detail', patient_id=patient.id) }}"
+                            class="table-action-btn view-btn" title="View Patient">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        {% if current_user.role in ('admin', 'receptionist') %}
+                        <a href="{{ url_for('appointments.add_appointment', patient_id=patient.id) }}"
+                            class="table-action-btn appointment-table-btn" title="Add Appointment">
+                            <i class="bi bi-calendar-plus"></i>
+                        </a>
+                        {% endif %}
+
+                        {% if current_user.role in ('admin', 'receptionist') %}
+                        <a href="{{ url_for('patients.edit_patient', patient_id=patient.id) }}"
+                            class="table-action-btn edit-btn" title="Edit Patient">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                        {% endif %}
+
+                        {% if current_user.role == 'admin' and not patient.appointments %}
+                        <a href="{{ url_for('patients.delete_patient', patient_id=patient.id) }}"
+                            class="table-action-btn delete-table-btn" title="Delete Patient">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if pagination.pages > 1 %}
+<nav class="appointments-pagination mt-4">
+    <ul class="pagination justify-content-center">
+
+        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+            {% if pagination.has_prev %}
+            <a class="page-link patients-ajax-link"
+                href="{{ url_for('patients.patients_table', page=pagination.prev_num, search=search_query, sort=sort_by, order=order) }}">
+                Previous
+            </a>
+            {% else %}
+            <span class="page-link">Previous</span>
+            {% endif %}
+        </li>
+
+        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+            <a class="page-link patients-ajax-link"
+                href="{{ url_for('patients.patients_table', page=page_num, search=search_query, sort=sort_by, order=order) }}">
+                {{ page_num }}
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">...</span>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+            {% if pagination.has_next %}
+            <a class="page-link patients-ajax-link"
+                href="{{ url_for('patients.patients_table', page=pagination.next_num, search=search_query, sort=sort_by, order=order) }}">
+                Next
+            </a>
+            {% else %}
+            <span class="page-link">Next</span>
+            {% endif %}
+        </li>
+
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div id="patient-search-empty" data-aos="fade-up" data-aos-delay="300">
+    <div class="empty-box">
+        <div class="empty-icon">
+            <i class="bi bi-person-x"></i>
+        </div>
+
+        <h4>No patients found</h4>
+
+        {% if search_query %}
+        <p>No patients match your current search.</p>
+        {% else %}
+        <p>There are no patients yet.</p>
+        {% endif %}
+
+        <a href="{{ url_for('patients.add_patient') }}" class="empty-btn">
+            Add New Patient
+        </a>
+    </div>
+</div>
+{% endif %}

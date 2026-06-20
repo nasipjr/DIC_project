@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Add Appointment{% endblock %}
+
+{% block content %}
+<br><br><br><br><br><br>
+
+
+<section id="add-patient-page" class="section">
+    <div class="container" data-aos="fade-up">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="add-patient-wrapper">
+
+                    <div class="add-patient-header text-center" data-aos="fade-up" data-aos-delay="100">
+                        <h2>Add New Appointment</h2>
+                        <p>Fill in the appointment information to create a new record.</p>
+                    </div>
+
+                    <div class="add-patient-icon" data-aos="zoom-in" data-aos-delay="200">
+                        <i class="bi bi-calendar-event"></i>
+                    </div>
+                    {% if error_message %}
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ error_message }}
+                    </div>
+                    {% endif %}
+
+                    {% if not patient and not patients %}
+                    <div class="text-center py-5" data-aos="fade-up" data-aos-delay="300">
+                        <i class="bi bi-people fs-1 text-muted mb-3 d-block"></i>
+                        <h4 class="mb-3">No Patients Found</h4>
+                        <p class="text-muted mb-4">You need to add at least one patient to the database before you can schedule an appointment.</p>
+                        <div class="col-12 text-center">
+                            <a href="{{ url_for('patients.add_patient') }}" class="save-patient-btn text-decoration-none px-4 py-2 d-inline-block">
+                                <i class="bi bi-person-plus me-1"></i> Add Patient
+                            </a>
+                            <a href="{{ url_for('appointments.appointments') }}" class="btn-outline-main ms-2 text-decoration-none px-4 py-2 d-inline-block">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <form id="add-patient-form" method="POST" data-aos="fade-up" data-aos-delay="300">
+                        {% if patients %}
+                        <div class="col-md-12">
+                            <label for="patient_id" class="form-label">Patient</label>
+                            <select id="patient_id" name="patient_id" class="form-select" required>
+                                <option value="">Select a Patient</option>
+                                {% for p in patients %}
+                                <option value="{{ p.id }}">{{ p.first_name }} {{ p.last_name }} ({{ p.phone or 'No phone' }})</option>
+                                {% endfor %}
+                            </select>
+                        </div><br>
+                        {% endif %}
+
+                        <div class="col-md-12">
+                            <label for="appointment_date" class="form-label">Date Of Appointment</label>
+                            <input type="datetime-local" id="appointment_date" name="appointment_date"
+                                class="form-control" min="{{ appointment_min_datetime }}"
+                                max="{{ appointment_max_datetime }}"
+                                value="{{ prefilled_date }}"
+                                data-working-days="{{ working_days }}"
+                                data-min-time="{{ working_hours_start }}"
+                                data-max-time="{{ working_hours_end }}" required>
+                        </div><br>
+
+                        <div class="col-md-12">
+                            <label for="reason" class="form-label">Reason</label>
+                            <select id="reason" name="reason" class="form-select" required>
+                                <option value="">Select a Reason</option>
+                                <option value="Check-up">Check-up</option>
+                                <option value="Cleaning">Cleaning</option>
+                                <option value="Filling">Filling</option>
+                                <option value="Root Canal">Root Canal</option>
+                                <option value="Extraction">Extraction</option>
+                                <option value="Crown / Bridge">Crown / Bridge</option>
+                                <option value="Braces / Orthodontics">Braces / Orthodontics</option>
+                                <option value="Whitening">Whitening</option>
+                                <option value="Emergency Pain">Emergency Pain</option>
+                                <option value="Follow-up">Follow-up</option>
+                            </select>
+                        </div><br>
+
+                        <div class="col-md-12">
+                            <label class="form-label">Status</label>
+                            <div class="form-control readonly-status-field">
+                                Scheduled
+                            </div>
+                        </div><br>
+
+
+                        <div class="col-12 text-center pt-2">
+                            <button type="submit" class="save-patient-btn">Save Appointment</button>
+                            {% if patient %}
+                            <a href="{{ url_for('patients.patient_detail', patient_id=patient.id) }}"
+                                class="btn-outline-main ms-2">
+                                Cancel
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('appointments.appointments') }}"
+                                class="btn-outline-main ms-2">
+                                Cancel
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                    {% endif %}
+
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+<script src="{{ url_for('static', filename='assets/js/appointments_flatpickr.js') }}"></script>
+{% endblock %}

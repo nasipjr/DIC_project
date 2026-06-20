@@ -1,0 +1,157 @@
+{% if patient_appointments %}
+<div class="appointments-table-wrapper table-responsive" data-aos="fade-up" data-aos-delay="250">
+    <table class="table appointments-table align-middle">
+        <thead>
+            <tr>
+                <th>
+                    <a href="{{ url_for(
+                        'patients.patient_appointments_table',
+                        patient_id=patient.id,
+                        appointment_sort='id',
+                        appointment_order='asc' if appointment_sort != 'id' or appointment_order == 'desc' else 'desc'
+                    ) }}" class="dashboard-ajax-link" data-target="patient-appointments-container">
+                        ID
+                        {% if appointment_sort == 'id' %}
+                        <i
+                            class="bi {% if appointment_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a href="{{ url_for(
+                        'patients.patient_appointments_table',
+                        patient_id=patient.id,
+                        appointment_sort='date',
+                        appointment_order='asc' if appointment_sort != 'date' or appointment_order == 'desc' else 'desc'
+                    ) }}" class="dashboard-ajax-link" data-target="patient-appointments-container">
+                        Date & Time
+                        {% if appointment_sort == 'date' %}
+                        <i
+                            class="bi {% if appointment_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a href="{{ url_for(
+                        'patients.patient_appointments_table',
+                        patient_id=patient.id,
+                        appointment_sort='reason',
+                        appointment_order='asc' if appointment_sort != 'reason' or appointment_order == 'desc' else 'desc'
+                    ) }}" class="dashboard-ajax-link" data-target="patient-appointments-container">
+                        Reason
+                        {% if appointment_sort == 'reason' %}
+                        <i
+                            class="bi {% if appointment_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th>
+                    <a href="{{ url_for(
+                        'patients.patient_appointments_table',
+                        patient_id=patient.id,
+                        appointment_sort='status',
+                        appointment_order='asc' if appointment_sort != 'status' or appointment_order == 'desc' else 'desc'
+                    ) }}" class="dashboard-ajax-link" data-target="patient-appointments-container">
+                        Status
+                        {% if appointment_sort == 'status' %}
+                        <i
+                            class="bi {% if appointment_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+                        {% endif %}
+                    </a>
+                </th>
+
+                <th class="text-center">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for appointment in patient_appointments %}
+            <tr>
+                <td>{{ appointment.id }}</td>
+
+                <td>
+                    {{ appointment.appointment_date.strftime('%Y-%m-%d %H:%M') if appointment.appointment_date else 'No
+                    date' }}
+                </td>
+
+                <td>
+                    {{ appointment.reason or 'No reason provided' }}
+                </td>
+
+                <td>
+                    <span class="appointment-status
+                        {% if appointment.status == 'Done' %}status-done
+                        {% elif appointment.status == 'Cancelled' %}status-cancelled
+                        {% elif appointment.status == 'Pending' %}status-pending
+                        {% else %}status-scheduled{% endif %}">
+                        {{ appointment.status }}
+                    </span>
+                </td>
+
+                <td class="text-center">
+                    <div class="appointments-actions">
+
+                        <a href="{{ url_for('appointments.view_appointment', appointment_id=appointment.id) }}"
+                            class="table-action-btn view-btn" title="View Appointment">
+                            <i class="bi bi-eye"></i>
+                        </a>
+
+                        <a href="{{ url_for('treatments.appointment_session', appointment_id=appointment.id) }}"
+                            class="table-action-btn appointment-table-btn" title="Open Session">
+                            <i class="bi bi-clipboard2-pulse"></i>
+                        </a>
+
+                        {% if appointment.status == 'Scheduled' %}
+                        <a href="{{ url_for('appointments.edit_appointment', appointment_id=appointment.id) }}"
+                            class="table-action-btn edit-btn" title="Edit Appointment">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+
+                        <button type="button"
+                            class="table-action-btn quick-action-btn border-0 bg-transparent p-0"
+                            data-action-url="{{ url_for('appointments.quick_cancel', appointment_id=appointment.id) }}"
+                            data-confirm-msg="Are you sure you want to cancel this appointment?"
+                            title="Quick Cancel">
+                            <i class="bi bi-x-circle text-danger"></i>
+                        </button>
+
+                        <button type="button"
+                            class="table-action-btn quick-action-btn border-0 bg-transparent p-0"
+                            data-action-url="{{ url_for('appointments.quick_done', appointment_id=appointment.id) }}"
+                            data-confirm-msg="Are you sure you want to mark this appointment as Done without treatments?"
+                            title="Quick Complete">
+                            <i class="bi bi-check-circle text-success"></i>
+                        </button>
+                        {% endif %}
+
+                        {% if appointment.status != 'Done' %}
+                        <a href="{{ url_for('appointments.delete_appointment', appointment_id=appointment.id) }}"
+                            class="table-action-btn delete-table-btn" title="Delete Appointment">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        {% endif %}
+
+
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% else %}
+<div class="empty-box text-center" data-aos="fade-up" data-aos-delay="250">
+    <div class="empty-icon">
+        <i class="bi bi-calendar-x"></i>
+    </div>
+    <h4>No appointments yet</h4>
+    <p>This patient has no appointments at the moment.</p>
+    <a href="{{ url_for('appointments.add_appointment', patient_id=patient.id) }}" class="empty-btn">
+        Add First Appointment
+    </a>
+</div>
+{% endif %}

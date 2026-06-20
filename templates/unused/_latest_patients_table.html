@@ -1,0 +1,185 @@
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+  <div>
+    <h3 class="mb-1">Latest Patients</h3>
+  </div>
+
+  <a href="{{ url_for('patients.patients') }}" class="btn-view-all">
+    View All Patients
+    <i class="bi bi-arrow-right"></i>
+  </a>
+</div>
+
+<!-- Patients Search -->
+<form method="GET"
+      action="{{ url_for('dashboard.dashboard_patients_table') }}"
+      class="appointments-filter-bar mb-4 dashboard-ajax-form"
+      data-target="latest-patients-container">
+
+  <div class="row gy-3 align-items-end">
+
+    <div class="col-md-6">
+      <label class="form-label">Search Patient</label>
+      <input
+        type="text"
+        name="patient_search"
+        class="form-control"
+        placeholder="Name, phone, email, or city"
+        value="{{ patient_search }}"
+      >
+    </div>
+
+    <input type="hidden" name="patient_sort" value="{{ patient_sort }}">
+    <input type="hidden" name="patient_order" value="{{ patient_order }}">
+
+    <div class="col-md-6 d-flex gap-2 flex-wrap">
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-search"></i>
+        Search Patients
+      </button>
+
+      <a href="{{ url_for('dashboard.dashboard_patients_table') }}"
+         class="btn btn-outline-secondary dashboard-ajax-link"
+         data-target="latest-patients-container">
+        Reset
+      </a>
+    </div>
+
+  </div>
+</form>
+<!-- /Patients Search -->
+
+{% if latest_patients %}
+<div class="appointments-table-wrapper table-responsive">
+  <table class="table appointments-table align-middle">
+    <thead>
+      <tr>
+
+        <th>
+          <a href="{{ url_for(
+            'dashboard_patients_table',
+            patient_search=patient_search,
+            patient_sort='id',
+            patient_order='asc' if patient_sort != 'id' or patient_order == 'desc' else 'desc'
+          ) }}"
+             class="dashboard-ajax-link"
+             data-target="latest-patients-container">
+            ID
+            {% if patient_sort == 'id' %}
+              <i class="bi {% if patient_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+            {% endif %}
+          </a>
+        </th>
+
+        <th>
+          <a href="{{ url_for(
+            'dashboard_patients_table',
+            patient_search=patient_search,
+            patient_sort='first_name',
+            patient_order='asc' if patient_sort != 'first_name' or patient_order == 'desc' else 'desc'
+          ) }}"
+             class="dashboard-ajax-link"
+             data-target="latest-patients-container">
+            First Name
+            {% if patient_sort == 'first_name' %}
+              <i class="bi {% if patient_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+            {% endif %}
+          </a>
+        </th>
+
+        <th>
+          <a href="{{ url_for(
+            'dashboard_patients_table',
+            patient_search=patient_search,
+            patient_sort='last_name',
+            patient_order='asc' if patient_sort != 'last_name' or patient_order == 'desc' else 'desc'
+          ) }}"
+             class="dashboard-ajax-link"
+             data-target="latest-patients-container">
+            Last Name
+            {% if patient_sort == 'last_name' %}
+              <i class="bi {% if patient_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+            {% endif %}
+          </a>
+        </th>
+
+        <th>
+          <a href="{{ url_for(
+            'dashboard_patients_table',
+            patient_search=patient_search,
+            patient_sort='phone',
+            patient_order='asc' if patient_sort != 'phone' or patient_order == 'desc' else 'desc'
+          ) }}"
+             class="dashboard-ajax-link"
+             data-target="latest-patients-container">
+            Phone
+            {% if patient_sort == 'phone' %}
+              <i class="bi {% if patient_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+            {% endif %}
+          </a>
+        </th>
+
+        <th>
+          <a href="{{ url_for(
+            'dashboard_patients_table',
+            patient_search=patient_search,
+            patient_sort='email',
+            patient_order='asc' if patient_sort != 'email' or patient_order == 'desc' else 'desc'
+          ) }}"
+             class="dashboard-ajax-link"
+             data-target="latest-patients-container">
+            Email
+            {% if patient_sort == 'email' %}
+              <i class="bi {% if patient_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+            {% endif %}
+          </a>
+        </th>
+
+        <th>
+          <a href="{{ url_for(
+            'dashboard_patients_table',
+            patient_search=patient_search,
+            patient_sort='city',
+            patient_order='asc' if patient_sort != 'city' or patient_order == 'desc' else 'desc'
+          ) }}"
+             class="dashboard-ajax-link"
+             data-target="latest-patients-container">
+            City
+            {% if patient_sort == 'city' %}
+              <i class="bi {% if patient_order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
+            {% endif %}
+          </a>
+        </th>
+
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for patient in latest_patients %}
+      <tr>
+        <td>{{ patient.id }}</td>
+        <td><strong>{{ patient.first_name }}</strong></td>
+        <td><strong>{{ patient.last_name }}</strong></td>
+        <td>{{ patient.phone or 'No phone' }}</td>
+        <td>{{ patient.email or 'No email' }}</td>
+        <td>{{ patient.city or 'No city' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% else %}
+<div class="home-empty-state">
+  <div class="home-empty-icon">
+    <i class="bi bi-person-x"></i>
+  </div>
+
+  <h4>No patients found.</h4>
+
+  {% if patient_search %}
+    <p>No patients match your current search.</p>
+  {% else %}
+    <p>You have not added any patients yet.</p>
+  {% endif %}
+</div>
+{% endif %}

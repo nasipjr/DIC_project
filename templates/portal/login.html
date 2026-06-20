@@ -1,0 +1,37 @@
+{% extends "portal/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="col-md-5">
+    <div class="card shadow-lg border-0 rounded-4" style="background: var(--surface-color);">
+      <div class="card-body p-5">
+        <div class="text-center mb-4">
+          <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3" style="width: 70px; height: 70px;">
+            <i class="bi bi-person-lock fs-1"></i>
+          </div>
+          <h3 class="card-title fw-bold">Patient Portal</h3>
+          <p class="text-secondary small">Login to manage your appointments</p>
+        </div>
+        
+        <form method="POST" action="{{ url_for('portal.login') }}">
+          <div class="mb-3">
+            <label for="username" class="form-label settings-label">Username</label>
+            <input type="text" class="form-control settings-input" id="username" name="username" required placeholder="Enter username">
+          </div>
+          <div class="mb-4">
+            <label for="password" class="form-label settings-label">Password</label>
+            <input type="password" class="form-control settings-input" id="password" name="password" required placeholder="Enter password">
+          </div>
+          <button type="submit" class="btn btn-primary w-100 rounded-pill py-2.5 fw-bold shadow-sm">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+          </button>
+        </form>
+        
+        <div class="text-center mt-4">
+          <span class="text-secondary small">Don't have an account? Please contact the clinic staff to set up your login credentials.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

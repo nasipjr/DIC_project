@@ -1,0 +1,464 @@
+% Completed
+(leave blank to keep current)
+15 Minutes
+30 Minutes
+30-Day Booking Window
+45 Minutes
+60 Minutes
+Action
+Actions
+Add Appointment
+Add First Appointment
+Add First Treatment
+Add Invoice
+Add Item
+Add Manual Invoice
+Add New Appointment
+Add New Patient
+Add New Payment
+Add New Procedure
+Add New Treatment
+Add New User
+Add Patient
+Add Payment
+Add Treatment
+Add a treatment record for this appointment session
+Add any medical information about the patient
+Add any notes about the patient
+Add any notes about the patient's appointment
+Add one or more procedures to this invoice
+Add treatment notes
+Address
+Admin
+All Statuses
+All appointments related to this patient
+All clear! No patients have outstanding balances
+All invoices are fully paid
+All invoices generated from appointments with treatments
+All patient payments recorded in the clinic
+All payments recorded for this patient
+All previous treatments recorded for this patient, ordered from newest to oldest
+All recorded treatments across this patient's appointments
+All rights reserved
+All treatments recorded during this appointment session
+Allocated
+Allocated Amount
+Amount
+Apply
+Apply Filter
+Apply Search
+Appointment
+Appointment Calendar
+Appointment Date
+Appointment Date & Time
+Appointment Details
+Appointment Notes
+Appointment Reason
+Appointment Session
+Appointment Sessions
+Appointment Status
+Appointment Statuses
+Appointments
+Appointments List
+Appointments completed today with treatment and payment summary
+Appointments scheduled for today and still waiting to be completed
+Are you sure you want to permanently delete this appointment?
+Are you sure you want to permanently delete this patient?
+Are you sure you want to permanently delete this treatment?
+Back
+Back to Appointments
+Back to Home
+Back to Invoices
+Back to Patient
+Back to Session
+Billing & Finance
+Billing & Finance Settings
+Braces / Orthodontics
+Built for professional clinic management
+Calendar
+Calendar & Appointment Settings
+Calendar Settings
+Cancel
+Cancelled
+Cancelled appointment — treatments cannot be added
+Check-up
+Checked days represent active business days. Unchecked days will be styled as weekends/closed days in the interactive calendar and will prevent scheduling appointments
+Checking status
+Choose whether the patient paid now or not
+City
+Cleaning
+Click any appointment to view details and manage the session
+Clinic Activity
+Clinic Credit
+Clinic Info
+Clinic Management System Portal
+Clinic Name
+Clinic Overview
+Clinic Profile
+Clinic Tools
+Closed
+Closed session — read-only mode
+Complete overview of the patient's profile, appointments, treatments, and financial summary
+Completed
+Completed Today
+Completed appointment sessions will appear here after using End Session
+Comprehensive financial and operational analysis for your clinic
+Configure working hours and default durations
+Country
+Create Account
+Create Invoice
+Create User Account
+Create a walk-in invoice with one or more treatment items
+Credit
+Crown / Bridge
+Custom Amount
+Custom Currency Symbol
+Custom Payment Amount
+Customize clinic profile, working hours, billing details, and treatment prices
+Customize the visual theme of the application
+Daily Working Hours End
+Daily Working Hours Start
+Dark Mode
+Dashboard
+Date
+Date & Time
+Date Of Appointment
+Date Of Birth
+Date of Birth
+Default Price
+Default Session Duration
+Delete All Cancelled
+Delete Appointment
+Delete Patient
+Delete Treatment
+Dental Clinic MS
+Dental Clinic Management System for managing patients, appointments
+Detailed invoice view with treatments, payments, and current invoice status
+Discount
+Discount (%)
+Doctor
+Done
+Done Appointments
+Done Today
+Dr
+Due
+Edit
+Edit Appointment
+Edit Discount
+Edit Patient
+Edit Treatment
+Edit User Account
+Email
+Email Address
+Emergency Contact
+Emergency Pain
+End Session
+English
+Enter address
+Enter amount
+Enter city
+Enter country
+Enter email address
+Enter emergency contact
+Enter first name
+Enter last name
+Enter medicare number
+Enter new password (optional)
+Enter occupation
+Enter password
+Enter payment amount
+Enter phone number
+Enter post code
+Enter preferred first name
+Enter state
+Enter username
+Enter your password
+Enter your username
+Example: 14
+Expected Status
+Extraction
+Facebook
+Female
+Fill in the appointment information to create a new record
+Fill in the patient information to create a new record
+Filling
+Finance Load
+Financial Summary
+First Name
+First name
+Follow up with patients having outstanding dental invoices
+Follow-up
+Friday
+Full Name
+Full Payment
+Full Price
+Gender
+Generated from appointment treatments
+Here's a list of your latest appointments
+Here's a list of your latest patients
+HomePage
+ID
+Instagram
+Interactive Calendar
+Invoice
+Invoice #
+Invoice Details
+Invoice Items
+Invoice Number
+Invoice Status
+Invoice Total
+Invoice number, patient name, phone, appointment status
+Invoiced
+Invoices
+Invoices List
+Invoices will appear here when an appointment has at least one treatment
+Last Name
+Last name
+Light Mode
+LinkedIn
+Logged in
+Login
+Logout
+Male
+Manage Patients
+Manage all appointments from one place
+Manage all clinic payments from one place
+Manage all patients from one place
+Manage procedure types and their default pricing
+Manage system users, roles, and credentials
+Manage treatments related to this appointment session
+Manual
+Manual / Walk-in Invoice
+Medical Information
+Medicare Number
+Miss
+Monday
+Monthly Financial Performance (Last 6 Months)
+Mr
+Mrs
+Ms
+N/A
+Name, phone, email, or city
+New Appointment
+New Password
+New Patient
+Next
+Next Upcoming Appointment
+No Credit
+No Payment
+No appointments found
+No appointments match your current filters
+No appointments yet
+No completed appointments today
+No invoices found
+No invoices match your search
+No more upcoming appointments scheduled for today
+No notes available
+No patients found
+No patients match your current search
+No payments found
+No payments match your search
+No payments yet
+No previous treatments
+No scheduled appointments today
+No treatments recorded yet
+No treatments yet
+Notes
+Occupation
+Open Patient
+Open Session
+Open Treatment Session
+Open session — treatments can be added or modified
+Operating Hours
+Optional notes about this payment
+Outstanding
+Outstanding / Credit
+Outstanding Amount
+Outstanding Balance
+Outstanding Balances
+Outstanding Debt
+PAY
+Paid
+Paid Ratio
+Partial
+Password
+Patient
+Patient Credit
+Patient Details
+Patient Gender Demographics
+Patient Name
+Patient Payments
+Patient Phone
+Patient name
+Patients
+Patients List
+Payment
+Payment #
+Payment Allocations
+Payment Amount
+Payment Date
+Payment Notes
+Payment Option
+Payments
+Payments List
+Payments allocated to this invoice
+Payments will appear here after they are recorded for patients
+Phone
+Phone Number
+Post Code
+Preferred First Name
+Previous
+Previous Treatments
+Price
+Procedure Name
+Procedure Price
+Procedure Type
+Quick Access
+Quick Cancel
+Quick Complete
+Quick overview of this patient's financial balance
+Realtime operational metrics
+Reason
+Receptionist
+Record a payment on the patient profile. The system will apply it to the oldest unpaid
+Remove
+Reopen Session
+Reports
+Reports & Statistics
+Reports Dashboard
+Reset
+Reset Search
+Revenue
+Review invoice totals, payments, and outstanding balances
+Role
+Root Canal
+Saturday
+Save All Settings
+Save Appointment
+Save Changes
+Save Patient
+Save Payment
+Save Treatment
+Scheduled
+Scheduled Appointments
+Scheduled Today
+Search
+Search Invoice
+Search Patient
+Search Payments
+Search by patient, phone, payment number, date, amount, or notes
+Select Gender
+Select Patient
+Select a Patient
+Select a Procedure Type
+Select a Reason
+Select a Status
+Select a Title
+Select a procedure type to show price
+Select patient
+Select procedure
+Selected Payment
+Session Mode
+Session Status
+Session Treatments
+Set the currency symbol used across invoices and reports
+Settings
+Sign In
+Start Session
+State
+Status
+Subtotal
+Sunday
+System Display Theme
+System Interface Language
+System Role
+System Settings
+Theme & Appearance
+There are no appointments yet
+There are no patients yet
+There are no scheduled appointments waiting for today
+This action cannot be undone
+This appointment is cancelled. Appointment is read-only
+This appointment is cancelled. Treatment is read-only
+This appointment is cancelled. Treatments cannot be added
+This appointment session is done. Appointment is read-only
+This appointment session is done. Treatment is read-only
+This invoice has an outstanding balance
+This invoice has an overpayment credit
+This invoice is fully paid
+This patient has an outstanding balance
+This patient has an overpayment credit
+This patient has no appointments at the moment
+This patient has no recorded payments
+This patient has no treatments from previous appointments
+This patient has no treatments yet. Treatments are added from appointment sessions
+This session is still open. You can add one or more treatments
+This session was ended without recorded treatments
+This symbol will be applied dynamically to all invoices, payments, and report pages
+This will create a completed appointment, treatment items, and an invoice
+Thursday
+Time
+Title
+Today's Paid
+Today's Progress
+Today's Revenue
+Today's Status
+Today’s
+Today’s Scheduled Appointments
+Tooth
+Tooth Number
+Tooth number
+Top 5 Procedure Types (by Volume)
+Top Patient Outstanding Balances
+Total Billed
+Total Invoiced
+Total Invoices
+Total Paid
+Total Patients
+Total Payments
+Total Remaining
+Total Treatments
+Track patients, appointments, treatments, payments, and outstanding balances
+Treatment Date
+Treatment Pricing
+Treatment Services & Prices
+Treatments
+Treatments included in this invoice
+Tuesday
+Unknown appointment status
+Unpaid
+Update the appointment information
+Update the treatment information
+Update your clinic's basic information
+User Accounts
+Username
+View Appointment
+View Appointments
+View Detail
+View Invoice
+View Patient
+View Patient Invoices
+View Treatment
+View and manage all your clinic appointments interactively from one dashboard
+View appointment information without editing
+View treatment information without editing
+Visit Date
+Wednesday
+WhatsApp
+Whitening
+Working Days of the Week
+Working Hours
+Yes, Delete Appointment
+Yes, Delete Patient
+Yes, Delete Treatment
+You
+done sessions
+e.g., $, USD, EUR, SAR
+e.g., Cleaning
+from one practical dashboard
+invoiced treatments
+invoices automatically
+payments collected
+treatments, and payments in one place
+waiting sessions
+العربية
