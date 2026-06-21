@@ -253,7 +253,7 @@
   <div class="col-md-4">
     <div class="card dashboard-metric-card metric-green p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
       <div>
-        <span class="metric-card-label">{{ _('total_revenue') }} (الشهر الحالي)</span>
+        <span class="metric-card-label">{{ _('total_revenue') }} ({{ _('current_month') }})</span>
         <h3 class="fw-bold text-success mt-1 mb-0">{{ total_sales | format_price }} <span class="fs-6 fw-normal text-muted">{{ currency_symbol }}</span></h3>
       </div>
       <div class="metric-icon-box">
@@ -266,7 +266,7 @@
   <div class="col-md-4">
     <div class="card dashboard-metric-card metric-cyan p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
       <div>
-        <span class="metric-card-label">{{ _('total_payments') }} (الشهر الحالي)</span>
+        <span class="metric-card-label">{{ _('total_payments') }} ({{ _('current_month') }})</span>
         <h3 class="fw-bold text-info mt-1 mb-0">{{ total_paid | format_price }} <span class="fs-6 fw-normal text-muted">{{ currency_symbol }}</span></h3>
       </div>
       <div class="metric-icon-box">
@@ -279,7 +279,7 @@
   <div class="col-md-4">
     <div class="card dashboard-metric-card metric-amber p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
       <div>
-        <span class="metric-card-label">{{ _('total_invoices') }} (الشهر الحالي)</span>
+        <span class="metric-card-label">{{ _('total_invoices') }} ({{ _('current_month') }})</span>
         <h3 class="fw-bold text-warning mt-1 mb-0">{{ total_invoices_count }}</h3>
       </div>
       <div class="metric-icon-box">
@@ -339,15 +339,15 @@
                 <div class="d-flex flex-column w-100 mt-1">
                   <!-- Invoices count -->
                   {% if day_data.invoices_count > 0 %}
-                    <div class="day-badge badge-invoice" title="{{ day_data.invoices_count }} {{ _('invoices') }}">
+                    <div class="day-badge badge-invoice" title="{{ day_data.invoices_count }} {{ _('invoices_label') }}">
                       <i class="fa-solid fa-receipt"></i>
-                      <span>{{ day_data.invoices_count }} فواتير</span>
+                      <span>{{ day_data.invoices_count }} {{ _('invoices_label') }}</span>
                     </div>
                   {% endif %}
 
                   <!-- Sales amount -->
                   {% if day_data.invoices_amount > 0 %}
-                    <div class="day-badge badge-sales" title="مبيعات: {{ day_data.invoices_amount | format_price }} {{ currency_symbol }}">
+                    <div class="day-badge badge-sales" title="{{ _('sales') }}: {{ day_data.invoices_amount | format_price }} {{ currency_symbol }}">
                       <i class="fa-solid fa-arrow-trend-up"></i>
                       <span dir="ltr">+{{ day_data.invoices_amount | format_price }}</span>
                     </div>
@@ -355,7 +355,7 @@
 
                   <!-- Payments amount -->
                   {% if day_data.payments_amount > 0 %}
-                    <div class="day-badge badge-paid" title="مقبوضات: {{ day_data.payments_amount | format_price }} {{ currency_symbol }}">
+                    <div class="day-badge badge-paid" title="{{ _('receipts') }}: {{ day_data.payments_amount | format_price }} {{ currency_symbol }}">
                       <i class="fa-solid fa-wallet"></i>
                       <span dir="ltr">+{{ day_data.payments_amount | format_price }}</span>
                     </div>
@@ -376,7 +376,7 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-chart-pie me-2"></i> {{ _('weekly_summary') }}</h5>
       </div>
-      <p class="text-muted small mb-3">مجموع المبيعات والمدفوعات مقسمة لكل أسبوع في هذا الشهر:</p>
+      <p class="text-muted small mb-3">{{ _('weekly_summary_desc') }}</p>
       
       <div class="d-flex flex-column">
         {% for summary in weekly_summaries %}
@@ -384,8 +384,8 @@
           <div>
             <h6 class="fw-bold text-white mb-1" style="font-size: 0.9rem;">{{ summary.label }}</h6>
             <div class="d-flex gap-3 small text-muted">
-              <span>مبيعات: <strong class="text-success">{{ summary.sales | format_price }} {{ currency_symbol }}</strong></span>
-              <span>مدفوعات: <strong class="text-info">{{ summary.payments | format_price }} {{ currency_symbol }}</strong></span>
+              <span>{{ _('sales') }}: <strong class="text-success">{{ summary.sales | format_price }} {{ currency_symbol }}</strong></span>
+              <span>{{ _('payments_label') }}: <strong class="text-info">{{ summary.payments | format_price }} {{ currency_symbol }}</strong></span>
             </div>
           </div>
           <div class="d-flex align-items-center justify-content-center rounded-circle bg-opacity-10 px-2.5 py-1.5 small
@@ -577,7 +577,7 @@
         labels: labels.map(label => label.split('-')[2]), // only show day number
         datasets: [
           {
-            label: 'المبيعات',
+            label: trans.sales,
             data: salesData,
             borderColor: '#10b981',
             backgroundColor: 'rgba(16, 185, 129, 0.05)',
@@ -588,7 +588,7 @@
             pointHoverRadius: 5
           },
           {
-            label: 'المدفوعات',
+            label: trans.payments,
             data: paymentsData,
             borderColor: '#06b6d4',
             backgroundColor: 'rgba(6, 182, 212, 0.05)',
@@ -660,7 +660,7 @@
     <div class="modal-content" style="background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 1.25rem;">
       <div class="modal-header border-bottom border-secondary border-opacity-10 py-3">
         <h5 class="modal-title fw-bold text-success" id="dayDetailsModalLabel">
-          <i class="fa-solid fa-calendar-day me-2"></i> <span id="modal-date-title">تفاصيل اليوم</span>
+          <i class="fa-solid fa-calendar-day me-2"></i> <span id="modal-date-title">{{ _('day_details') }}</span>
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1) grayscale(1) brightness(2);"></button>
       </div>

@@ -99,7 +99,7 @@
   <ul class="pagination justify-content-center">
     <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
       <a class="page-link" href="{{ url_for('payments.payments', page=pagination.prev_num, search=search_query, sort=sort_by, order=order, range=active_range) }}" tabindex="-1">
-        <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %}"></i>
+        <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}right{% else %}left{% endif %}"></i>
       </a>
     </li>
     {% for p in pagination.iter_pages() %}
@@ -113,7 +113,7 @@
     {% endfor %}
     <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
       <a class="page-link" href="{{ url_for('payments.payments', page=pagination.next_num, search=search_query, sort=sort_by, order=order, range=active_range) }}">
-        <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}right{% else %}left{% endif %}"></i>
+        <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %}"></i>
       </a>
     </li>
   </ul>

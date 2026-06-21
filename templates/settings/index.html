@@ -9,13 +9,13 @@
     border-radius: 1rem;
     padding: 1.5rem;
   }
-  
+
   .settings-sidebar-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 0.75rem;
   }
-  
+
   .settings-content-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -23,9 +23,10 @@
     position: relative;
     min-height: 520px;
   }
-  
+
   .settings-tab-btn {
     width: 100%;
+
     text-align: {% if current_lang == 'ar' %}right{% else %}left{% endif %};
     background: transparent;
     border: none;
@@ -39,35 +40,35 @@
     gap: 0.75rem;
     margin-bottom: 0.5rem;
   }
-  
+
   .settings-tab-btn:hover {
     color: var(--text-dark);
     background-color: rgba(0, 0, 0, 0.02);
   }
-  
+
   [data-bs-theme="dark"] .settings-tab-btn:hover {
     color: #ffffff;
     background-color: rgba(255, 255, 255, 0.03);
   }
-  
+
   .settings-tab-btn.active {
     background-color: var(--primary-color) !important;
     color: #ffffff !important;
     box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
   }
-  
+
   .settings-tab-btn i {
     font-size: 1.15rem;
     width: 24px;
     text-align: center;
   }
-  
+
   .settings-content-header {
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 1rem;
     margin-bottom: 1.5rem;
   }
-  
+
   .settings-content-header i {
     color: var(--primary-color);
     background-color: rgba(5, 150, 105, 0.1);
@@ -79,26 +80,28 @@
     justify-content: center;
     font-size: 1.2rem;
   }
-  
+
   /* Inputs styled dynamically */
-  .dark-form-control, .dark-form-select {
+  .dark-form-control,
+  .dark-form-select {
     background-color: var(--input-bg) !important;
     border: 1px solid var(--input-border) !important;
     color: var(--text-dark) !important;
     transition: all 0.2s ease !important;
   }
-  
-  .dark-form-control:focus, .dark-form-select:focus {
+
+  .dark-form-control:focus,
+  .dark-form-select:focus {
     border-color: var(--primary-color) !important;
     box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25) !important;
     color: var(--text-dark) !important;
   }
-  
+
   .dark-form-control::placeholder {
     color: var(--text-muted) !important;
     opacity: 0.6;
   }
-  
+
   /* Save button */
   .btn-save-settings {
     background-color: var(--primary-color);
@@ -107,21 +110,21 @@
     transition: all 0.2s ease;
     border: none;
   }
-  
+
   .btn-save-settings:hover {
     background-color: var(--primary-hover);
     color: white;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
   }
-  
+
   .backup-item {
     background-color: var(--input-bg);
     border: 1px solid var(--border-color);
     border-radius: 0.5rem;
     transition: all 0.2s ease;
   }
-  
+
   .backup-item:hover {
     border-color: var(--primary-color);
   }
@@ -130,33 +133,37 @@
     color: var(--text-muted);
     font-size: 0.85rem;
   }
-  
+
   /* Working Days Checkbox Cards */
   .day-checkbox-card {
     transition: all 0.2s ease;
     border: 1px solid var(--input-border) !important;
     background-color: var(--input-bg) !important;
   }
+
   .day-checkbox-card:has(.day-checkbox-input:checked) {
     border-color: var(--primary-color) !important;
     background-color: rgba(5, 150, 105, 0.08) !important;
   }
+
   .day-checkbox-card:has(.day-checkbox-input:checked) .day-checkbox-label {
     color: var(--primary-color) !important;
   }
+
   .day-checkbox-card:hover {
     border-color: var(--primary-color) !important;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(5, 150, 105, 0.1);
   }
-  
+
   [data-bs-theme="dark"] .day-checkbox-card:has(.day-checkbox-input:checked) .day-checkbox-label {
     color: #34d399 !important;
   }
+
   [data-bs-theme="dark"] .day-checkbox-card:has(.day-checkbox-input:checked) {
     background-color: rgba(16, 185, 129, 0.05) !important;
   }
-  
+
   .day-checkbox-input:focus {
     box-shadow: none !important;
   }
@@ -166,65 +173,80 @@
 {% block content %}
 <div class="container-fluid settings-container mt-4">
   <div class="row g-4">
-    
+
     <!-- Left Sidebar: Tabs List -->
     <div class="col-md-4 col-lg-3">
       <div class="card settings-sidebar-card p-3 shadow border-0">
         <div class="nav flex-column nav-pills" id="settingsTabs" role="tablist" aria-orientation="vertical">
-          
-          <button class="settings-tab-btn {% if active_tab == 'profile' %}active{% endif %}" id="profile-tab" data-bs-toggle="pill" data-bs-target="#tab-profile" type="button" role="tab" aria-controls="tab-profile" aria-selected="{% if active_tab == 'profile' %}true{% else %}false{% endif %}">
+
+          <button class="settings-tab-btn {% if active_tab == 'profile' %}active{% endif %}" id="profile-tab"
+            data-bs-toggle="pill" data-bs-target="#tab-profile" type="button" role="tab" aria-controls="tab-profile"
+            aria-selected="{% if active_tab == 'profile' %}true{% else %}false{% endif %}">
             <i class="fa-solid fa-building"></i>
             <span>{{ _('profile_tab_title') }}</span>
           </button>
-          
-          <button class="settings-tab-btn {% if active_tab == 'billing' %}active{% endif %}" id="billing-tab" data-bs-toggle="pill" data-bs-target="#tab-billing" type="button" role="tab" aria-controls="tab-billing" aria-selected="{% if active_tab == 'billing' %}true{% else %}false{% endif %}">
+
+          <button class="settings-tab-btn {% if active_tab == 'billing' %}active{% endif %}" id="billing-tab"
+            data-bs-toggle="pill" data-bs-target="#tab-billing" type="button" role="tab" aria-controls="tab-billing"
+            aria-selected="{% if active_tab == 'billing' %}true{% else %}false{% endif %}">
             <i class="fa-solid fa-wallet"></i>
             <span>{{ _('billing_finance') }}</span>
           </button>
 
-          <button class="settings-tab-btn {% if active_tab == 'companies' %}active{% endif %}" id="companies-tab" data-bs-toggle="pill" data-bs-target="#tab-companies" type="button" role="tab" aria-controls="tab-companies" aria-selected="{% if active_tab == 'companies' %}true{% else %}false{% endif %}">
+          <button class="settings-tab-btn {% if active_tab == 'companies' %}active{% endif %}" id="companies-tab"
+            data-bs-toggle="pill" data-bs-target="#tab-companies" type="button" role="tab" aria-controls="tab-companies"
+            aria-selected="{% if active_tab == 'companies' %}true{% else %}false{% endif %}">
             <i class="fa-solid fa-industry"></i>
             <span>{{ _('companies') }}</span>
           </button>
-          
-          <button class="settings-tab-btn {% if active_tab == 'appearance' %}active{% endif %}" id="appearance-tab" data-bs-toggle="pill" data-bs-target="#tab-appearance" type="button" role="tab" aria-controls="tab-appearance" aria-selected="{% if active_tab == 'appearance' %}true{% else %}false{% endif %}">
+
+          <button class="settings-tab-btn {% if active_tab == 'appearance' %}active{% endif %}" id="appearance-tab"
+            data-bs-toggle="pill" data-bs-target="#tab-appearance" type="button" role="tab"
+            aria-controls="tab-appearance"
+            aria-selected="{% if active_tab == 'appearance' %}true{% else %}false{% endif %}">
             <i class="fa-solid fa-palette"></i>
             <span>{{ _('theme_appearance') }}</span>
           </button>
-          
-          <button class="settings-tab-btn {% if active_tab == 'user' %}active{% endif %}" id="user-tab" data-bs-toggle="pill" data-bs-target="#tab-user" type="button" role="tab" aria-controls="tab-user" aria-selected="{% if active_tab == 'user' %}true{% else %}false{% endif %}">
+
+          <button class="settings-tab-btn {% if active_tab == 'user' %}active{% endif %}" id="user-tab"
+            data-bs-toggle="pill" data-bs-target="#tab-user" type="button" role="tab" aria-controls="tab-user"
+            aria-selected="{% if active_tab == 'user' %}true{% else %}false{% endif %}">
             <i class="fa-solid fa-user-gear"></i>
             <span>{{ _('user_accounts') }}</span>
           </button>
-          
-          <button class="settings-tab-btn {% if active_tab == 'backups' %}active{% endif %}" id="backups-tab" data-bs-toggle="pill" data-bs-target="#tab-backups" type="button" role="tab" aria-controls="tab-backups" aria-selected="{% if active_tab == 'backups' %}true{% else %}false{% endif %}">
+
+          <button class="settings-tab-btn {% if active_tab == 'backups' %}active{% endif %}" id="backups-tab"
+            data-bs-toggle="pill" data-bs-target="#tab-backups" type="button" role="tab" aria-controls="tab-backups"
+            aria-selected="{% if active_tab == 'backups' %}true{% else %}false{% endif %}">
             <i class="fa-solid fa-database"></i>
             <span>{{ _('system_backups') }}</span>
           </button>
-          
+
         </div>
       </div>
-      
+
       <div class="mt-4 text-center">
         <a href="{{ url_for('dashboard.home') }}" class="btn btn-outline-secondary rounded-pill px-4 w-100">
-          <i class="fa-solid fa-circle-chevron-{% if current_lang == 'ar' %}right{% else %}left{% endif %} me-2"></i> {{ _('back') }}
+          <i class="fa-solid fa-circle-chevron-{% if current_lang == 'ar' %}right{% else %}left{% endif %} me-2"></i> {{
+          _('back') }}
         </a>
       </div>
     </div>
-    
+
     <!-- Right Panel: Settings Tab Panes -->
     <div class="col-md-8 col-lg-9">
       <div class="card settings-content-card p-4 shadow border-0">
-        
+
         <form method="POST" action="{{ url_for('settings.settings') }}" id="settingsMainForm">
-          
+
           <!-- Hidden active tab tracker -->
           <input type="hidden" name="active_tab" id="active_tab_input" value="{{ active_tab }}">
-          
+
           <div class="tab-content" id="settingsTabContent">
-            
+
             <!-- Tab 1: Profile -->
-            <div class="tab-pane fade {% if active_tab == 'profile' %}show active{% endif %}" id="tab-profile" role="tabpanel" aria-labelledby="profile-tab">
+            <div class="tab-pane fade {% if active_tab == 'profile' %}show active{% endif %}" id="tab-profile"
+              role="tabpanel" aria-labelledby="profile-tab">
               <div class="settings-content-header d-flex align-items-center gap-3">
                 <i class="fa-solid fa-building"></i>
                 <div>
@@ -232,66 +254,82 @@
                   <span class="section-subtitle">{{ _('profile_tab_desc') }}</span>
                 </div>
               </div>
-              
+
               <div class="row g-4">
                 <div class="col-12">
                   <label for="clinic_name" class="form-label fw-semibold">{{ _('clinic_name_label') }}</label>
-                  <input type="text" class="form-control dark-form-control rounded-3" id="clinic_name" name="clinic_name" value="{{ clinic_name_val }}" required>
+                  <input type="text" class="form-control dark-form-control rounded-3" id="clinic_name"
+                    name="clinic_name" value="{{ clinic_name_val }}" required>
                 </div>
-                
+
                 <div class="col-md-6">
                   <label for="clinic_phone" class="form-label fw-semibold">{{ _('clinic_phone_label') }}</label>
-                  <input type="text" class="form-control dark-form-control rounded-3" id="clinic_phone" name="clinic_phone" value="{{ clinic_phone_val }}">
+                  <input type="text" class="form-control dark-form-control rounded-3" id="clinic_phone"
+                    name="clinic_phone" value="{{ clinic_phone_val }}">
                 </div>
-                
+
                 <div class="col-md-6">
                   <label for="clinic_email" class="form-label fw-semibold">{{ _('clinic_email_label') }}</label>
-                  <input type="email" class="form-control dark-form-control rounded-3" id="clinic_email" name="clinic_email" value="{{ clinic_email_val }}">
+                  <input type="email" class="form-control dark-form-control rounded-3" id="clinic_email"
+                    name="clinic_email" value="{{ clinic_email_val }}">
                 </div>
-                
+
                 <div class="col-12">
                   <label for="clinic_address" class="form-label fw-semibold">{{ _('clinic_address_label') }}</label>
-                  <textarea class="form-control dark-form-control rounded-3" id="clinic_address" name="clinic_address" rows="3">{{ clinic_address_val }}</textarea>
+                  <textarea class="form-control dark-form-control rounded-3" id="clinic_address" name="clinic_address"
+                    rows="3">{{ clinic_address_val }}</textarea>
                 </div>
 
                 <div class="col-12 mt-4 pt-2 border-top border-secondary border-opacity-10">
-                  <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-clock me-2"></i>{{ _('operating_hours') }}</h6>
+                  <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-clock me-2"></i>{{ _('operating_hours') }}
+                  </h6>
                 </div>
 
                 <!-- Daily Working Hours Start -->
                 <div class="col-md-6">
-                  <label for="working_hours_start" class="form-label fw-semibold">{{ _('working_hours_start_label') or 'وقت بدء الدوام اليومي' }}</label>
-                  <input type="time" class="form-control dark-form-control rounded-3" id="working_hours_start" name="working_hours_start" value="{{ working_hours_start_val or '08:00' }}">
+                  <label for="working_hours_start" class="form-label fw-semibold">{{ _('working_hours_start_label') or
+                    'وقت بدء الدوام اليومي' }}</label>
+                  <input type="time" class="form-control dark-form-control rounded-3" id="working_hours_start"
+                    name="working_hours_start" value="{{ working_hours_start_val or '08:00' }}">
                 </div>
 
                 <!-- Daily Working Hours End -->
                 <div class="col-md-6">
-                  <label for="working_hours_end" class="form-label fw-semibold">{{ _('working_hours_end_label') or 'وقت انتهاء الدوام اليومي' }}</label>
-                  <input type="time" class="form-control dark-form-control rounded-3" id="working_hours_end" name="working_hours_end" value="{{ working_hours_end_val or '16:00' }}">
+                  <label for="working_hours_end" class="form-label fw-semibold">{{ _('working_hours_end_label') or 'وقت
+                    انتهاء الدوام اليومي' }}</label>
+                  <input type="time" class="form-control dark-form-control rounded-3" id="working_hours_end"
+                    name="working_hours_end" value="{{ working_hours_end_val or '16:00' }}">
                 </div>
 
                 <!-- Working Days Checkboxes -->
                 <div class="col-12 mt-3">
-                  <label class="form-label fw-semibold d-block mb-3">{{ _('working_days_label') or 'أيام العمل الأسبوعية' }}</label>
+                  <label class="form-label fw-semibold d-block mb-3">{{ _('working_days_label') or 'أيام العمل
+                    الأسبوعية' }}</label>
                   <div class="row g-3">
-                    {% set working_days_list = working_days_val.split(',') if working_days_val else ['0','1','2','3','4','6'] %}
-                    
+                    {% set working_days_list = working_days_val.split(',') if working_days_val else
+                    ['0','1','2','3','4','6'] %}
+
                     {% set days = [
-                      ('6', _('sat') or 'السبت'),
-                      ('0', _('sun') or 'الأحد'),
-                      ('1', _('mon') or 'الاثنين'),
-                      ('2', _('tue') or 'الثلاثاء'),
-                      ('3', _('wed') or 'الأربعاء'),
-                      ('4', _('thu') or 'الخميس'),
-                      ('5', _('fri') or 'الجمعة')
+                    ('6', _('sat') or 'السبت'),
+                    ('0', _('sun') or 'الأحد'),
+                    ('1', _('mon') or 'الاثنين'),
+                    ('2', _('tue') or 'الثلاثاء'),
+                    ('3', _('wed') or 'الأربعاء'),
+                    ('4', _('thu') or 'الخميس'),
+                    ('5', _('fri') or 'الجمعة')
                     ] %}
-                    
+
                     {% for day_val, day_name in days %}
                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                      <div class="card p-3 h-100 border text-center day-checkbox-card" style="background-color: var(--input-bg); border-color: var(--input-border); border-radius: 0.75rem; cursor: pointer; transition: all 0.2s ease;">
+                      <div class="card p-3 h-100 border text-center day-checkbox-card"
+                        style="background-color: var(--input-bg); border-color: var(--input-border); border-radius: 0.75rem; cursor: pointer; transition: all 0.2s ease;">
                         <div class="form-check d-flex flex-column align-items-center justify-content-center m-0 p-0">
-                          <input class="form-check-input mb-2 m-0 day-checkbox-input" type="checkbox" name="working_days" value="{{ day_val }}" id="day-{{ day_val }}" {% if day_val in working_days_list %}checked{% endif %} style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
-                          <label class="form-check-label fw-bold text-white-50 day-checkbox-label" for="day-{{ day_val }}" style="cursor: pointer; font-size: 0.95rem;">
+                          <input class="form-check-input mb-2 m-0 day-checkbox-input" type="checkbox"
+                            name="working_days" value="{{ day_val }}" id="day-{{ day_val }}" {% if day_val in
+                            working_days_list %}checked{% endif %}
+                            style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
+                          <label class="form-check-label fw-bold text-white-50 day-checkbox-label"
+                            for="day-{{ day_val }}" style="cursor: pointer; font-size: 0.95rem;">
                             {{ day_name }}
                           </label>
                         </div>
@@ -300,14 +338,16 @@
                     {% endfor %}
                   </div>
                   <div class="form-text text-muted mt-3">
-                    <i class="fa-solid fa-circle-info me-1 text-success"></i> {{ _('working_days_hint') or 'أيام العمل المحددة تظهر باللون الأخضر وتنعكس على التقويم. الأيام غير المحددة تعتبر عطلة.' }}
+                    <i class="fa-solid fa-circle-info me-1 text-success"></i> {{ _('Working days hint') or 'أيام العمل
+                    المحددة تظهر باللون الأخضر وتنعكس على التقويم. الأيام غير المحددة تعتبر عطلة.' }}
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <!-- Tab 2: Billing & Finance -->
-            <div class="tab-pane fade {% if active_tab == 'billing' %}show active{% endif %}" id="tab-billing" role="tabpanel" aria-labelledby="billing-tab">
+            <div class="tab-pane fade {% if active_tab == 'billing' %}show active{% endif %}" id="tab-billing"
+              role="tabpanel" aria-labelledby="billing-tab">
               <div class="settings-content-header d-flex align-items-center gap-3">
                 <i class="fa-solid fa-wallet"></i>
                 <div>
@@ -315,22 +355,25 @@
                   <span class="section-subtitle">{{ _('billing_tab_desc') }}</span>
                 </div>
               </div>
-              
+
               <div class="row g-4">
                 <div class="col-md-6">
                   <label for="currency_symbol" class="form-label fw-semibold">{{ _('currency') }}</label>
-                  <input type="text" class="form-control dark-form-control rounded-3" id="currency_symbol" name="currency_symbol" value="{{ currency_symbol_val }}" required>
+                  <input type="text" class="form-control dark-form-control rounded-3" id="currency_symbol"
+                    name="currency_symbol" value="{{ currency_symbol_val }}" required>
                 </div>
-                
+
                 <div class="col-md-6">
                   <label for="tax_rate" class="form-label fw-semibold">{{ _('tax_rate') }} (%)</label>
-                  <input type="number" step="0.01" class="form-control dark-form-control rounded-3" id="tax_rate" name="tax_rate" value="{{ tax_rate_val }}">
+                  <input type="number" step="0.01" class="form-control dark-form-control rounded-3" id="tax_rate"
+                    name="tax_rate" value="{{ tax_rate_val }}">
                 </div>
               </div>
             </div>
 
             <!-- Tab 3: Companies -->
-            <div class="tab-pane fade {% if active_tab == 'companies' %}show active{% endif %}" id="tab-companies" role="tabpanel" aria-labelledby="companies-tab">
+            <div class="tab-pane fade {% if active_tab == 'companies' %}show active{% endif %}" id="tab-companies"
+              role="tabpanel" aria-labelledby="companies-tab">
               <div class="settings-content-header d-flex justify-content-between align-items-center mb-4">
                 <div class="d-flex align-items-center gap-3">
                   <i class="fa-solid fa-industry"></i>
@@ -339,13 +382,15 @@
                     <span class="section-subtitle">{{ _('companies_settings_desc') }}</span>
                   </div>
                 </div>
-                <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-bold" id="addCompanyBtn">
+                <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-bold"
+                  id="addCompanyBtn">
                   <i class="fa-solid fa-circle-plus me-1"></i> {{ _('add_row') }}
                 </button>
               </div>
 
               <div class="table-responsive">
-                <table class="table align-middle table-hover" id="companiesTable" style="border-collapse: separate; border-spacing: 0 10px;">
+                <table class="table align-middle table-hover" id="companiesTable"
+                  style="border-collapse: separate; border-spacing: 0 10px;">
                   <thead>
                     <tr class="text-secondary small text-uppercase">
                       <th scope="col" style="width: 85%;">{{ _('company') }}</th>
@@ -356,7 +401,8 @@
                     {% for comp in companies_list %}
                     <tr class="company-row">
                       <td>
-                        <input type="text" name="companies" class="form-control dark-form-control rounded-3 py-2 px-3" value="{{ comp }}" placeholder="..." required>
+                        <input type="text" name="companies" class="form-control dark-form-control rounded-3 py-2 px-3"
+                          value="{{ comp }}" placeholder="..." required>
                       </td>
                       <td class="text-end">
                         <button type="button" class="btn btn-outline-danger btn-sm rounded-3 remove-company-btn">
@@ -371,7 +417,8 @@
             </div>
 
             <!-- Tab 4: Appearance & Footer -->
-            <div class="tab-pane fade {% if active_tab == 'appearance' %}show active{% endif %}" id="tab-appearance" role="tabpanel" aria-labelledby="appearance-tab">
+            <div class="tab-pane fade {% if active_tab == 'appearance' %}show active{% endif %}" id="tab-appearance"
+              role="tabpanel" aria-labelledby="appearance-tab">
               <div class="settings-content-header d-flex align-items-center gap-3">
                 <i class="fa-solid fa-palette"></i>
                 <div>
@@ -379,31 +426,32 @@
                   <span class="section-subtitle">{{ _('appearance_tab_desc') }}</span>
                 </div>
               </div>
-              
+
               <div class="row g-4">
                 <!-- Lang -->
                 <div class="col-md-6">
                   <label for="lang" class="form-label fw-semibold">{{ _('language') }}</label>
                   <select name="lang" id="lang" class="form-select dark-form-select rounded-3">
-                    <option value="ar" {% if current_lang == 'ar' %}selected{% endif %}>العربية (Arabic)</option>
-                    <option value="en" {% if current_lang == 'en' %}selected{% endif %}>English</option>
+                    <option value="ar" {% if current_lang=='ar' %}selected{% endif %}>العربية (Arabic)</option>
+                    <option value="en" {% if current_lang=='en' %}selected{% endif %}>English</option>
                   </select>
                 </div>
-                
+
                 <!-- Theme -->
                 <div class="col-md-6">
                   <label for="theme" class="form-label fw-semibold">{{ _('theme') }}</label>
                   <select name="theme" id="theme" class="form-select dark-form-select rounded-3">
-                    <option value="light" {% if current_theme == 'light' %}selected{% endif %}>{{ _('light') }}</option>
-                    <option value="dark" {% if current_theme == 'dark' %}selected{% endif %}>{{ _('dark') }}</option>
+                    <option value="light" {% if current_theme=='light' %}selected{% endif %}>{{ _('light') }}</option>
+                    <option value="dark" {% if current_theme=='dark' %}selected{% endif %}>{{ _('dark') }}</option>
                   </select>
                 </div>
 
               </div>
             </div>
-            
+
             <!-- Tab 5: User Profile -->
-            <div class="tab-pane fade {% if active_tab == 'user' %}show active{% endif %}" id="tab-user" role="tabpanel" aria-labelledby="user-tab">
+            <div class="tab-pane fade {% if active_tab == 'user' %}show active{% endif %}" id="tab-user" role="tabpanel"
+              aria-labelledby="user-tab">
               <div class="settings-content-header d-flex align-items-center gap-3">
                 <i class="fa-solid fa-user-gear"></i>
                 <div>
@@ -411,27 +459,31 @@
                   <span class="section-subtitle">{{ _('user_profile_desc') }}</span>
                 </div>
               </div>
-              
+
               <div class="row g-4">
                 <div class="col-md-6">
                   <label for="admin_first_name" class="form-label fw-semibold">First Name</label>
-                  <input type="text" class="form-control dark-form-control rounded-3" id="admin_first_name" name="admin_first_name" value="{{ g.current_user.first_name if g.current_user else '' }}">
+                  <input type="text" class="form-control dark-form-control rounded-3" id="admin_first_name"
+                    name="admin_first_name" value="{{ g.current_user.first_name if g.current_user else '' }}">
                 </div>
-                
+
                 <div class="col-md-6">
                   <label for="admin_last_name" class="form-label fw-semibold">Last Name</label>
-                  <input type="text" class="form-control dark-form-control rounded-3" id="admin_last_name" name="admin_last_name" value="{{ g.current_user.last_name if g.current_user else '' }}">
+                  <input type="text" class="form-control dark-form-control rounded-3" id="admin_last_name"
+                    name="admin_last_name" value="{{ g.current_user.last_name if g.current_user else '' }}">
                 </div>
-                
+
                 <div class="col-12">
                   <label for="admin_password" class="form-label fw-semibold">Change Password</label>
-                  <input type="password" class="form-control dark-form-control rounded-3" id="admin_password" name="admin_password" placeholder="Leave blank to keep current password">
+                  <input type="password" class="form-control dark-form-control rounded-3" id="admin_password"
+                    name="admin_password" placeholder="Leave blank to keep current password">
                 </div>
               </div>
             </div>
 
             <!-- Tab 6: Backups -->
-            <div class="tab-pane fade {% if active_tab == 'backups' %}show active{% endif %}" id="tab-backups" role="tabpanel" aria-labelledby="backups-tab">
+            <div class="tab-pane fade {% if active_tab == 'backups' %}show active{% endif %}" id="tab-backups"
+              role="tabpanel" aria-labelledby="backups-tab">
               <div class="settings-content-header d-flex align-items-center gap-3">
                 <i class="fa-solid fa-database"></i>
                 <div>
@@ -439,7 +491,7 @@
                   <span class="section-subtitle">{{ _('backups_tab_desc') }}</span>
                 </div>
               </div>
-              
+
               <!-- Trigger backup separate form -->
               <div class="d-flex align-items-center gap-3 mb-4 p-3 bg-opacity-10 bg-info rounded-3">
                 <div>
@@ -447,10 +499,12 @@
                 </div>
                 <div class="flex-grow-1">
                   <h6 class="mb-0 text-white">Manual Backup</h6>
-                  <span class="text-secondary small">Trigger a database dump immediately. File is saved securely on the server.</span>
+                  <span class="text-secondary small">Trigger a database dump immediately. File is saved securely on the
+                    server.</span>
                 </div>
                 <div>
-                  <button type="submit" form="runBackupForm" class="btn btn-info rounded-pill px-4 btn-sm text-dark font-weight-bold">
+                  <button type="submit" form="runBackupForm"
+                    class="btn btn-info rounded-pill px-4 btn-sm text-dark font-weight-bold">
                     <i class="fa-solid fa-play me-1"></i> {{ _('create_backup_btn') }}
                   </button>
                 </div>
@@ -469,54 +523,59 @@
                   </thead>
                   <tbody>
                     {% if backups %}
-                      {% for backup in backups %}
-                      <tr class="border-bottom border-secondary border-opacity-10">
-                        <td class="fw-semibold text-white-50"><i class="fa-solid fa-file-code text-secondary me-2"></i>{{ backup.filename }}</td>
-                        <td class="text-center text-secondary small">{{ backup.size_kb }}</td>
-                        <td class="text-center text-secondary small">{{ backup.created_at }}</td>
-                        <td class="text-end">
-                          <div class="d-inline-flex gap-2">
-                            <a href="{{ url_for('settings.download_backup', filename=backup.filename) }}" class="btn btn-sm btn-outline-success rounded-circle" title="Download">
-                              <i class="fa-solid fa-download"></i>
-                            </a>
-                            <form method="POST" action="{{ url_for('settings.delete_backup', filename=backup.filename) }}" class="d-inline" onsubmit="return confirm('{{ _('delete_item_confirm') }}');">
-                              <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Delete">
-                                <i class="fa-solid fa-trash-can"></i>
-                              </button>
-                            </form>
-                          </div>
-                        </td>
-                      </tr>
-                      {% endfor %}
+                    {% for backup in backups %}
+                    <tr class="border-bottom border-secondary border-opacity-10">
+                      <td class="fw-semibold text-white-50"><i class="fa-solid fa-file-code text-secondary me-2"></i>{{
+                        backup.filename }}</td>
+                      <td class="text-center text-secondary small">{{ backup.size_kb }}</td>
+                      <td class="text-center text-secondary small">{{ backup.created_at }}</td>
+                      <td class="text-end">
+                        <div class="d-inline-flex gap-2">
+                          <a href="{{ url_for('settings.download_backup', filename=backup.filename) }}"
+                            class="btn btn-sm btn-outline-success rounded-circle" title="Download">
+                            <i class="fa-solid fa-download"></i>
+                          </a>
+                          <form method="POST" action="{{ url_for('settings.delete_backup', filename=backup.filename) }}"
+                            class="d-inline" onsubmit="return confirm('{{ _('delete_item_confirm') }}');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Delete">
+                              <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
                     {% else %}
-                      <tr>
-                        <td colspan="4" class="text-center py-4 text-muted small">
-                          <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ _('no_backups') }}
-                        </td>
-                      </tr>
+                    <tr>
+                      <td colspan="4" class="text-center py-4 text-muted small">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> {{ _('no_backups') }}
+                      </td>
+                    </tr>
                     {% endif %}
                   </tbody>
                 </table>
               </div>
             </div>
-            
+
           </div>
-          
+
           <!-- Tab Actions (Excluding Backups action block) -->
-          <div class="d-flex gap-2 justify-content-end border-top border-secondary border-opacity-10 pt-4 mt-5" id="settingsActionsPanel">
+          <div class="d-flex gap-2 justify-content-end border-top border-secondary border-opacity-10 pt-4 mt-5"
+            id="settingsActionsPanel">
             <button type="submit" class="btn btn-save-settings px-5 py-2.5 rounded-pill shadow-sm">
               <i class="fa-solid fa-circle-check me-2"></i> {{ _('save_all_settings') }}
             </button>
           </div>
-          
+
         </form>
-        
+
         <!-- Separate non-ajax helper form for running manual backups -->
-        <form method="POST" action="{{ url_for('settings.run_backup') }}" id="runBackupForm" style="display:none;"></form>
+        <form method="POST" action="{{ url_for('settings.run_backup') }}" id="runBackupForm" style="display:none;">
+        </form>
 
       </div>
     </div>
-    
+
   </div>
 </div>
 {% endblock %}
@@ -526,7 +585,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     const activeTabInput = document.getElementById("active_tab_input");
     const actionsPanel = document.getElementById("settingsActionsPanel");
-    
+
     // Function to check if active tab is Backups and hide main save button
     function checkBackupsTab(tabName) {
       if (tabName === "backups") {
@@ -535,7 +594,7 @@
         actionsPanel.style.setProperty("display", "flex", "important");
       }
     }
-    
+
     // Initial check
     checkBackupsTab(activeTabInput.value);
 
@@ -545,13 +604,13 @@
       tabEl.addEventListener('shown.bs.tab', function (event) {
         const targetId = event.target.getAttribute('data-bs-target');
         const tabName = targetId.replace('#tab-', '');
-        
+
         // Update input tracking
         activeTabInput.value = tabName;
-        
+
         // Show/hide main save button depending on tab
         checkBackupsTab(tabName);
-        
+
         // Update browser URL query parameter without reloading
         const url = new URL(window.location);
         url.searchParams.set('tab', tabName);
@@ -564,7 +623,7 @@
     const companiesTableBody = document.getElementById("companiesTableBody");
 
     if (addCompanyBtn && companiesTableBody) {
-      addCompanyBtn.addEventListener("click", function() {
+      addCompanyBtn.addEventListener("click", function () {
         const row = document.createElement("tr");
         row.className = "company-row";
         row.innerHTML = `
@@ -581,7 +640,7 @@
       });
 
       // Event delegation for deleting rows
-      companiesTableBody.addEventListener("click", function(e) {
+      companiesTableBody.addEventListener("click", function (e) {
         if (e.target.classList.contains("remove-company-btn") || e.target.closest(".remove-company-btn")) {
           const btn = e.target.classList.contains("remove-company-btn") ? e.target : e.target.closest(".remove-company-btn");
           const row = btn.closest(".company-row");
@@ -595,7 +654,7 @@
     // Make day checkbox cards clickable to toggle checkboxes inside them
     const checkboxCards = document.querySelectorAll(".day-checkbox-card");
     checkboxCards.forEach(card => {
-      card.addEventListener("click", function(e) {
+      card.addEventListener("click", function (e) {
         if (e.target.tagName === "INPUT" || e.target.tagName === "LABEL") {
           return;
         }
@@ -609,5 +668,3 @@
   });
 </script>
 {% endblock %}
-
-

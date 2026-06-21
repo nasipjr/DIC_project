@@ -173,11 +173,17 @@ def add_invoice():
                 
                 if payment_amount > 0:
                     client_obj = Client.query.filter_by(name=client_name).first()
+                    lang = request.cookies.get('lang', 'ar')
+                    if lang == 'en':
+                        payment_notes = f"Automatic payment for invoice {invoice.invoice_number} ({'Full' if invoice.status == 'Paid' else 'Partial'})"
+                    else:
+                        payment_notes = f"دفعة تلقائية للفاتورة {invoice.invoice_number} ({'كاملة' if invoice.status == 'Paid' else 'جزئية'})"
+                    
                     new_payment = Payment(
                         client_id=client_obj.id if client_obj else None,
                         amount=payment_amount,
                         payment_date=invoice.issue_date or datetime.now(),
-                        notes=f"دفعة تلقائية للفاتورة {invoice.invoice_number} ({'كاملة' if invoice.status == 'Paid' else 'جزئية'})"
+                        notes=payment_notes
                     )
                     db.session.add(new_payment)
                     db.session.flush()

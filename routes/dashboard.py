@@ -172,7 +172,11 @@ def view_calendar():
         current_row += [None] * (7 - len(current_row))
         grid.append(current_row)
 
-    # Arabic month name helper
+    # Multilingual month name helper
+    current_lang = request.cookies.get('lang', 'ar')
+    if current_lang not in ('ar', 'en'):
+        current_lang = 'ar'
+
     arabic_months = {
         1: "كانون الثاني (يناير)",
         2: "شباط (فبراير)",
@@ -187,7 +191,21 @@ def view_calendar():
         11: "تشرين الثاني (نوفمبر)",
         12: "كانون الأول (ديسمبر)"
     }
-    month_name = arabic_months.get(month, "")
+    english_months = {
+        1: "January",
+        2: "February",
+        3: "March",
+        4: "April",
+        5: "May",
+        6: "June",
+        7: "July",
+        8: "August",
+        9: "September",
+        10: "October",
+        11: "November",
+        12: "December"
+    }
+    month_name = arabic_months.get(month, "") if current_lang == 'ar' else english_months.get(month, "")
 
     # Calculate weekly summaries
     weekly_summaries = []
@@ -203,8 +221,9 @@ def view_calendar():
         if week_days:
             start_day = week_days[0]
             end_day = week_days[-1]
+            week_label = f"الأسبوع {idx + 1} ({start_day} - {end_day})" if current_lang == 'ar' else f"Week {idx + 1} ({start_day} - {end_day})"
             weekly_summaries.append({
-                "label": f"الأسبوع {idx + 1} ({start_day} - {end_day})",
+                "label": week_label,
                 "sales": week_sales,
                 "payments": week_payments
             })

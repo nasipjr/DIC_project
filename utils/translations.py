@@ -842,5 +842,137 @@ TRANSLATIONS = {
     "holiday": {
         "ar": "عطلة أسبوعية",
         "en": "Holiday"
+    },
+    "allocated_amount": {
+        "ar": "القيمة الموزعة للفواتير",
+        "en": "Allocated Amount"
+    },
+    "allocated_invoices": {
+        "ar": "الفواتير المغطاة بالسند",
+        "en": "Allocated Invoices"
+    },
+    "amount": {
+        "ar": "المبلغ",
+        "en": "Amount"
+    },
+    "client": {
+        "ar": "الزبون",
+        "en": "Client"
+    },
+    "client_signature": {
+        "ar": "توقيع العميل",
+        "en": "Client Signature"
+    },
+    "download": {
+        "ar": "تحميل",
+        "en": "Download"
+    },
+    "sat": {
+        "ar": "السبت",
+        "en": "Saturday"
+    },
+    "sun": {
+        "ar": "الأحد",
+        "en": "Sunday"
+    },
+    "mon": {
+        "ar": "الاثنين",
+        "en": "Monday"
+    },
+    "tue": {
+        "ar": "الثلاثاء",
+        "en": "Tuesday"
+    },
+    "wed": {
+        "ar": "الأربعاء",
+        "en": "Wednesday"
+    },
+    "thu": {
+        "ar": "الخميس",
+        "en": "Thursday"
+    },
+    "fri": {
+        "ar": "الجمعة",
+        "en": "Friday"
+    },
+    "payment_details_title": {
+        "ar": "تفاصيل سند القبض",
+        "en": "Payment Receipt Details"
+    },
+    "payment_receipt": {
+        "ar": "سند قبض مالي",
+        "en": "Payment Receipt"
+    },
+    "print": {
+        "ar": "طباعة",
+        "en": "Print"
+    },
+    "receipt_system_verified": {
+        "ar": "هذا السند تم إنشاؤه وتوثيقه إلكترونياً وصالح بدون توقيع.",
+        "en": "This receipt was electronically generated and verified, and is valid without signature."
+    },
+    "received_by": {
+        "ar": "المستلم (الرئيسي)",
+        "en": "Received By"
+    },
+    "working_days_label": {
+        "ar": "أيام العمل الأسبوعية",
+        "en": "Weekly Working Days"
+    },
+    "working_hours_start_label": {
+        "ar": "وقت بدء الدوام اليومي",
+        "en": "Daily Shift Start Time"
+    },
+    "working_hours_end_label": {
+        "ar": "وقت انتهاء الدوام اليومي",
+        "en": "Daily Shift End Time"
+    },
+    "Working days hint": {
+        "ar": "أيام العمل المحددة تظهر باللون الأخضر وتنعكس على التقويم. الأيام غير المحددة تعتبر عطلة.",
+        "en": "Selected working days are highlighted in green and reflected in the calendar. Unchecked days are treated as holidays."
+    },
+    "all": {
+        "ar": "الجميع",
+        "en": "All"
+    },
+    "today": {
+        "ar": "اليوم",
+        "en": "Today"
+    },
+    "week": {
+        "ar": "هذا الأسبوع",
+        "en": "This Week"
+    },
+    "month": {
+        "ar": "هذا الشهر",
+        "en": "This Month"
+    },
+    "current_month": {
+        "ar": "الشهر الحالي",
+        "en": "Current Month"
+    },
+    "weekly_summary_desc": {
+        "ar": "مجموع المبيعات والمدفوعات مقسمة لكل أسبوع في هذا الشهر:",
+        "en": "Total sales and payments broken down by week for this month:"
+    },
+    "sales": {
+        "ar": "مبيعات",
+        "en": "Sales"
+    },
+    "receipts": {
+        "ar": "مقبوضات",
+        "en": "Receipts"
+    },
+    "payments_label": {
+        "ar": "مدفوعات",
+        "en": "Payments"
+    },
+    "invoices_label": {
+        "ar": "فواتير",
+        "en": "Invoices"
+    },
+    "day_details": {
+        "ar": "تفاصيل اليوم",
+        "en": "Day Details"
     }
 }

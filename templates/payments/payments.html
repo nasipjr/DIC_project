@@ -19,22 +19,22 @@
 <ul class="nav nav-pills mb-4 gap-2">
   <li class="nav-item">
     <a class="nav-link {% if active_range == 'all' or not active_range %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('payments.payments', range='all', search=search_query, sort=sort_by, order=order) }}">
-      <i class="fa-solid fa-border-all me-1"></i> الجميع / All
+      <i class="fa-solid fa-border-all me-1"></i> {{ _('all') }}
     </a>
   </li>
   <li class="nav-item">
     <a class="nav-link {% if active_range == 'today' %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('payments.payments', range='today', search=search_query, sort=sort_by, order=order) }}">
-      <i class="fa-solid fa-calendar-day me-1"></i> اليوم / Today
+      <i class="fa-solid fa-calendar-day me-1"></i> {{ _('today') }}
     </a>
   </li>
   <li class="nav-item">
     <a class="nav-link {% if active_range == 'week' %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('payments.payments', range='week', search=search_query, sort=sort_by, order=order) }}">
-      <i class="fa-solid fa-calendar-week me-1"></i> الأسبوع / Week
+      <i class="fa-solid fa-calendar-week me-1"></i> {{ _('week') }}
     </a>
   </li>
   <li class="nav-item">
     <a class="nav-link {% if active_range == 'month' %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('payments.payments', range='month', search=search_query, sort=sort_by, order=order) }}">
-      <i class="fa-solid fa-calendar-days me-1"></i> الشهر / Month
+      <i class="fa-solid fa-calendar-days me-1"></i> {{ _('month') }}
     </a>
   </li>
 </ul>
