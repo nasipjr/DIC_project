@@ -36,7 +36,15 @@ DEFAULT_SETTINGS = {
     "smtp_password": "",
     "smtp_from_email": "",
     "tax_rate": "15",
-    "clinic_vat_number": ""
+    "clinic_vat_number": "",
+    "clinic_description": "",
+    "social_facebook": "https://facebook.com",
+    "social_instagram": "https://instagram.com",
+    "social_linkedin": "https://linkedin.com",
+    "social_whatsapp": "https://wa.me/963958948727",
+    "operating_hours_weekdays": "",
+    "operating_hours_weekend": "",
+    "companies": json.dumps(["Rain Bird", "Hunter", "Netafim", "Toro"])
 }
 
 from flask import g, has_app_context

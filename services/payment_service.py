@@ -1,19 +1,23 @@
-from models import db, Appointment, Invoice, Payment, PaymentAllocation
+from decimal import Decimal
+from models import db, Invoice, Payment, PaymentAllocation
 
+def allocate_client_payments_to_invoices(client_id):
+    from models import Client
+    client = Client.query.get(client_id)
+    if not client:
+        return
 
-def allocate_patient_payments_to_invoices(patient_id):
     payments = (
         Payment.query
-        .filter_by(patient_id=patient_id)
+        .filter_by(client_id=client_id)
         .order_by(Payment.payment_date.asc(), Payment.id.asc())
         .all()
     )
 
     invoices = (
         Invoice.query
-        .join(Invoice.appointment)
-        .filter(Invoice.patient_id == patient_id)
-        .order_by(Appointment.appointment_date.asc(), Invoice.id.asc())
+        .filter_by(client_name=client.name)
+        .order_by(Invoice.issue_date.asc(), Invoice.id.asc())
         .all()
     )
 
@@ -23,16 +27,16 @@ def allocate_patient_payments_to_invoices(patient_id):
 
     db.session.flush()
 
-    invoice_allocated = {invoice.id: 0.0 for invoice in invoices}
+    invoice_allocated = {invoice.id: Decimal("0.00") for invoice in invoices}
 
     for payment in payments:
-        remaining_payment_amount = float(payment.amount or 0)
+        remaining_payment_amount = Decimal(str(payment.amount or 0))
 
         if remaining_payment_amount <= 0:
             continue
 
         for invoice in invoices:
-            invoice_total = float(invoice.total_amount or 0)
+            invoice_total = Decimal(str(invoice.total_amount or 0))
 
             if invoice_total <= 0:
                 continue
@@ -57,5 +61,18 @@ def allocate_patient_payments_to_invoices(patient_id):
 
             if remaining_payment_amount <= 0:
                 break
+
+    db.session.flush()
+
+    # Sync invoice statuses in the database
+    for invoice in invoices:
+        db.session.expire(invoice, ['payment_allocations'])
+        total_paid = sum(alloc.amount for alloc in invoice.payment_allocations)
+        if total_paid >= invoice.total_amount:
+            invoice.status = "Paid"
+        elif total_paid > 0:
+            invoice.status = "Partially Paid"
+        else:
+            invoice.status = "Unpaid"
 
     db.session.flush()

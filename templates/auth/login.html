@@ -1,257 +1,39 @@
-{% set current_lang = request.cookies.get('lang', 'en') %}
-<!DOCTYPE html>
-<html lang="{{ current_lang }}" dir="{% if current_lang == 'ar' %}rtl{% else %}ltr{% endif %}">
+{% extends "base.html" %}
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>{% if current_lang == 'ar' %}تسجيل الدخول - {{ clinic_name }}{% else %}Login - {{ clinic_name }}{% endif %}</title>
-  
-  <!-- Favicons -->
-  <link href="{{ url_for('static', filename='assets/img/favicon.png') }}" rel="icon">
-  
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+{% block title %}{{ _('login') }}{% endblock %}
 
-  <!-- Vendor CSS Files -->
-  <link href="{{ url_for('static', filename='assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='assets/css/main.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
-
-  <style>
-    body.login-layout {
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--default-font), sans-serif;
-      color: #fff;
-    }
-    
-    .login-container {
-      width: 100%;
-      max-width: 450px;
-      padding: 15px;
-    }
-    
-    .login-card {
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px;
-      padding: 40px 30px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease;
-    }
-    
-    .login-card:hover {
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-    
-    .login-header {
-      text-align: center;
-      margin-bottom: 35px;
-    }
-    
-    .login-header h2 {
-      font-size: 26px;
-      font-weight: 700;
-      color: #fff;
-      font-family: var(--heading-font);
-      margin-bottom: 8px;
-    }
-    
-    .login-header p {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 14px;
-    }
-    
-    .login-form .form-label {
-      color: rgba(255, 255, 255, 0.85);
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    
-    .login-form .form-control {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #fff;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 14px;
-      transition: all 0.3s ease;
-    }
-    
-    .login-form .form-control:focus {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: #66e0ff;
-      box-shadow: 0 0 0 3px rgba(102, 224, 255, 0.25);
-      outline: none;
-      color: #fff;
-    }
-    
-    .login-form .form-control::placeholder {
-      color: rgba(255, 255, 255, 0.4);
-    }
-    
-    .btn-login {
-      background-color: var(--accent-color) !important;
-      border: 1px solid var(--accent-color) !important;
-      color: var(--contrast-color) !important;
-      padding: 12px 20px !important;
-      border-radius: 12px !important;
-      font-size: 15px !important;
-      font-weight: 700 !important;
-      width: 100%;
-      margin-top: 15px;
-      box-shadow: 0 6px 20px rgba(23, 92, 221, 0.3) !important;
-    }
-    
-    .btn-login:hover {
-      background-color: color-mix(in srgb, var(--accent-color), transparent 10%) !important;
-      transform: translateY(-2px) !important;
-      box-shadow: 0 8px 25px rgba(23, 92, 221, 0.4) !important;
-    }
-    
-    .login-logo {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 60px;
-      height: 60px;
-      border-radius: 16px;
-      background: rgba(102, 224, 255, 0.15);
-      border: 1px solid rgba(102, 224, 255, 0.3);
-      color: #66e0ff;
-      font-size: 28px;
-      margin-bottom: 20px;
-    }
-    
-    .nav-pills .nav-link {
-      background: transparent;
-      border: none;
-      transition: all 0.2s ease;
-    }
-    
-    .nav-pills .nav-link.active {
-      background-color: var(--accent-color) !important;
-      color: #fff !important;
-      box-shadow: 0 4px 12px rgba(23, 92, 221, 0.2);
-    }
-    
-    .nav-pills .nav-link:hover:not(.active) {
-      background: rgba(255, 255, 255, 0.05);
-    }
-  </style>
-</head>
-
-<body class="login-layout">
-  <div class="login-container">
-    <!-- Language Switcher -->
-    <div class="text-end mb-3">
-      <button class="btn btn-sm btn-outline-light rounded-pill px-3" id="lang-toggle-btn" style="font-size: 13px; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);">
-        {% if current_lang == 'ar' %}English{% else %}العربية{% endif %}
-      </button>
-    </div>
-
-    <div class="login-card">
-      <div class="login-header">
-        <div class="login-logo">
-          <i class="bi bi-shield-lock"></i>
-        </div>
-        <h2>{{ clinic_name }}</h2>
-        <p>{% if current_lang == 'ar' %}بوابة نظام إدارة العيادة{% else %}Clinic Management System Portal{% endif %}</p>
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="col-md-5">
+    <div class="card card-premium p-4">
+      <div class="text-center mb-4">
+        <i class="fa-solid fa-droplet text-success fs-1 mb-2"></i>
+        <h4 class="fw-bold text-success mb-1">{{ clinic_name }}</h4>
+        <p class="text-muted small">{{ _('login_sub_title') }}</p>
       </div>
 
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show rounded-3 p-3 mb-4" role="alert" style="font-size: 13px; color: #fff; background-color: rgba(220, 53, 69, 0.2); border: 1px solid rgba(220, 53, 69, 0.3);">
-              {{ message }}
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close" style="padding: 1rem;"></button>
-            </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
-
-      <!-- Tab selectors -->
-      <ul class="nav nav-pills nav-fill mb-4 p-1 bg-white bg-opacity-10 rounded-3" id="loginTabs" role="tablist" style="border: 1px solid rgba(255, 255, 255, 0.1);">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link {% if active_tab == 'staff' %}active{% endif %} text-white rounded-3 py-2 fw-semibold" id="staff-tab" data-bs-toggle="pill" data-bs-target="#staff-pane" type="button" role="tab" style="font-size: 14px;">
-            <i class="bi bi-person-badge me-1"></i> {% if current_lang == 'ar' %}الكادر الطبي{% else %}Clinic Staff{% endif %}
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link {% if active_tab == 'patient' %}active{% endif %} text-white rounded-3 py-2 fw-semibold" id="patient-tab" data-bs-toggle="pill" data-bs-target="#patient-pane" type="button" role="tab" style="font-size: 14px;">
-            <i class="bi bi-people me-1"></i> {% if current_lang == 'ar' %}المرضى{% else %}Patients{% endif %}
-          </button>
-        </li>
-      </ul>
-
-      <div class="tab-content" id="loginTabsContent">
-        <!-- Clinic Staff Login Pane -->
-        <div class="tab-pane fade {% if active_tab == 'staff' %}show active{% endif %}" id="staff-pane" role="tabpanel" aria-labelledby="staff-tab">
-          <form method="POST" class="login-form">
-            <input type="hidden" name="user_type" value="staff">
-            <div class="mb-3">
-              <label for="staff_username" class="form-label">{% if current_lang == 'ar' %}اسم المستخدم{% else %}Username{% endif %}</label>
-              <input type="text" class="form-control" id="staff_username" name="username" placeholder="{% if current_lang == 'ar' %}أدخل اسم المستخدم للكادر{% else %}Enter staff username{% endif %}" required {% if active_tab == 'staff' %}autofocus{% endif %}>
-            </div>
-
-            <div class="mb-4">
-              <label for="staff_password" class="form-label">{% if current_lang == 'ar' %}كلمة المرور{% else %}Password{% endif %}</label>
-              <input type="password" class="form-control" id="staff_password" name="password" placeholder="{% if current_lang == 'ar' %}أدخل كلمة المرور{% else %}Enter password{% endif %}" required>
-            </div>
-
-            <button type="submit" class="btn btn-login">
-              {% if current_lang == 'ar' %}تسجيل دخول الكادر{% else %}Staff Sign In{% endif %}
-            </button>
-          </form>
+      <form method="POST" action="{{ url_for('auth.login') }}">
+        <div class="mb-3">
+          <label for="username" class="form-label fw-semibold">{{ _('username') }}</label>
+          <div class="input-group">
+            <span class="input-group-text border-end-0 text-muted"><i class="fa-solid fa-user"></i></span>
+            <input type="text" class="form-control border-start-0 ps-0" id="username" name="username" placeholder="..." required autofocus>
+          </div>
         </div>
 
-        <!-- Patient Login Pane -->
-        <div class="tab-pane fade {% if active_tab == 'patient' %}show active{% endif %}" id="patient-pane" role="tabpanel" aria-labelledby="patient-tab">
-          <form method="POST" class="login-form">
-            <input type="hidden" name="user_type" value="patient">
-            <div class="mb-3">
-              <label for="patient_username" class="form-label">{% if current_lang == 'ar' %}اسم المستخدم{% else %}Username{% endif %}</label>
-              <input type="text" class="form-control" id="patient_username" name="username" placeholder="{% if current_lang == 'ar' %}أدخل اسم المستخدم للمريض{% else %}Enter patient username{% endif %}" required {% if active_tab == 'patient' %}autofocus{% endif %}>
-            </div>
-
-            <div class="mb-4">
-              <label for="patient_password" class="form-label">{% if current_lang == 'ar' %}كلمة المرور{% else %}Password{% endif %}</label>
-              <input type="password" class="form-control" id="patient_password" name="password" placeholder="{% if current_lang == 'ar' %}أدخل كلمة المرور{% else %}Enter password{% endif %}" required>
-            </div>
-
-            <button type="submit" class="btn btn-login">
-              {% if current_lang == 'ar' %}تسجيل دخول المرضى{% else %}Patient Sign In{% endif %}
-            </button>
-          </form>
+        <div class="mb-4">
+          <label for="password" class="form-label fw-semibold">{{ _('password') }}</label>
+          <div class="input-group">
+            <span class="input-group-text border-end-0 text-muted"><i class="fa-solid fa-lock"></i></span>
+            <input type="password" class="form-control border-start-0 ps-0" id="password" name="password" placeholder="..." required>
+          </div>
         </div>
-      </div>
 
+        <button type="submit" class="btn btn-success w-100 py-2 fs-5 fw-bold rounded-3">
+          <i class="fa-solid fa-right-to-bracket me-2"></i> {{ _('login_btn') }}
+        </button>
+      </form>
     </div>
   </div>
-
-  <script src="{{ url_for('static', filename='assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script>
-    const langBtn = document.getElementById('lang-toggle-btn');
-    if (langBtn) {
-      langBtn.addEventListener('click', () => {
-        const currentLang = '{{ current_lang }}';
-        const newLang = currentLang === 'ar' ? 'en' : 'ar';
-        document.cookie = "lang=" + newLang + ";path=/;max-age=31536000";
-        window.location.reload();
-      });
-    }
-  </script>
-</body>
-
-</html>
+</div>
+{% endblock %}

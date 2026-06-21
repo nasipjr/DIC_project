@@ -1,124 +1,141 @@
 {% extends "base.html" %}
 
-{% block title %}Invoices{% endblock %}
+{% block title %}{{ _('invoices') }}{% endblock %}
 
 {% block content %}
-</br></br></br></br></br></br></br></br></br></br></br></br></br>
-
-<!-- Section Title -->
-<div class="container section-title" data-aos="fade-up">
-    <h2>Invoices</h2>
-    <p>All invoices generated from appointments with treatments.</p></br>
-</div>
-<!-- End Section Title -->
-
-<section id="invoices-table-section" class="find-a-doctor section">
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-            <div>
-                <h3 class="mb-1">Invoices List</h3>
-                <p class="mb-0">Review invoice totals, payments, and outstanding balances.</p>
-            </div>
-
-            <a href="{{ url_for('invoices.add_invoice') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i>
-                Add Invoice
-            </a>
-        </div>
-
-        <!-- Search -->
-        <form id="invoices-filter-form" method="GET" action="{{ url_for('invoices.invoices') }}" class="appointments-filter-bar mb-4">
-            <div class="row gy-3 align-items-end">
-
-                <div class="col-md-6">
-                    <label class="form-label">Search Invoice</label>
-                    <input type="text" name="search" class="form-control"
-                        placeholder="Invoice number, patient name, phone, appointment status"
-                        value="{{ search_query }}">
-                </div>
-
-                <input type="hidden" name="sort" value="{{ sort_by }}">
-                <input type="hidden" name="order" value="{{ order }}">
-
-                <div class="col-md-6 d-flex gap-2 flex-wrap">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search"></i>
-                        Search
-                    </button>
-
-                    <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-secondary">
-                        Reset
-                    </a>
-                </div>
-
-            </div>
-        </form>
-        <!-- /Search -->
-
-        <div id="invoices-table-container">
-            {% include "partials/_invoices_table.html" %}
-        </div>
-
+<div class="row gy-4 mb-4">
+  <div class="col-12 d-flex justify-content-between align-items-center">
+    <div>
+      <h2 class="fw-bold text-success mb-1">{{ _('invoices_management_title') }}</h2>
+      <p class="text-muted">{{ _('invoices_sub_title') }}</p>
     </div>
-</section>
+    <a href="{{ url_for('invoices.add_invoice') }}" class="btn btn-success rounded-pill px-4">
+      <i class="fa-solid fa-plus-circle me-2"></i> {{ _('add_invoice') }}
+    </a>
+  </div>
+</div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const tableContainer = document.getElementById("invoices-table-container");
-    const filterForm = document.getElementById("invoices-filter-form");
+<!-- Time Range Tabs -->
+<ul class="nav nav-pills mb-4 gap-2">
+  <li class="nav-item">
+    <a class="nav-link {% if active_range == 'all' or not active_range %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('invoices.invoices', range='all', search=search_query, status=status_filter) }}">
+      <i class="fa-solid fa-border-all me-1"></i> الجميع / All
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_range == 'today' %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('invoices.invoices', range='today', search=search_query, status=status_filter) }}">
+      <i class="fa-solid fa-calendar-day me-1"></i> اليوم / Today
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_range == 'week' %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('invoices.invoices', range='week', search=search_query, status=status_filter) }}">
+      <i class="fa-solid fa-calendar-week me-1"></i> الأسبوع / Week
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_range == 'month' %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('invoices.invoices', range='month', search=search_query, status=status_filter) }}">
+      <i class="fa-solid fa-calendar-days me-1"></i> الشهر / Month
+    </a>
+  </li>
+</ul>
 
-    function loadInvoicesTable(url) {
-        // Rewrite the URL path from '/invoices' to '/invoices/table' to fetch only the partial HTML table
-        const fetchUrl = url.replace("/invoices", "/invoices/table");
+<!-- Filters & Search Bar -->
+<div class="card card-premium p-3 mb-4">
+  <form method="GET" action="{{ url_for('invoices.invoices') }}">
+    <input type="hidden" name="range" value="{{ active_range }}">
+    <div class="row g-3 align-items-center">
+      <!-- Search Input -->
+      <div class="col-md-6">
+        <div class="input-group">
+          <span class="input-group-text text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="{{ _('search') }}" value="{{ search_query }}">
+        </div>
+      </div>
+      
+      <!-- Status Filter -->
+      <div class="col-md-3">
+        <select name="status" class="form-select">
+          <option value="">{{ _('view_all') }}</option>
+          <option value="Paid" {% if status_filter == 'Paid' %}selected{% endif %}>{{ _('paid') }}</option>
+          <option value="Partially Paid" {% if status_filter == 'Partially Paid' %}selected{% endif %}>{{ _('partially_paid') }}</option>
+          <option value="Unpaid" {% if status_filter == 'Unpaid' %}selected{% endif %}>{{ _('unpaid') }}</option>
+        </select>
+      </div>
 
-        fetch(fetchUrl, {
-            headers: {
-                "X-Requested-With": "XMLHttpRequest"
-            }
-        })
-        .then(function (response) {
-            if (!response.ok) {
-                throw new Error("Failed to load invoices table.");
-            }
-            return response.text();
-        })
-        .then(function (html) {
-            tableContainer.innerHTML = html;
-            window.history.pushState(null, "", url);
-            if (window.initCustomTooltips) {
-                window.initCustomTooltips();
-            }
-        })
-        .catch(function (error) {
-            console.error(error);
-            window.location.href = url;
-        });
-    }
+      <!-- Action Buttons -->
+      <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-success w-100 fw-semibold">{{ _('filter_btn') }}</button>
+        {% if search_query or status_filter %}
+        <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-secondary w-50">{{ _('clear_btn') }}</a>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+</div>
 
-    if (filterForm) {
-        filterForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            const formData = new FormData(filterForm);
-            const queryString = new URLSearchParams(formData).toString();
-            const url = filterForm.getAttribute("action") + "?" + queryString;
-
-            loadInvoicesTable(url);
-        });
-    }
-
-    document.addEventListener("click", function (event) {
-        const link = event.target.closest(".invoices-ajax-link");
-
-        if (!link) {
-            return;
-        }
-
-        event.preventDefault();
-        loadInvoicesTable(link.href);
-    });
-});
-</script>
-
+<!-- Invoices Table -->
+<div class="card card-premium p-4">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr class="text-muted">
+          <th>{{ _('invoice_number') }}</th>
+          <th>{{ _('client_name') }}</th>
+          <th>{{ _('client_phone') }}</th>
+          <th>{{ _('issue_date') }}</th>
+          <th>{{ _('discount') }}</th>
+          <th>{{ _('tax_rate') }}</th>
+          <th>{{ _('total_amount') }}</th>
+          <th>{{ _('status') }}</th>
+          <th class="text-center">{{ _('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inv in invoices %}
+        <tr>
+          <td class="fw-bold"><a href="{{ url_for('invoices.view_invoice', invoice_id=inv.id) }}">{{ inv.invoice_number }}</a></td>
+          <td class="fw-bold text-success">
+            {% if inv.client %}
+              <a href="{{ url_for('clients.view_client', client_id=inv.client.id) }}" class="fw-bold text-success text-decoration-none">
+                {{ inv.client_name }}
+              </a>
+            {% else %}
+              {{ inv.client_name }}
+            {% endif %}
+          </td>
+          <td class="text-muted small">{{ inv.client_phone or 'N/A' }}</td>
+          <td class="text-secondary small">{{ inv.issue_date.strftime('%Y-%m-%d %H:%M') }}</td>
+          <td>{{ inv.discount_amount | format_price }} {{ currency_symbol }}</td>
+          <td>{{ inv.tax_rate }}%</td>
+          <td class="fw-bold text-success">{{ inv.total_amount | format_price }} {{ currency_symbol }}</td>
+          <td>
+            <span class="badge rounded-pill {% if inv.status == 'Paid' %}badge-paid{% elif inv.status == 'Partially Paid' %}badge-partial{% else %}badge-unpaid{% endif %}">
+              {% if inv.status == 'Paid' %}{{ _('paid') }}{% elif inv.status == 'Partially Paid' %}{{ _('partially_paid') }}{% else %}{{ _('unpaid') }}{% endif %}
+            </span>
+          </td>
+          <td class="text-center">
+            <div class="d-inline-flex gap-2">
+              <a href="{{ url_for('invoices.view_invoice', invoice_id=inv.id) }}" class="btn btn-sm btn-outline-success" title="{{ _('view_invoice') }}">
+                <i class="fa-solid fa-eye"></i>
+              </a>
+              <form method="POST" action="{{ url_for('invoices.delete_invoice', invoice_id=inv.id) }}" onsubmit="return confirm('{{ _('delete_invoice_confirm') }}');">
+                <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ _('delete') }}">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="9" class="text-center py-5 text-muted">
+            <i class="fa-solid fa-receipt fs-1 d-block mb-3"></i>
+            {{ _('no_invoices_found') }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 {% endblock %}

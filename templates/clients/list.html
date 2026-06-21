@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('clients') }}{% endblock %}
+
+{% block content %}
+<div class="row gy-4 mb-4">
+  <div class="col-12 d-flex justify-content-between align-items-center">
+    <div>
+      <h2 class="fw-bold text-success mb-1">{{ _('clients') }}</h2>
+      <p class="text-muted">{{ _('clients_sub_title') }}</p>
+    </div>
+    <button type="button" class="btn btn-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#addClientModal">
+      <i class="fa-solid fa-user-plus me-2"></i> {{ _('add_client') }}
+    </button>
+  </div>
+</div>
+
+<!-- Search Bar -->
+<div class="card card-premium p-3 mb-4">
+  <form method="GET" action="{{ url_for('clients.list_clients') }}">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-9">
+        <div class="input-group">
+          <span class="input-group-text text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="{{ _('search') }}" value="{{ search_query }}">
+        </div>
+      </div>
+      <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-success w-100 fw-semibold">{{ _('search') }}</button>
+        {% if search_query %}
+        <a href="{{ url_for('clients.list_clients') }}" class="btn btn-outline-secondary w-50">{{ _('clear_btn') }}</a>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- Clients Table -->
+<div class="card card-premium p-4">
+  <div class="table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr class="text-muted">
+          <th>{{ _('client_name') }}</th>
+          <th>{{ _('client_phone') }}</th>
+          <th>{{ _('client_address') }}</th>
+          <th class="text-center">{{ _('invoices') }}</th>
+          <th class="text-center">{{ _('files_and_documents') }}</th>
+          <th>{{ _('issue_date') }}</th>
+          <th class="text-end">{{ _('actions') }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for client in clients %}
+        <tr>
+          <td>
+            <a href="{{ url_for('clients.view_client', client_id=client.id) }}" class="fw-bold text-success text-decoration-none">
+              {{ client.name }}
+            </a>
+          </td>
+          <td>
+            <span class="text-white-50">{{ client.phone }}</span>
+          </td>
+          <td class="text-truncate text-secondary small" style="max-width: 250px;" title="{{ client.address }}">
+            {{ client.address }}
+          </td>
+          <td class="text-center">
+            <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3">
+              {{ client.invoice_count }}
+            </span>
+          </td>
+          <td class="text-center">
+            <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">
+              {{ client.file_count }}
+            </span>
+          </td>
+          <td class="text-muted small">{{ client.created_at.strftime('%Y-%m-%d') if client.created_at else 'N/A' }}</td>
+          <td class="text-end">
+            <a href="{{ url_for('clients.view_client', client_id=client.id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+              <i class="fa-solid fa-folder-open me-1"></i> {{ _('client_details') }}
+            </a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center py-5 text-muted">
+            <i class="fa-solid fa-users-slash fs-1 d-block mb-3"></i>
+            {{ _('no_clients_found') }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Client Modal -->
+<div class="modal fade" id="addClientModal" tabindex="-1" aria-labelledby="addClientModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content card card-premium border border-secondary border-opacity-20 shadow-lg">
+      <div class="modal-header border-bottom border-secondary border-opacity-10">
+        <h5 class="modal-title fw-bold text-success" id="addClientModalLabel">
+          <i class="fa-solid fa-user-plus me-2"></i>{{ _('add_client') }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="POST" action="{{ url_for('clients.add_client') }}">
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="client_name_input" class="form-label fw-semibold">{{ _('client_name') }} <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="client_name_input" name="name" placeholder="..." required>
+            </div>
+            <div class="col-12">
+              <label for="client_phone_input" class="form-label fw-semibold">{{ _('client_phone') }}</label>
+              <input type="text" class="form-control" id="client_phone_input" name="phone" placeholder="...">
+            </div>
+            <div class="col-12">
+              <label for="client_address_input" class="form-label fw-semibold">{{ _('client_address') }}</label>
+              <textarea class="form-control" id="client_address_input" name="address" rows="3" placeholder="..."></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top border-secondary border-opacity-10">
+          <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">{{ _('cancel') }}</button>
+          <button type="submit" class="btn btn-success px-4">{{ _('save') }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

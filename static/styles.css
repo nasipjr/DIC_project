@@ -2174,50 +2174,50 @@ body.calendar-page.scrolled .header {
 /* ═════════════════════ DARK MODE THEME ════════════════════ */
 /* ────────────────────────────────────────────────────────── */
 [data-bs-theme="dark"] {
-  --background-color: #05140e !important;
+  --background-color: #06120e !important;
   --default-color: #e0ede9 !important;
   --heading-color: #ffffff !important;
   --accent-color: #34d399 !important;
-  --surface-color: #0c261c !important;
+  --surface-color: #0c2018 !important;
   --contrast-color: #ffffff !important;
   
   --nav-color: #e0ede9 !important;
   --nav-hover-color: #34d399 !important;
-  --nav-mobile-background-color: #0c261c !important;
-  --nav-dropdown-background-color: #0c261c !important;
+  --nav-mobile-background-color: #0c2018 !important;
+  --nav-dropdown-background-color: #0c2018 !important;
   --nav-dropdown-color: #e0ede9 !important;
   --nav-dropdown-hover-color: #34d399 !important;
 }
 
 /* Dark mode specific component adjustments */
 [data-bs-theme="dark"] body {
-  background-color: #05140e !important;
+  background-color: #06120e !important;
   color: #e0ede9 !important;
 }
 
 [data-bs-theme="dark"] #settings-section {
-  background: #091e16 !important; /* dark background for settings container */
+  background: #091a14 !important; /* dark background for settings container */
 }
 
 [data-bs-theme="dark"] .light-background {
-  --background-color: #091e16 !important;
-  --surface-color: #0c261c !important;
-  background-color: #091e16 !important;
+  --background-color: #091a14 !important;
+  --surface-color: #0c2018 !important;
+  background-color: #091a14 !important;
 }
 
 /* Header & Glassmorphic navbar overrides for dark mode */
 [data-bs-theme="dark"] .header {
-  background: rgba(12, 38, 28, 0.75) !important;
+  background: rgba(12, 32, 24, 0.75) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 [data-bs-theme="dark"] body.calendar-page .header {
-  background: rgba(12, 38, 28, 0.28) !important;
+  background: rgba(12, 32, 24, 0.28) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 [data-bs-theme="dark"] body.calendar-page.scrolled .header {
-  background: rgba(15, 23, 42, 0.38) !important;
+  background: rgba(12, 32, 24, 0.38) !important;
 }
 
 /* Form inputs styling inside settings / patient forms in dark mode */
@@ -2225,23 +2225,34 @@ body.calendar-page.scrolled .header {
 [data-bs-theme="dark"] .settings-input,
 [data-bs-theme="dark"] select,
 [data-bs-theme="dark"] textarea {
-  background-color: #0f172a !important;
+  background-color: #091812 !important;
   color: #f1f5f9 !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(16, 185, 129, 0.15) !important;
+}
+
+.input-group-text {
+  background-color: #ffffff !important;
+  border-color: #ced4da !important;
+}
+
+[data-bs-theme="dark"] .input-group-text {
+  background-color: #091812 !important;
+  color: #94a3b8 !important;
+  border: 1px solid rgba(16, 185, 129, 0.15) !important;
 }
 
 [data-bs-theme="dark"] .form-control:focus,
 [data-bs-theme="dark"] .settings-input:focus {
-  background-color: #0f172a !important;
-  border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25) !important;
+  background-color: #091812 !important;
+  border-color: #34d399 !important;
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.25) !important;
 }
 
 /* Tables style in dark mode */
 [data-bs-theme="dark"] .table,
 [data-bs-theme="dark"] th,
 [data-bs-theme="dark"] td {
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(16, 185, 129, 0.08) !important;
 }
 
 [data-bs-theme="dark"] .settings-table th {
@@ -2253,31 +2264,31 @@ body.calendar-page.scrolled .header {
 }
 
 [data-bs-theme="dark"] .settings-nav-item:not(.active):hover {
-  background: rgba(59, 130, 246, 0.12) !important;
-  color: #3b82f6 !important;
+  background: rgba(52, 211, 153, 0.12) !important;
+  color: #34d399 !important;
 }
 
 /* Card buttons theme overrides for Dark Mode setting active selection */
 [data-bs-theme="dark"] .theme-selector-btn {
-  background-color: #0f172a;
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #091812;
+  border-color: rgba(16, 185, 129, 0.1);
   color: #94a3b8;
 }
 
 [data-bs-theme="dark"] .theme-selector-btn:hover {
-  background-color: #1e293b;
-  border-color: rgba(255, 255, 255, 0.2);
+  background-color: #0c2018;
+  border-color: rgba(16, 185, 129, 0.2);
   color: #e2e8f0;
 }
 
 /* Dynamic Analytics Tab Styling overrides */
 [data-bs-theme="dark"] .card-tab-btn:not(.active) {
-  background-color: #1e293b !important;
+  background-color: #0c2018 !important;
   color: #94a3b8 !important;
 }
 
 [data-bs-theme="dark"] .card-tab-btn:not(.active):hover {
-  background-color: #334155 !important;
+  background-color: #112e22 !important;
   color: #f1f5f9 !important;
 }
 
@@ -2289,9 +2300,9 @@ body.calendar-page.scrolled .header {
 [data-bs-theme="dark"] .settings-content-card,
 [data-bs-theme="dark"] .live-activity-card,
 [data-bs-theme="dark"] #add-patient-page .add-patient-wrapper {
-  background-color: #1e293b !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25) !important;
+  background-color: #0c2018 !important;
+  border: 1px solid rgba(16, 185, 129, 0.08) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35) !important;
 }
 
 [data-bs-theme="dark"] #add-patient-page .add-patient-header h2,
@@ -2305,16 +2316,16 @@ body.calendar-page.scrolled .header {
 }
 
 [data-bs-theme="dark"] #add-patient-form .readonly-status-field {
-  background-color: #0f172a !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background-color: #091812 !important;
+  border-color: rgba(16, 185, 129, 0.15) !important;
   color: #e2e8f0 !important;
 }
 
 /* SweetAlert dark theme integration */
 [data-bs-theme="dark"] .swal2-popup {
-  background-color: #1e293b !important;
+  background-color: #0c2018 !important;
   color: #e2e8f0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(16, 185, 129, 0.08) !important;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.35) !important;
 }
 
@@ -2332,8 +2343,8 @@ body.calendar-page.scrolled .header {
 
 /* Flatpickr Calendar theme integration for dark mode */
 [data-bs-theme="dark"] .flatpickr-calendar {
-  background: #1e293b !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background: #0c2018 !important;
+  border-color: rgba(16, 185, 129, 0.15) !important;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
 }
 
@@ -2354,8 +2365,8 @@ body.calendar-page.scrolled .header {
 
 /* Flatpickr Time Picker theme integration for dark mode */
 [data-bs-theme="dark"] .flatpickr-time {
-  border-top-color: rgba(255, 255, 255, 0.1) !important;
-  background: #1e293b !important;
+  border-top-color: rgba(16, 185, 129, 0.15) !important;
+  background: #0c2018 !important;
 }
 
 [data-bs-theme="dark"] .flatpickr-time input,
@@ -2368,7 +2379,7 @@ body.calendar-page.scrolled .header {
 [data-bs-theme="dark"] .flatpickr-time .flatpickr-am-pm:hover,
 [data-bs-theme="dark"] .flatpickr-time input:focus,
 [data-bs-theme="dark"] .flatpickr-time .flatpickr-am-pm:focus {
-  background: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(16, 185, 129, 0.08) !important;
 }
 
 [data-bs-theme="dark"] .flatpickr-time .numInputWrapper span.arrowUp:after {
@@ -2382,23 +2393,23 @@ body.calendar-page.scrolled .header {
 
 /* Custom dark mode improvements for the dashboard visualizer card and KPI cards */
 [data-bs-theme="dark"] .hero-visual .main-image {
-  background: rgba(30, 41, 59, 0.8) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(12, 32, 24, 0.8) !important;
+  border-color: rgba(16, 185, 129, 0.08) !important;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3) !important;
 }
 
 [data-bs-theme="dark"] .stat-grid-item {
-  background: #0f172a !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: #0c2018 !important;
+  border-color: rgba(16, 185, 129, 0.08) !important;
 }
 
 [data-bs-theme="dark"] .stat-grid-item.scheduled {
-  background: rgba(13, 110, 253, 0.08) !important;
-  border-color: rgba(13, 110, 253, 0.2) !important;
+  background: rgba(5, 150, 105, 0.08) !important;
+  border-color: rgba(5, 150, 105, 0.2) !important;
 }
 
 [data-bs-theme="dark"] .stat-grid-item.scheduled strong {
-  color: #60a5fa !important;
+  color: #34d399 !important;
 }
 
 [data-bs-theme="dark"] .stat-grid-item.completed {
@@ -2411,21 +2422,21 @@ body.calendar-page.scrolled .header {
 }
 
 [data-bs-theme="dark"] .stat-grid-item.revenue {
-  background: rgba(139, 92, 246, 0.08) !important;
-  border-color: rgba(139, 92, 246, 0.2) !important;
+  background: rgba(2, 132, 199, 0.08) !important;
+  border-color: rgba(2, 132, 199, 0.2) !important;
 }
 
 [data-bs-theme="dark"] .stat-grid-item.revenue strong {
-  color: #a78bfa !important;
+  color: #38bdf8 !important;
 }
 
 [data-bs-theme="dark"] .stat-grid-item.collected {
-  background: rgba(25, 135, 84, 0.08) !important;
-  border-color: rgba(25, 135, 84, 0.2) !important;
+  background: rgba(16, 185, 129, 0.08) !important;
+  border-color: rgba(16, 185, 129, 0.2) !important;
 }
 
 [data-bs-theme="dark"] .stat-grid-item.collected strong {
-  color: #4ade80 !important;
+  color: #34d399 !important;
 }
 
 /* ────────────────────────────────────────────────────────── */

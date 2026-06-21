@@ -1,103 +1,74 @@
 {% extends "base.html" %}
 
 {% block title %}
-  {% if mode == 'add' %}
-    {% if current_lang == 'ar' %}إضافة مادة جديدة{% else %}Add New Stock Item{% endif %}
-  {% else %}
-    {% if current_lang == 'ar' %}تعديل مادة{% else %}Edit Stock Item{% endif %}
-  {% endif %}
+  {% if mode == 'add' %}{{ _('add_item') }}{% else %}{{ _('edit_item') }}{% endif %}
 {% endblock %}
 
 {% block content %}
-<br><br><br><br><br><br>
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card card-premium p-4 shadow-sm">
+      <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h4 class="fw-bold text-success mb-0">
+          {% if mode == 'add' %}
+            <i class="fa-solid fa-plus-circle me-1"></i> {{ _('add_stock_title') }}
+          {% else %}
+            <i class="fa-solid fa-edit me-1"></i> {{ _('edit_stock_title') }}: {{ item.name }}
+          {% endif %}
+        </h4>
+        <a href="{{ url_for('stock.list_stock') }}" class="btn btn-outline-secondary btn-sm">{{ _('back_to_stock') }}</a>
+      </div>
 
-<section id="add-stock-page" class="section">
-    <div class="container" data-aos="fade-up">
-        <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="add-patient-wrapper">
+      <form method="POST">
+        <div class="row g-3">
+          <!-- Item Name -->
+          <div class="col-12">
+            <label for="name" class="form-label fw-semibold">{{ _('item_name') }} <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="..." value="{% if mode == 'edit' %}{{ item.name }}{% endif %}" required>
+          </div>
 
-                    <div class="add-patient-header text-center" data-aos="fade-up" data-aos-delay="100">
-                        <h2>
-                          {% if mode == 'add' %}
-                            {% if current_lang == 'ar' %}إضافة مادة جديدة للمستودع{% else %}Add New Stock Item{% endif %}
-                          {% else %}
-                            {% if current_lang == 'ar' %}تعديل تفاصيل المادة{% else %}Edit Stock Item{% endif %}
-                          {% endif %}
-                        </h2>
-                        <p>
-                          {% if current_lang == 'ar' %}تعبئة معلومات المواد المتوفرة في المخزن لتسجيل كمياتها وأسعارها.{% else %}Fill in details to track item levels and prices.{% endif %}
-                        </p>
-                    </div>
+          <!-- SKU Code -->
+          <div class="col-md-6">
+            <label for="sku" class="form-label fw-semibold">{{ _('sku') }}</label>
+            <input type="text" class="form-control" id="sku" name="sku" placeholder="SKU" value="{% if mode == 'edit' %}{{ item.sku or '' }}{% endif %}">
+          </div>
 
-                    <div class="add-patient-icon" data-aos="zoom-in" data-aos-delay="200">
-                        <i class="bi bi-box-seam"></i>
-                    </div>
+          <!-- Company Dropdown -->
+          <div class="col-md-6">
+            <label for="company" class="form-label fw-semibold">{{ _('company') }}</label>
+            <select class="form-select" id="company" name="company">
+              <option value="">{{ _('select_company') }}</option>
+              {% for comp in companies %}
+                <option value="{{ comp }}" {% if mode == 'edit' and item.company == comp %}selected{% endif %}>{{ comp }}</option>
+              {% endfor %}
+            </select>
+          </div>
 
-                    {% if error_message %}
-                    <div class="alert alert-danger text-center" role="alert">
-                        {{ error_message }}
-                    </div>
-                    {% endif %}
+          <!-- Unit Price -->
+          <div class="col-md-3">
+            <label for="unit_price" class="form-label fw-semibold">{{ _('unit_price') }}</label>
+            <input type="number" step="0.01" min="0" class="form-control" id="unit_price" name="unit_price" placeholder="0.00" value="{% if mode == 'edit' %}{{ item.unit_price }}{% else %}0{% endif %}" required>
+          </div>
 
-                    <form id="add-stock-form" method="POST" data-aos="fade-up" data-aos-delay="300">
-                        <div class="row gy-4">
+          <!-- Initial Quantity -->
+          <div class="col-md-3">
+            <label for="quantity" class="form-label fw-semibold">{{ _('quantity') }}</label>
+            <input type="number" min="0" class="form-control" id="quantity" name="quantity" placeholder="0" value="{% if mode == 'edit' %}{{ item.quantity }}{% else %}0{% endif %}" required>
+          </div>
 
-                            <!-- Item Name -->
-                            <div class="col-md-12">
-                                <label for="name" class="form-label fw-bold">{% if current_lang == 'ar' %}اسم المادة / القطعة *{% else %}Item Name *{% endif %}</label>
-                                <input type="text" id="name" name="name" class="form-control settings-input" 
-                                       placeholder="{% if current_lang == 'ar' %}مثال: أنابيب ري تنقيط 16 مم{% else %}e.g. Drip Tube 16mm{% endif %}"
-                                       value="{{ item.name if item else '' }}" required>
-                            </div>
-
-                            <!-- SKU & Quantity -->
-                            <div class="col-md-6">
-                                <label for="sku" class="form-label fw-bold">{% if current_lang == 'ar' %}رمز المادة (SKU){% else %}SKU Code{% endif %}</label>
-                                <input type="text" id="sku" name="sku" class="form-control settings-input" 
-                                       placeholder="{% if current_lang == 'ar' %}مثال: DRIP-16MM-100M{% else %}e.g. DRIP-16MM-100M{% endif %}"
-                                       value="{{ item.sku if item and item.sku else '' }}">
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="quantity" class="form-label fw-bold">{% if current_lang == 'ar' %}الكمية المتوفرة *{% else %}Quantity In Stock *{% endif %}</label>
-                                <input type="number" id="quantity" name="quantity" class="form-control settings-input" min="0"
-                                       value="{{ item.quantity if item else '0' }}" required>
-                            </div>
-
-                            <!-- Unit Price -->
-                            <div class="col-md-12">
-                                <label for="unit_price" class="form-label fw-bold">{% if current_lang == 'ar' %}سعر القطعة المفرد *{% else %}Unit Price *{% endif %}</label>
-                                <div class="input-group">
-                                    <input type="number" id="unit_price" name="unit_price" step="0.01" min="0" class="form-control settings-input"
-                                           value="{{ item.unit_price if item else '0.00' }}" required>
-                                    <span class="input-group-text bg-light text-muted">{{ currency_symbol }}</span>
-                                </div>
-                            </div>
-
-                            <!-- Description -->
-                            <div class="col-md-12">
-                                <label for="description" class="form-label fw-bold">{% if current_lang == 'ar' %}الوصف والتفاصيل{% else %}Description / Details{% endif %}</label>
-                                <textarea id="description" name="description" class="form-control" rows="4"
-                                          placeholder="{% if current_lang == 'ar' %}أية تفاصيل إضافية مثل الشركة المصنعة والمقاسات...{% else %}Any additional details about manufacturer, dimensions...{% endif %}">{{ item.description if item and item.description else '' }}</textarea>
-                            </div>
-
-                            <!-- Buttons -->
-                            <div class="col-12 text-center pt-3">
-                                <button type="submit" class="save-patient-btn">
-                                    {% if current_lang == 'ar' %}حفظ المادة{% else %}Save Item{% endif %}
-                                </button>
-                                <a href="{{ url_for('stock.list_stock') }}" class="btn-outline-main px-4 ms-2">
-                                    {% if current_lang == 'ar' %}إلغاء وعودة{% else %}Cancel{% endif %}
-                                </a>
-                            </div>
-
-                        </div>
-                    </form>
-
-                </div>
-            </div>
+          <!-- Description -->
+          <div class="col-12">
+            <label for="description" class="form-label fw-semibold">{{ _('description') }}</label>
+            <textarea class="form-control" id="description" name="description" rows="3" placeholder="...">{% if mode == 'edit' %}{{ item.description or '' }}{% endif %}</textarea>
+          </div>
         </div>
+
+        <div class="d-flex gap-2 justify-content-end mt-4 border-top pt-3">
+          <button type="submit" class="btn btn-success px-4 py-2 fw-bold">{{ _('save') }}</button>
+          <a href="{{ url_for('stock.list_stock') }}" class="btn btn-outline-secondary px-4 py-2">{{ _('cancel') }}</a>
+        </div>
+      </form>
     </div>
-</section>
+  </div>
+</div>
 {% endblock %}

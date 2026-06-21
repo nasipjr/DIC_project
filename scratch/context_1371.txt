@@ -1,0 +1,40 @@
+            "Session Status": "حالة الجلسة",
+
+            "Session Treatments": "خدمات الجلسة الفنية",
+
+            "Set the currency symbol used across invoices and reports": "تحديد رمز العملة المستخدم في الفواتير والتقارير",
+
+            "Settings": "الإعدادات",
+
+            "Sign In": "تسجيل الدخول",
+
+            "Start Session": "بدء الجلسة الفنية",
+
+            "State": "الولاية / المحافظة",
+
+            "Status": "الحالة",
+
+            "Subtotal": "المجموع الفرعي",
+
+            "Sunday": "الأحد",
+
+            "System Display Theme": "مظهر عرض النظام",
+
+            "System Interface Language": "لغة واجهة النظام",
+
+            "System Role": "دور النظام",
+
+            "System Settings": "إعدادات النظام",
+
+            "Theme & Appearance": "المظهر والثيم",
+
+            "There are no appointments yet": "لا توجد زيارات بعد",
+
+            "There are no patients yet": "لا يوجد زبائن بعد",
+
+            "There are no scheduled appointments waiting for today": "لا توجد زيارات مجدولة بانتظار البدء اليوم",
+
+            "This action cannot be undone": "هذا الإجراء لا يمكن التراجع عنه",
+
+            "This appointment is cancelled. Appointment is read-only": "هذا موعد زيارة ملغى. الزيارة للقراءة فقط",
+

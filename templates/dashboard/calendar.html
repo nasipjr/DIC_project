@@ -1,0 +1,737 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('calendar') }}{% endblock %}
+
+{% block content %}
+<style>
+  .calendar-container {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 1.25rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+  }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+  }
+  .calendar-header-day {
+    text-align: center;
+    font-weight: 700;
+    padding: 12px;
+    background: rgba(5, 150, 105, 0.08);
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    text-transform: uppercase;
+  }
+  .calendar-day {
+    min-height: 120px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    position: relative;
+  }
+  .calendar-day:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    border-color: var(--primary-color) !important;
+  }
+  .calendar-day-empty {
+    min-height: 120px;
+    background: transparent;
+    border: 1px dashed var(--border-color);
+    opacity: 0.25;
+    border-radius: 12px;
+  }
+  /* Shading Friday in light gray */
+  .calendar-day-friday {
+    background-color: rgba(100, 116, 139, 0.08) !important;
+  }
+  /* Non-working days overlay */
+  .calendar-day-holiday {
+    background-color: rgba(239, 68, 68, 0.03) !important;
+  }
+  .day-number-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .day-number {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-dark);
+  }
+  .day-number-today {
+    background: var(--primary-color);
+    color: white !important;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+  }
+  .day-badge {
+    font-size: 0.68rem;
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .day-badge i {
+    font-size: 0.75rem;
+    margin-inline-end: 4px;
+  }
+  .badge-invoice {
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+  .badge-sales {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+  .badge-paid {
+    background-color: rgba(6, 182, 212, 0.1);
+    color: #06b6d4;
+    border: 1px solid rgba(6, 182, 212, 0.2);
+  }
+  .badge-holiday-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+  
+  /* Month switcher styling */
+  .month-switcher {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border-radius: 50rem;
+    padding: 0.375rem 1rem;
+  }
+  .month-switcher-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--primary-color);
+    background-color: rgba(5, 150, 105, 0.08);
+    border: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+  }
+  .month-switcher-btn:hover {
+    background-color: var(--primary-color);
+    color: #ffffff !important;
+    transform: scale(1.08);
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.3);
+  }
+  .month-switcher-btn:active {
+    transform: scale(0.95);
+  }
+  .month-switcher-title {
+    font-weight: 700;
+    color: var(--primary-color);
+    text-align: center;
+    font-size: 1.15rem;
+    min-width: 170px;
+    user-select: none;
+  }
+  
+  /* Compact list elements and interactive weekly items */
+  .weekly-list-item {
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0.75rem;
+    margin-bottom: 6px;
+  }
+  .weekly-list-item:hover {
+    background-color: rgba(5, 150, 105, 0.08);
+    transform: translateX({% if current_lang == 'ar' %}-6px{% else %}6px{% endif %});
+  }
+  .weekly-list-item.active-week {
+    background-color: rgba(5, 150, 105, 0.15) !important;
+    border-inline-start: 4px solid var(--primary-color);
+    border-top-left-radius: {% if current_lang == 'ar' %}0.75rem{% else %}0{% endif %};
+    border-bottom-left-radius: {% if current_lang == 'ar' %}0.75rem{% else %}0{% endif %};
+    border-top-right-radius: {% if current_lang == 'ar' %}0{% else %}0.75rem{% endif %};
+    border-bottom-right-radius: {% if current_lang == 'ar' %}0{% else %}0.75rem{% endif %};
+  }
+  .calendar-day {
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  .highlighted-week-day {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 16px rgba(5, 150, 105, 0.45) !important;
+    transform: scale(1.03) translateY(-3px);
+    z-index: 5;
+  }
+  .calendar-day-empty {
+    transition: all 0.25s ease;
+  }
+
+  @media (max-width: 991px) {
+    .calendar-grid {
+      grid-template-columns: repeat(7, 1fr);
+    }
+    .calendar-day {
+      min-height: 90px;
+      font-size: 0.8rem;
+    }
+    .day-badge {
+      font-size: 0.6rem;
+      padding: 2px 4px;
+    }
+  }
+  @media (max-width: 576px) {
+    .calendar-grid {
+      gap: 4px;
+    }
+    .calendar-day {
+      min-height: 70px;
+      padding: 4px;
+    }
+    .calendar-header-day {
+      padding: 6px 2px;
+      font-size: 0.7rem;
+    }
+    .day-badge {
+      display: none; /* Hide badges on very small mobile screens, keep numbers */
+    }
+  }
+</style>
+
+<div class="row gy-4 mb-4">
+  <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div>
+      <h2 class="fw-bold text-success mb-1">{{ _('calendar') }}</h2>
+      <p class="text-muted">{{ _('calendar_title') }}</p>
+    </div>
+    
+    <!-- Month Switcher Controls -->
+    <div class="month-switcher">
+      <a href="{{ url_for('dashboard.view_calendar', month=prev_month, year=prev_year) }}" class="month-switcher-btn" title="{{ _('previous_month') }}">
+        <i class="fa-solid fa-chevron-{% if current_lang == 'ar' %}right{% else %}left{% endif %}"></i>
+      </a>
+      <span class="month-switcher-title">{{ month_name }} {{ year }}</span>
+      <a href="{{ url_for('dashboard.view_calendar', month=next_month, year=next_year) }}" class="month-switcher-btn" title="{{ _('next_month') }}">
+        <i class="fa-solid fa-chevron-{% if current_lang == 'ar' %}left{% else %}right{% endif %}"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Row for Selected Month -->
+<div class="row g-4 mb-4">
+  <!-- Month Total Sales -->
+  <div class="col-md-4">
+    <div class="card dashboard-metric-card metric-green p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('total_revenue') }} (الشهر الحالي)</span>
+        <h3 class="fw-bold text-success mt-1 mb-0">{{ total_sales | format_price }} <span class="fs-6 fw-normal text-muted">{{ currency_symbol }}</span></h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Month Total Paid -->
+  <div class="col-md-4">
+    <div class="card dashboard-metric-card metric-cyan p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('total_payments') }} (الشهر الحالي)</span>
+        <h3 class="fw-bold text-info mt-1 mb-0">{{ total_paid | format_price }} <span class="fs-6 fw-normal text-muted">{{ currency_symbol }}</span></h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-wallet"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Month Total Invoices Issued -->
+  <div class="col-md-4">
+    <div class="card dashboard-metric-card metric-amber p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('total_invoices') }} (الشهر الحالي)</span>
+        <h3 class="fw-bold text-warning mt-1 mb-0">{{ total_invoices_count }}</h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-receipt"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Calendar Grid Column -->
+  <div class="col-xl-8 col-lg-12">
+    <div class="calendar-container">
+      <div class="calendar-grid">
+        <!-- Weekday Headers (RTL/LTR Aware: Sunday starts on far right/left) -->
+        <div class="calendar-header-day">{{ _('sun') or 'الأحد' }}</div>
+        <div class="calendar-header-day">{{ _('mon') or 'الاثنين' }}</div>
+        <div class="calendar-header-day">{{ _('tue') or 'الثلاثاء' }}</div>
+        <div class="calendar-header-day">{{ _('wed') or 'الأربعاء' }}</div>
+        <div class="calendar-header-day">{{ _('thu') or 'الخميس' }}</div>
+        <div class="calendar-header-day">{{ _('fri') or 'الجمعة' }}</div>
+        <div class="calendar-header-day">{{ _('sat') or 'السبت' }}</div>
+
+        <!-- Render Calendar Grid -->
+        {% for row in grid %}
+          {% set week_idx = loop.index0 %}
+          {% for day in row %}
+            {% if day is none %}
+              <div class="calendar-day-empty" data-week-idx="{{ week_idx }}"></div>
+            {% else %}
+              {% set day_data = days_data[day] %}
+              {% set is_today = (day == today.day and month == today.month and year == today.year) %}
+              
+              <!-- Calculate Day of Week Index (Sunday = 0, ..., Friday = 5, Saturday = 6) -->
+              <!-- grid index maps Sunday as 0, Saturday as 6 since it is loop.index0 % 7 -->
+              {% set weekday_idx = loop.index0 %}
+              {% set is_friday = (weekday_idx == 5) %}
+              {% set is_working_day = (weekday_idx in working_days) %}
+              
+              <div class="calendar-day 
+                {% if is_friday %}calendar-day-friday{% endif %}
+                {% if not is_working_day %}calendar-day-holiday{% endif %}"
+                data-day="{{ day }}"
+                data-week-idx="{{ week_idx }}"
+                style="cursor: pointer;">
+                
+                <div class="day-number-container">
+                  <span class="day-number {% if is_today %}day-number-today{% endif %}">
+                    {{ day }}
+                  </span>
+                  {% if not is_working_day %}
+                    <span class="badge-holiday-label" title="{{ _('holiday') }}">{{ _('holiday') }}</span>
+                  {% endif %}
+                </div>
+                
+                <!-- Daily Metrics -->
+                <div class="d-flex flex-column w-100 mt-1">
+                  <!-- Invoices count -->
+                  {% if day_data.invoices_count > 0 %}
+                    <div class="day-badge badge-invoice" title="{{ day_data.invoices_count }} {{ _('invoices') }}">
+                      <i class="fa-solid fa-receipt"></i>
+                      <span>{{ day_data.invoices_count }} فواتير</span>
+                    </div>
+                  {% endif %}
+
+                  <!-- Sales amount -->
+                  {% if day_data.invoices_amount > 0 %}
+                    <div class="day-badge badge-sales" title="مبيعات: {{ day_data.invoices_amount | format_price }} {{ currency_symbol }}">
+                      <i class="fa-solid fa-arrow-trend-up"></i>
+                      <span dir="ltr">+{{ day_data.invoices_amount | format_price }}</span>
+                    </div>
+                  {% endif %}
+
+                  <!-- Payments amount -->
+                  {% if day_data.payments_amount > 0 %}
+                    <div class="day-badge badge-paid" title="مقبوضات: {{ day_data.payments_amount | format_price }} {{ currency_symbol }}">
+                      <i class="fa-solid fa-wallet"></i>
+                      <span dir="ltr">+{{ day_data.payments_amount | format_price }}</span>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Weekly & Graphical Analytics Column -->
+  <div class="col-xl-4 col-lg-12">
+    <!-- Weekly summaries -->
+    <div class="card card-premium p-4 mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-chart-pie me-2"></i> {{ _('weekly_summary') }}</h5>
+      </div>
+      <p class="text-muted small mb-3">مجموع المبيعات والمدفوعات مقسمة لكل أسبوع في هذا الشهر:</p>
+      
+      <div class="d-flex flex-column">
+        {% for summary in weekly_summaries %}
+        <div class="weekly-list-item d-flex align-items-center justify-content-between" data-week-idx="{{ loop.index0 }}">
+          <div>
+            <h6 class="fw-bold text-white mb-1" style="font-size: 0.9rem;">{{ summary.label }}</h6>
+            <div class="d-flex gap-3 small text-muted">
+              <span>مبيعات: <strong class="text-success">{{ summary.sales | format_price }} {{ currency_symbol }}</strong></span>
+              <span>مدفوعات: <strong class="text-info">{{ summary.payments | format_price }} {{ currency_symbol }}</strong></span>
+            </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-center rounded-circle bg-opacity-10 px-2.5 py-1.5 small
+            {% if summary.sales > summary.payments %}bg-success text-success{% else %}bg-info text-info{% endif %}" style="font-size: 0.75rem;">
+            {% if summary.sales > summary.payments %}
+              <i class="fa-solid fa-arrow-trend-up"></i>
+            {% else %}
+              <i class="fa-solid fa-wallet"></i>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Daily trend Chart -->
+    <div class="card card-premium p-4">
+      <h5 class="fw-bold text-success mb-4"><i class="fa-solid fa-chart-line me-2"></i> {{ _('sales_trend') }}</h5>
+      <div style="position: relative; height: 260px; width: 100%;">
+        <canvas id="trendsChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart.js and rendering scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const calendarData = {{ days_data | tojson }};
+    const currentYear = {{ year }};
+    const currentMonth = {{ month }};
+    const monthName = "{{ month_name }}";
+    const currencySymbol = "{{ currency_symbol }}";
+    const lang = "{{ current_lang }}";
+    const isAr = lang === 'ar';
+
+    const trans = {
+      dayDetails: isAr ? "تفاصيل يوم" : "Details for",
+      sales: isAr ? "المبيعات" : "Sales",
+      payments: isAr ? "المدفوعات" : "Payments",
+      noData: isAr ? "لا توجد مبيعات أو مقبوضات مسجلة في هذا اليوم." : "No sales or payments recorded for this day.",
+      paid: isAr ? "مدفوعة" : "Paid",
+      unpaid: isAr ? "غير مدفوعة" : "Unpaid",
+      partiallyPaid: isAr ? "مدفوعة جزئياً" : "Partially Paid",
+      invoiceNum: isAr ? "رقم الفاتورة" : "Invoice Number",
+      client: isAr ? "العميل" : "Client",
+      amount: isAr ? "المبلغ" : "Amount",
+      status: isAr ? "الحالة" : "Status",
+      method: isAr ? "طريقة الدفع" : "Method",
+      notes: isAr ? "ملاحظات" : "Notes"
+    };
+
+    // Format price helper in JS
+    function formatPrice(val) {
+      return parseFloat(val).toLocaleString(lang === 'ar' ? 'ar-EG' : 'en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      });
+    }
+
+    // Modal populate logic
+    const dayCells = document.querySelectorAll(".calendar-day");
+    dayCells.forEach(cell => {
+      cell.addEventListener("click", function(e) {
+        if (e.target.closest("a")) return;
+        
+        const day = parseInt(this.getAttribute("data-day"), 10);
+        if (!day || !calendarData[day]) return;
+
+        const data = calendarData[day];
+        
+        const formattedDate = `${day} ${monthName} ${currentYear}`;
+        document.getElementById("modal-date-title").textContent = `${trans.dayDetails} ${formattedDate}`;
+
+        document.getElementById("modal-stat-sales").textContent = formatPrice(data.invoices_amount);
+        document.getElementById("modal-stat-payments").textContent = formatPrice(data.payments_amount);
+
+        const invBody = document.getElementById("modal-invoices-body");
+        invBody.innerHTML = "";
+        if (data.invoices && data.invoices.length > 0) {
+          data.invoices.forEach(inv => {
+            let statusBadge = '';
+            if (inv.status === 'Paid') {
+              statusBadge = `<span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1" style="font-size: 0.75rem;">${trans.paid}</span>`;
+            } else if (inv.status === 'Partially Paid') {
+              statusBadge = `<span class="badge rounded-pill bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2.5 py-1" style="font-size: 0.75rem;">${trans.partiallyPaid}</span>`;
+            } else {
+              statusBadge = `<span class="badge rounded-pill bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2.5 py-1" style="font-size: 0.75rem;">${trans.unpaid}</span>`;
+            }
+            
+            const clientLink = inv.client_id 
+              ? `<a href="/clients/${inv.client_id}" class="text-success fw-bold text-decoration-none"><i class="fa-solid fa-user me-1 text-secondary opacity-50"></i>${inv.client_name}</a>`
+              : `<span class="text-secondary">${inv.client_name}</span>`;
+
+            const tr = document.createElement("tr");
+            tr.className = "border-bottom border-secondary border-opacity-10";
+            tr.innerHTML = `
+              <td class="py-2.5">
+                <a href="/invoices/${inv.id}" class="text-info fw-bold text-decoration-none">
+                  <i class="fa-solid fa-receipt me-1 text-secondary opacity-50"></i>${inv.invoice_number}
+                </a>
+              </td>
+              <td class="py-2.5">${clientLink}</td>
+              <td class="py-2.5 fw-bold text-white-50">${formatPrice(inv.total_amount)} <span class="small text-muted">${currencySymbol}</span></td>
+              <td class="py-2.5">${statusBadge}</td>
+            `;
+            invBody.appendChild(tr);
+          });
+        } else {
+          invBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted small py-4"><i class="fa-solid fa-folder-open me-2 opacity-50"></i>${trans.noData}</td></tr>`;
+        }
+
+        const payBody = document.getElementById("modal-payments-body");
+        payBody.innerHTML = "";
+        if (data.payments && data.payments.length > 0) {
+          data.payments.forEach(pay => {
+            const clientLink = pay.client_id 
+              ? `<a href="/clients/${pay.client_id}" class="text-success fw-bold text-decoration-none"><i class="fa-solid fa-user me-1 text-secondary opacity-50"></i>${pay.client_name}</a>`
+              : `<span class="text-secondary">${pay.client_name}</span>`;
+
+            const tr = document.createElement("tr");
+            tr.className = "border-bottom border-secondary border-opacity-10";
+            tr.innerHTML = `
+              <td class="py-2.5">
+                <a href="/payments/${pay.id}" class="text-info fw-bold text-decoration-none">
+                  <i class="fa-solid fa-receipt me-1 text-secondary opacity-50"></i>${pay.payment_number}
+                </a>
+              </td>
+              <td class="py-2.5">${clientLink}</td>
+              <td class="py-2.5 fw-bold text-info">+${formatPrice(pay.amount)} <span class="small text-muted">${currencySymbol}</span></td>
+              <td class="py-2.5"><span class="text-secondary small">${pay.notes || '-'}</span></td>
+            `;
+            payBody.appendChild(tr);
+          });
+        } else {
+          payBody.innerHTML = `<tr><td colspan="4" class="text-center text-muted small py-4"><i class="fa-solid fa-folder-open me-2 opacity-50"></i>${trans.noData}</td></tr>`;
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('dayDetailsModal'));
+        modal.show();
+      });
+    });
+
+    // Weekly Summary Row highlighting
+    const weeklyItems = document.querySelectorAll(".weekly-list-item");
+    weeklyItems.forEach(item => {
+      item.addEventListener("click", function() {
+        const weekIdx = this.getAttribute("data-week-idx");
+        const isActive = this.classList.contains("active-week");
+        
+        weeklyItems.forEach(i => i.classList.remove("active-week"));
+        document.querySelectorAll(".calendar-day").forEach(d => {
+          d.classList.remove("highlighted-week-day");
+          d.style.opacity = "1";
+        });
+        document.querySelectorAll(".calendar-day-empty").forEach(d => {
+          d.style.opacity = "0.25";
+        });
+        
+        if (!isActive) {
+          this.classList.add("active-week");
+          document.querySelectorAll(".calendar-day, .calendar-day-empty").forEach(d => {
+            if (d.getAttribute("data-week-idx") === weekIdx) {
+              d.classList.add("highlighted-week-day");
+              d.style.opacity = "1";
+            } else {
+              d.style.opacity = "0.25";
+            }
+          });
+        }
+      });
+    });
+
+    const labels = {{ chart_labels | tojson }};
+    const salesData = {{ chart_sales | tojson }};
+    const paymentsData = {{ chart_payments | tojson }};
+
+    const ctx = document.getElementById('trendsChart').getContext('2d');
+    
+    // Check theme to color chart grid lines
+    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
+    const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+    const textColor = isDark ? '#94a3b8' : '#64748b';
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels.map(label => label.split('-')[2]), // only show day number
+        datasets: [
+          {
+            label: 'المبيعات',
+            data: salesData,
+            borderColor: '#10b981',
+            backgroundColor: 'rgba(16, 185, 129, 0.05)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 2.5,
+            pointRadius: 1,
+            pointHoverRadius: 5
+          },
+          {
+            label: 'المدفوعات',
+            data: paymentsData,
+            borderColor: '#06b6d4',
+            backgroundColor: 'rgba(6, 182, 212, 0.05)',
+            fill: true,
+            tension: 0.3,
+            borderWidth: 2.5,
+            pointRadius: 1,
+            pointHoverRadius: 5
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: {
+              font: {
+                family: 'Cairo, sans-serif',
+                size: 11
+              },
+              color: textColor
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            titleFont: {
+              family: 'Cairo, sans-serif'
+            },
+            bodyFont: {
+              family: 'Cairo, sans-serif'
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              color: gridColor
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 10
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: gridColor
+            },
+            ticks: {
+              color: textColor,
+              font: {
+                size: 10
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+</script>
+
+<!-- Dynamic details Modal definition -->
+<div class="modal fade" id="dayDetailsModal" tabindex="-1" aria-labelledby="dayDetailsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content" style="background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 1.25rem;">
+      <div class="modal-header border-bottom border-secondary border-opacity-10 py-3">
+        <h5 class="modal-title fw-bold text-success" id="dayDetailsModalLabel">
+          <i class="fa-solid fa-calendar-day me-2"></i> <span id="modal-date-title">تفاصيل اليوم</span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="filter: invert(1) grayscale(1) brightness(2);"></button>
+      </div>
+      <div class="modal-body p-4">
+        <!-- Quick Stats Row inside Modal -->
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <div class="p-3 rounded-3 d-flex align-items-center justify-content-between" style="background: rgba(16, 185, 129, 0.06); border: 1px solid rgba(16, 185, 129, 0.15);">
+              <div>
+                <span class="text-secondary small d-block">{{ _('total_revenue') }}</span>
+                <strong class="fs-5 text-success" id="modal-stat-sales">0</strong> <span class="small text-muted">{{ currency_symbol }}</span>
+              </div>
+              <i class="fa-solid fa-file-invoice-dollar fs-4 text-success opacity-75"></i>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 rounded-3 d-flex align-items-center justify-content-between" style="background: rgba(6, 182, 212, 0.06); border: 1px solid rgba(6, 182, 212, 0.15);">
+              <div>
+                <span class="text-secondary small d-block">{{ _('total_payments') }}</span>
+                <strong class="fs-5 text-info" id="modal-stat-payments">0</strong> <span class="small text-muted">{{ currency_symbol }}</span>
+              </div>
+              <i class="fa-solid fa-wallet fs-4 text-info opacity-75"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoices List -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-success mb-3 border-bottom pb-2 border-secondary border-opacity-10">
+            <i class="fa-solid fa-receipt me-2"></i> {{ _('invoices') }}
+          </h6>
+          <div class="table-responsive">
+            <table class="table align-middle text-start" style="--bs-table-bg: transparent; --bs-table-color: var(--text-dark); border-collapse: collapse;">
+              <thead>
+                <tr class="text-secondary small border-bottom border-secondary border-opacity-20">
+                  <th scope="col" style="width: 25%;">{{ _('invoice_number') or 'رقم الفاتورة' }}</th>
+                  <th scope="col" style="width: 35%;">{{ _('client') or 'العميل' }}</th>
+                  <th scope="col" style="width: 20%;">{{ _('amount') or 'المبلغ' }}</th>
+                  <th scope="col" style="width: 20%;">{{ _('status') or 'الحالة' }}</th>
+                </tr>
+              </thead>
+              <tbody id="modal-invoices-body">
+                <!-- Dynamic Content -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Payments List -->
+        <div>
+          <h6 class="fw-bold text-success mb-3 border-bottom pb-2 border-secondary border-opacity-10">
+            <i class="fa-solid fa-wallet me-2"></i> {{ _('payments') }}
+          </h6>
+          <div class="table-responsive">
+            <table class="table align-middle text-start" style="--bs-table-bg: transparent; --bs-table-color: var(--text-dark); border-collapse: collapse;">
+              <thead>
+                <tr class="text-secondary small border-bottom border-secondary border-opacity-20">
+                  <th scope="col" style="width: 20%;">{{ _('receipt_no') or 'رقم السند' }}</th>
+                  <th scope="col" style="width: 30%;">{{ _('client') or 'العميل' }}</th>
+                  <th scope="col" style="width: 20%;">{{ _('amount') or 'المبلغ' }}</th>
+                  <th scope="col" style="width: 30%;">{{ _('notes') or 'ملاحظات' }}</th>
+                </tr>
+              </thead>
+              <tbody id="modal-payments-body">
+                <!-- Dynamic Content -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

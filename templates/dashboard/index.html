@@ -1,798 +1,218 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}{{ _('dashboard') }}{% endblock %}
 
 {% block content %}
-
-<main class="main">
-
-  <!-- Hero Section -->
-  <section id="hero" class="hero section">
-
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-      <div class="row align-items-center">
-
-        <div class="col-lg-6">
-          <div class="hero-content">
-
-            <div class="trust-badges mb-4" data-aos="fade-right" data-aos-delay="200">
-              <div class="badge-item">
-                <i class="bi bi-clock"></i>
-                <span>{{ operating_hours }} Working Hours</span>
-              </div>
-
-              <div class="badge-item">
-                <i class="bi bi-calendar-check"></i>
-                <span>30-Day Booking Window</span>
-              </div>
-            </div>
-
-            <h1 data-aos="fade-right" data-aos-delay="300">
-              Today’s <span class="highlight">Center Overview</span>
-            </h1>
-
-            <p class="hero-description" data-aos="fade-right" data-aos-delay="400">
-              Track clients, reservations, services, inventory levels, and financial parameters
-              from one practical dashboard.
-            </p>
-
-            <div class="dashboard-stat-grid mb-4" data-aos="fade-right" data-aos-delay="500">
-
-              <div class="dashboard-stat-card">
-                <h3>
-                  <span data-purecounter-start="0" data-purecounter-end="{{ total_patients }}"
-                    data-purecounter-duration="2" class="purecounter"></span>
-                </h3>
-                <p>Total Clients</p>
-              </div>
-
-              <div class="dashboard-stat-card">
-                <h3>
-                  <span data-purecounter-start="0" data-purecounter-end="{{ scheduled_appointments }}"
-                    data-purecounter-duration="2" class="purecounter"></span>
-                </h3>
-                <p>Scheduled Visits</p>
-              </div>
-
-              <div class="dashboard-stat-card">
-                <h3>
-                  <span data-purecounter-start="0" data-purecounter-end="{{ done_appointments }}"
-                    data-purecounter-duration="2" class="purecounter"></span>
-                </h3>
-                <p>Done Visits</p>
-              </div>
-
-              <div class="dashboard-stat-card">
-                <h3>
-                  <span data-purecounter-start="0" data-purecounter-end="{{ total_treatments }}"
-                    data-purecounter-duration="2" class="purecounter"></span>
-                </h3>
-                <p>Total Services</p>
-              </div>
-
-              {% if current_user.role in ('admin', 'receptionist') %}
-              <div class="dashboard-stat-card">
-                <h3>
-                  <span data-purecounter-start="0" data-purecounter-end="{{ total_revenue }}"
-                    data-purecounter-duration="2" data-purecounter-separator="true" data-purecounter-formater="de-DE" class="purecounter"></span> {{ currency_symbol }}
-                </h3>
-                <p>Total Invoices</p>
-              </div>
-
-              <div class="dashboard-stat-card">
-                <h3>
-                  <span data-purecounter-start="0" data-purecounter-end="{{ total_paid }}" data-purecounter-duration="2"
-                    data-purecounter-separator="true" data-purecounter-formater="de-DE" class="purecounter"></span> {{ currency_symbol }}
-                </h3>
-                <p>Total Payments</p>
-              </div>
-
-              <div class="dashboard-stat-card">
-                <h3>
-                  <span data-purecounter-start="0" data-purecounter-end="{{ total_outstanding }}" data-purecounter-duration="2"
-                    data-purecounter-separator="true" data-purecounter-formater="de-DE" class="purecounter"></span> {{ currency_symbol }}
-                </h3>
-                <p>Outstanding Balances</p>
-              </div>
-
-              <div class="dashboard-stat-card">
-                <h3>
-                  <span data-purecounter-start="0" data-purecounter-end="{{ total_stock_items }}"
-                    data-purecounter-duration="2" class="purecounter"></span>
-                </h3>
-                <p>Stock Items</p>
-              </div>
-
-              {% if low_stock_count > 0 %}
-              <div class="dashboard-stat-card bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20">
-                <h3>
-                  <span data-purecounter-start="0" data-purecounter-end="{{ low_stock_count }}"
-                    data-purecounter-duration="2" class="purecounter"></span>
-                </h3>
-                <p class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>Low Stock!</p>
-              </div>
-              {% endif %}
-              {% endif %}
-
-            </div>
-
-            <div class="hero-actions d-flex gap-3 flex-wrap" data-aos="fade-right" data-aos-delay="600">
-              <a href="{{ url_for('patients.patients') }}" class="btn btn-primary">
-                Manage Clients
-              </a>
-
-              <a href="{{ url_for('appointments.appointments') }}" class="btn btn-outline-primary">
-                View Reservations
-              </a>
-            </div>
-
-            {% if current_user.role in ('admin', 'receptionist') %}
-            <div class="emergency-contact mt-4" data-aos="fade-right" data-aos-delay="700">
-              <div class="emergency-icon">
-                <i
-                  class="bi {% if total_remaining < 0 %}bi-wallet2{% elif total_remaining > 0 %}bi-exclamation-circle{% else %}bi-check-circle{% endif %}"></i>
-              </div>
-
-              <div class="emergency-info">
-                {% if total_remaining < 0 %} <small>Client Credits</small>
-                  <strong>{{ (total_remaining|abs) | format_price }} {{ currency_symbol }}</strong>
-                  {% elif total_remaining > 0 %}
-                  <small>Outstanding Amount</small>
-                  <strong>{{ total_remaining | format_price }} {{ currency_symbol }}</strong>
-                  {% else %}
-                  <small>Outstanding Amount</small>
-                  <strong>0 {{ currency_symbol }}</strong>
-                  {% endif %}
-              </div>
-            </div>
-            {% endif %}
-
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="hero-visual" data-aos="fade-left" data-aos-delay="400">
-            <!-- Dynamic Analytics Visualizer Card (Soft Glassmorphic Theme) -->
-            <div class="main-image p-4 d-flex flex-column justify-content-between" style="border-radius: 24px; min-height: 430px; box-shadow: 0 15px 35px rgba(13,110,253,0.06) !important; background: color-mix(in srgb, var(--surface-color), transparent 20%) !important; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid color-mix(in srgb, var(--default-color), transparent 90%) !important;">
-              <div class="d-flex justify-content-between align-items-start mb-3">
-                <div class="text-start">
-                  <h5 class="fw-bold mb-0 text-primary" style="font-size: 1.1rem; letter-spacing: -0.3px;"><i class="bi bi-bar-chart-steps me-2"></i>Center Activity</h5>
-                  <small class="text-muted" style="font-size: 0.75rem;">Realtime operational metrics</small>
-                </div>
-                <div class="btn-group btn-group-sm rounded-pill p-1 border-0" role="group" style="padding: 3px !important; background: color-mix(in srgb, var(--default-color), transparent 90%); border: none !important;">
-                  <button type="button" class="btn btn-primary btn-sm rounded-pill px-3 py-1 fw-bold border-0" id="btn-show-status" style="font-size: 0.72rem; transition: all 0.25s; background: var(--accent-color, #0d6efd); color: #ffffff; box-shadow: 0 2px 6px rgba(13, 110, 253, 0.15);">Appointments</button>
-                  <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1 fw-bold border-0 text-secondary" id="btn-show-financials" style="font-size: 0.72rem; transition: all 0.25s; background: transparent; border: none;">Finance Load</button>
-                  <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 py-1 fw-bold border-0 text-secondary" id="btn-show-today" style="font-size: 0.72rem; transition: all 0.25s; background: transparent; border: none;">Today's Status</button>
-                </div>
-              </div>
-              
-              <!-- Chart & Container -->
-              <div class="flex-grow-1 position-relative d-flex align-items-center" style="height: 250px; width: 100%;">
-                <canvas id="dashboardOverviewChart" style="max-height: 250px; width: 100%;"></canvas>
-                
-                <!-- Today's Status Tab Content (hidden by default) -->
-                <div id="todayStatusContainer" style="display: none; width: 100%; height: 100%; overflow-y: auto; padding: 5px 0;"
-                     data-working-days="{{ working_days }}"
-                     data-min-time="{{ working_hours_start }}"
-                     data-max-time="{{ working_hours_end }}">
-                   
-                  <!-- Operational Status Badge -->
-                  <div class="d-flex justify-content-between align-items-center mb-3 p-2 rounded-3" style="background: color-mix(in srgb, var(--default-color), transparent 97%); border: 1px solid color-mix(in srgb, var(--default-color), transparent 92%);">
-                    <div class="d-flex align-items-center gap-2">
-                      <span id="clinicStatusDot" class="spinner-grow spinner-grow-sm text-success" role="status" style="width: 8px; height: 8px; animation-duration: 1.5s;"></span>
-                      <span id="clinicStatusText" class="fw-bold" style="font-size: 0.75rem; color: var(--heading-color);">Checking status...</span>
-                    </div>
-                    <span class="text-muted" style="font-size: 0.72rem; font-weight: 600;">
-                      <i class="bi bi-clock me-1 text-primary"></i>{{ operating_hours }}
-                    </span>
-                  </div>
- 
-                  <!-- Four Metrics Grid -->
-                  <div class="row g-2 mb-3">
-                    <div class="col-6">
-                      <div class="stat-grid-item scheduled">
-                        <span class="text-muted d-block" style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">Scheduled Today</span>
-                        <strong style="font-size: 1.3rem; font-weight: 800;">{{ today_scheduled_appointments|length }}</strong>
-                        <span class="text-muted d-block" style="font-size: 0.65rem;">waiting visits</span>
-                      </div>
-                    </div>
-                    
-                    <div class="col-6">
-                      <div class="stat-grid-item completed">
-                        <span class="text-muted d-block" style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">Completed Today</span>
-                        <strong style="font-size: 1.3rem; font-weight: 800;">{{ today_done_appointments|length }}</strong>
-                        <span class="text-muted d-block" style="font-size: 0.65rem;">done visits</span>
-                      </div>
-                    </div>
- 
-                    {% if current_user.role in ('admin', 'receptionist') %}
-                    <div class="col-6">
-                      <div class="stat-grid-item revenue">
-                        <span class="text-muted d-block" style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">Today's Revenue</span>
-                        <strong style="font-size: 1.15rem; font-weight: 800;">{{ today_revenue_sum | format_price }} {{ currency_symbol }}</strong>
-                        <span class="text-muted d-block" style="font-size: 0.65rem;">invoiced services</span>
-                      </div>
-                    </div>
- 
-                    <div class="col-6">
-                      <div class="stat-grid-item collected">
-                        <span class="text-muted d-block" style="font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px;">Today's Paid</span>
-                        <strong style="font-size: 1.15rem; font-weight: 800;">{{ today_payments_sum | format_price }} {{ currency_symbol }}</strong>
-                        <span class="text-muted d-block" style="font-size: 0.65rem;">payments collected</span>
-                      </div>
-                    </div>
-                    {% endif %}
-                  </div>
- 
-                  <!-- Daily Progress Bar -->
-                  {% set total_today = (today_scheduled_appointments|length + today_done_appointments|length) %}
-                  {% set pct = ((today_done_appointments|length / total_today) * 100)|round|int if total_today > 0 else 0 %}
-                  <div class="mb-3 p-2.5 rounded-3 border" style="background-color: color-mix(in srgb, var(--default-color), transparent 97%); border-color: color-mix(in srgb, var(--default-color), transparent 92%) !important; padding: 10px !important;">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                      <span style="font-size: 0.72rem; font-weight: 600; color: var(--default-color);"><i class="bi bi-activity text-primary me-1"></i>Today's Progress</span>
-                      <span class="badge bg-primary text-white fw-bold" style="font-size: 0.68rem; padding: 2px 6px; border-radius: 4px;">{{ pct }}% Completed</span>
-                    </div>
-                    <div class="progress" style="height: 6px; border-radius: 99px; background: color-mix(in srgb, var(--default-color), transparent 90%); margin-top: 4px;">
-                      <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: {{ pct }}%; border-radius: 99px;"></div>
-                    </div>
-                  </div>
- 
-                  <!-- Next Technical Visit -->
-                  <div class="p-3 rounded-3 border text-start position-relative overflow-hidden" style="border-color: color-mix(in srgb, var(--default-color), transparent 90%) !important; box-shadow: 0 2px 8px rgba(0,0,0,0.02); background: linear-gradient(135deg, var(--surface-color), color-mix(in srgb, var(--accent-color), transparent 98%));">
-                    <div class="position-absolute" style="right: -8px; bottom: -8px; font-size: 2.2rem; opacity: 0.04; color: #0d6efd;">
-                      <i class="bi bi-calendar2-check"></i>
-                    </div>
-                    <h6 class="fw-bold mb-2" style="font-size: 0.78rem; display: flex; align-items: center; gap: 5px; color: var(--heading-color);">
-                      <i class="bi bi-clock-history text-primary"></i> Next Technical Visit
-                    </h6>
-                    {% if today_scheduled_appointments %}
-                      {% set next_appt = today_scheduled_appointments[0] %}
-                      <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                          <strong style="font-size: 0.85rem; color: var(--heading-color);">{{ next_appt.patient.first_name }} {{ next_appt.patient.last_name }}</strong>
-                          <small class="text-muted d-block" style="font-size: 0.72rem;">{{ next_appt.reason or 'General checkup' }}</small>
-                        </div>
-                        <div class="d-flex flex-column align-items-end gap-1">
-                          <span class="badge bg-primary rounded-pill px-2.5 py-1 fw-bold" style="font-size: 0.7rem;">
-                            {{ next_appt.appointment_date.strftime('%I:%M %p') }}
-                          </span>
-                          {% if current_user.role in ('admin', 'doctor') %}
-                            <a href="{{ url_for('treatments.appointment_session', appointment_id=next_appt.id) }}" class="btn btn-xs btn-outline-success py-0 px-2 fw-bold" style="font-size: 0.65rem; border-radius: 4px; border-width: 1px;">
-                              <i class="bi bi-clipboard2-pulse"></i> Start Session
-                            </a>
-                          {% endif %}
-                        </div>
-                      </div>
-                    {% else %}
-                      <small class="text-muted d-block" style="font-size: 0.72rem;">No more upcoming appointments scheduled for today.</small>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
- 
-              <!-- Mini Stats Info Footer inside the visual -->
-              <div class="d-flex justify-content-around align-items-center mt-3 pt-3 border-top text-center" style="border-top-color: color-mix(in srgb, var(--default-color), transparent 90%) !important;">
-                <div>
-                  <small class="text-muted d-block mb-1" style="font-size: 0.7rem; font-weight:600; text-transform: uppercase; letter-spacing: 0.5px;">Patients</small>
-                  <strong style="font-size: 1.15rem; font-weight:700; color: var(--heading-color);">{{ total_patients }}</strong>
-                </div>
-                <div style="width: 1px; height: 24px; background-color: color-mix(in srgb, var(--default-color), transparent 88%);"></div>
-                <div>
-                  <small class="text-muted d-block mb-1" style="font-size: 0.7rem; font-weight:600; text-transform: uppercase; letter-spacing: 0.5px;">Treatments</small>
-                  <strong style="font-size: 1.15rem; font-weight:700; color: var(--heading-color);">{{ total_treatments }}</strong>
-                </div>
-                <div style="width: 1px; height: 24px; background-color: color-mix(in srgb, var(--default-color), transparent 88%);"></div>
-                <div>
-                  <small class="text-muted d-block mb-1" style="font-size: 0.7rem; font-weight:600; text-transform: uppercase; letter-spacing: 0.5px;">Paid Ratio</small>
-                  <strong class="text-success" style="font-size: 1.15rem; font-weight:700;">
-                    {% if total_revenue > 0 %}
-                      {{ ((total_paid / total_revenue) * 100)|round(0)|int }}%
-                    {% else %}
-                      100%
-                    {% endif %}
-                  </strong>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
+<div class="row gy-4 mb-5">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center">
+      <div>
+        <h2 class="fw-bold text-success mb-1">{{ _('dashboard') }}</h2>
+        <p class="text-muted">{{ _('dashboard_title') }}</p>
       </div>
-
+      <a href="{{ url_for('invoices.add_invoice') }}" class="btn btn-success rounded-pill px-4 py-2 fw-semibold">
+        <i class="fa-solid fa-file-invoice-dollar me-2"></i> {{ _('add_invoice') }}
+      </a>
     </div>
-
-  </section>
-  <!-- /Hero Section -->
-
-  <!-- Pending Booking Requests Title -->
-  {% if pending_appointments %}
-  <div class="container section-title" style="margin-top: 80px;" data-aos="fade-up">
-    <h2>Pending Booking Requests</h2>
-    <p>Incoming appointment requests from the patient portal waiting for confirmation.</p>
   </div>
-  <!-- /Pending Booking Requests Title -->
 
-  <!-- Pending Booking Requests Section -->
-  <section id="pending-appointments-section" class="find-a-doctor section">
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-      <div class="appointments-table-wrapper table-responsive">
-        <table class="table appointments-table align-middle">
-          <thead>
-            <tr>
-              <th>Date & Time</th>
-              <th>Patient</th>
-              <th>Phone</th>
-              <th>Reason</th>
-              <th>Status</th>
-              {% if current_user.role in ('admin', 'receptionist') %}
-              <th class="text-center">Actions</th>
-              {% endif %}
-            </tr>
-          </thead>
-
-          <tbody>
-            {% for appointment in pending_appointments %}
-            <tr>
-              <td>
-                {{ appointment.appointment_date.strftime('%Y-%m-%d %H:%M') if appointment.appointment_date else 'No date' }}
-              </td>
-
-              <td>
-                <strong>
-                  {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}
-                </strong>
-              </td>
-
-              <td>
-                {{ appointment.patient.phone or 'No phone number' }}
-              </td>
-
-              <td>
-                {{ appointment.reason or 'No reason provided' }}
-              </td>
-
-              <td>
-                <span class="appointment-status status-pending">
-                  {{ appointment.status }}
-                </span>
-              </td>
-
-              {% if current_user.role in ('admin', 'receptionist') %}
-              <td class="text-center">
-                <div class="d-flex justify-content-center gap-2">
-                  <button type="button"
-                    class="btn btn-sm btn-success quick-action-btn py-1 px-3 fw-bold rounded-pill"
-                    data-action-url="{{ url_for('appointments.confirm_appointment', appointment_id=appointment.id) }}"
-                    data-confirm-msg="Are you sure you want to confirm this booking request?"
-                    title="Confirm Booking">
-                    <i class="bi bi-check-lg"></i> Confirm
-                  </button>
-
-                  <button type="button"
-                    class="btn btn-sm btn-danger quick-action-btn py-1 px-3 fw-bold rounded-pill"
-                    data-action-url="{{ url_for('appointments.decline_appointment', appointment_id=appointment.id) }}"
-                    data-confirm-msg="Are you sure you want to decline this booking request?"
-                    title="Decline Booking">
-                    <i class="bi bi-x-lg"></i> Decline
-                  </button>
-                </div>
-              </td>
-              {% endif %}
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <!-- Metric Card 1: Total Clients -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-metric-card metric-blue p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('total_clients') }}</span>
+        <h3 class="fw-bold text-white mt-1 mb-0">{{ total_clients }}</h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-users"></i>
       </div>
     </div>
-  </section>
-  {% endif %}
-
-  <!-- Today's Scheduled Appointments Title -->
-  <div class="container section-title" style="margin-top: 80px;" data-aos="fade-up">
-    <h2>Today’s Scheduled Appointments</h2>
-    <p>Appointments scheduled for today and still waiting to be completed.</p>
   </div>
-  <!-- /Today's Scheduled Appointments Title -->
 
-
-  <!-- Today's Scheduled Appointments Section -->
-  <section id="today-scheduled-appointments-section" class="find-a-doctor section">
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-      {% if today_scheduled_appointments %}
-      <div class="appointments-table-wrapper table-responsive">
-        <table class="table appointments-table align-middle">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Patient</th>
-              <th>Phone</th>
-              <th>Reason</th>
-              <th>Status</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {% for appointment in today_scheduled_appointments %}
-            <tr>
-              <td>
-                {{ appointment.appointment_date.strftime('%H:%M') if appointment.appointment_date else 'No time' }}
-              </td>
-
-              <td>
-                <strong>
-                  {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}
-                </strong>
-              </td>
-
-              <td>
-                {{ appointment.patient.phone or 'No phone number' }}
-              </td>
-
-              <td>
-                {{ appointment.reason or 'No reason provided' }}
-              </td>
-
-              <td>
-                <span class="appointment-status status-scheduled">
-                  {{ appointment.status }}
-                </span>
-              </td>
-
-              <td class="text-center">
-                <a href="{{ url_for('appointments.view_appointment', appointment_id=appointment.id) }}"
-                  class="table-action-btn view-btn" title="View Appointment">
-                  <i class="bi bi-eye"></i>
-                </a>
-
-                {% if current_user.role in ('admin', 'doctor') %}
-                <a href="{{ url_for('treatments.appointment_session', appointment_id=appointment.id) }}"
-                  class="table-action-btn session-btn" title="Open Session">
-                  <i class="bi bi-clipboard2-pulse"></i>
-                </a>
-                {% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <!-- Metric Card 2: Total Invoices (Sales) -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-metric-card metric-green p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('total_revenue') }}</span>
+        <h3 class="fw-bold text-success mt-1 mb-0">{{ total_revenue | format_price }} <span class="fs-6 fw-normal text-muted">{{ currency_symbol }}</span></h3>
       </div>
-
-      {% else %}
-      <div class="empty-state-card text-center">
-        <i class="bi bi-calendar-check"></i>
-        <h4>No scheduled appointments today</h4>
-        <p>There are no scheduled appointments waiting for today.</p>
-        <a href="{{ url_for('patients.patients') }}" class="btn btn-primary mt-3">
-          Add Appointment
-        </a>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
       </div>
-      {% endif %}
-
     </div>
-  </section>
-  <!-- /Today's Scheduled Appointments Section -->
-
-
-  <!-- Done Today Title -->
-  <div class="container section-title" style="margin-top: 80px;" data-aos="fade-up">
-    <h2>Done Today</h2>
-    <p>Appointments completed today with treatment and payment summary.</p>
   </div>
-  <!-- /Done Today Title -->
 
+  <!-- Metric Card 3: Total Payments -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-metric-card metric-cyan p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('total_payments') }}</span>
+        <h3 class="fw-bold text-info mt-1 mb-0">{{ total_payments | format_price }} <span class="fs-6 fw-normal text-muted">{{ currency_symbol }}</span></h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-wallet"></i>
+      </div>
+    </div>
+  </div>
 
-  <!-- Done Today Section -->
-  <section id="done-today-section" class="find-a-doctor section">
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
+  <!-- Metric Card 4: Outstanding Debt -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-metric-card metric-red p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('outstanding_debt') }}</span>
+        <h3 class="fw-bold text-danger mt-1 mb-0">{{ total_debt | format_price }} <span class="fs-6 fw-normal text-muted">{{ currency_symbol }}</span></h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-circle-exclamation"></i>
+      </div>
+    </div>
+  </div>
 
-      {% if today_done_appointments %}
-      <div class="appointments-table-wrapper table-responsive">
-        <table class="table appointments-table align-middle">
+  <!-- Metric Card 5: Paid Invoices -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-metric-card metric-green p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('paid_invoices') }}</span>
+        <h3 class="fw-bold text-success mt-1 mb-0">
+          <span dir="ltr">{{ paid_invoices }} <span class="fs-6 text-muted fw-normal">/ {{ total_invoices }}</span></span>
+        </h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-file-circle-check"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metric Card 6: Unpaid Invoices -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-metric-card metric-red p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('unpaid_invoices') }}</span>
+        <h3 class="fw-bold text-danger mt-1 mb-0">{{ unpaid_invoices }}</h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-file-circle-xmark"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metric Card 7: Total Client Credit -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-metric-card metric-teal p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('clinic_credit') }}</span>
+        <h3 class="fw-bold text-info mt-1 mb-0">{{ total_credit | format_price }} <span class="fs-6 fw-normal text-muted">{{ currency_symbol }}</span></h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Metric Card 8: Total Stock Items -->
+  <div class="col-xl-3 col-md-6">
+    <div class="card dashboard-metric-card metric-amber p-4 d-flex flex-row align-items-center justify-content-between h-100 border-0">
+      <div>
+        <span class="metric-card-label">{{ _('total_stock_items') }}</span>
+        <h3 class="fw-bold text-warning mt-1 mb-0">{{ total_stock_items }}</h3>
+      </div>
+      <div class="metric-icon-box">
+        <i class="fa-solid fa-boxes-stacked"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Recent Invoices -->
+  <div class="col-lg-7">
+    <div class="card card-premium p-4 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold text-success mb-0"><i class="fa-solid fa-file-invoice me-2"></i> {{ _('recent_invoices') }}</h5>
+        <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-success btn-sm rounded-pill px-3">{{ _('view_all') }}</a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle">
           <thead>
-            <tr>
-              <th>Time</th>
-              <th>Patient</th>
-              <th>Reason</th>
-              <th>Treatments</th>
-              {% if current_user.role in ('admin', 'receptionist') %}
-              <th>Total Invoices</th>
-              <th>Payments</th>
-              <th>Outstanding / Credit</th>
-              {% endif %}
-              <th class="text-center">Actions</th>
+            <tr class="text-muted">
+              <th>{{ _('invoice_number') }}</th>
+              <th>{{ _('client_name') }}</th>
+              <th>{{ _('issue_date') }}</th>
+              <th>{{ _('total_amount') }}</th>
+              <th>{{ _('status') }}</th>
             </tr>
           </thead>
-
           <tbody>
-            {% for appointment in today_done_appointments %}
-            {% set invoice_total = appointment.invoice_total %}
-            {% set total_paid = appointment.total_paid %}
-            {% set balance = appointment.balance %}
-            {% set credit = appointment.credit %}
-
+            {% for inv in recent_invoices %}
             <tr>
+              <td class="fw-bold"><a href="{{ url_for('invoices.view_invoice', invoice_id=inv.id) }}">{{ inv.invoice_number }}</a></td>
               <td>
-                {{ appointment.appointment_date.strftime('%H:%M') if appointment.appointment_date else 'No time' }}
-              </td>
-
-              <td>
-                <strong>
-                  {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}
-                </strong>
-                <br>
-                <small>{{ appointment.patient.phone or 'No phone number' }}</small>
-              </td>
-
-              <td>
-                {{ appointment.reason or 'No reason provided' }}
-              </td>
-
-              <td>
-                {{ appointment.treatments|length }}
-              </td>
-
-              {% if current_user.role in ('admin', 'receptionist') %}
-              <td>
-                {{ invoice_total | format_price }} {{ currency_symbol }}
-              </td>
-
-              <td>
-                {{ total_paid | format_price }} {{ currency_symbol }}
-              </td>
-
-              <td>
-                {% if credit > 0 %}
-                <span class="credit-amount">
-                  {{ credit | format_price }} {{ currency_symbol }}
-                  <span class="credit-badge">Credit</span>
-                </span>
-                {% elif balance > 0 %}
-                <span class="remaining-due">
-                  {{ balance | format_price }} {{ currency_symbol }}
-                  <span class="due-badge">Due</span>
-                </span>
+                {% if inv.client %}
+                  <a href="{{ url_for('clients.view_client', client_id=inv.client.id) }}" class="fw-bold text-success text-decoration-none">
+                    {{ inv.client_name }}
+                  </a>
                 {% else %}
-                <span class="remaining-clear">
-                  0 {{ currency_symbol }}
-                  <span class="paid-badge">Paid</span>
-                </span>
+                  {{ inv.client_name }}
                 {% endif %}
               </td>
-              {% endif %}
+              <td class="text-muted small">{{ inv.issue_date.strftime('%Y-%m-%d') }}</td>
+              <td class="fw-semibold">{{ inv.total_amount | format_price }} {{ currency_symbol }}</td>
+              <td>
+                <span class="badge rounded-pill {% if inv.status == 'Paid' %}badge-paid{% elif inv.status == 'Partially Paid' %}badge-partial{% else %}badge-unpaid{% endif %}">
+                  {% if inv.status == 'Paid' %}{{ _('paid') }}{% elif inv.status == 'Partially Paid' %}{{ _('partially_paid') }}{% else %}{{ _('unpaid') }}{% endif %}
+                </span>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" class="text-center py-4 text-muted">{{ _('no_recent_invoices') }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 
+  <!-- Low Stock Items / Alerts -->
+  <div class="col-lg-5">
+    <div class="card card-premium p-4 h-100">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold text-danger mb-0"><i class="fa-solid fa-triangle-exclamation me-2"></i> {{ _('low_stock_alerts') }}</h5>
+        <a href="{{ url_for('stock.list_stock') }}" class="btn btn-outline-danger btn-sm rounded-pill px-3">{{ _('inventory') }}</a>
+      </div>
+
+      {% if low_stock_items %}
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr class="text-muted">
+              <th>{{ _('item_name') }}</th>
+              <th>{{ _('sku') }}</th>
+              <th class="text-center">{{ _('quantity') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in low_stock_items %}
+            <tr>
+              <td class="fw-semibold">{{ item.name }}</td>
+              <td class="text-muted small">{{ item.sku or 'N/A' }}</td>
               <td class="text-center">
-                <a href="{{ url_for('appointments.view_appointment', appointment_id=appointment.id) }}"
-                  class="table-action-btn view-btn" title="View Appointment">
-                  <i class="bi bi-eye"></i>
-                </a>
-
-                {% if current_user.role in ('admin', 'doctor') %}
-                <a href="{{ url_for('treatments.appointment_session', appointment_id=appointment.id) }}"
-                  class="table-action-btn session-btn" title="Open Session">
-                  <i class="bi bi-clipboard2-pulse"></i>
-                </a>
-                {% endif %}
+                <span class="badge bg-danger rounded-pill px-3">{{ item.quantity }}</span>
               </td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
       </div>
-
       {% else %}
-      <div class="empty-state-card text-center">
-        <i class="bi bi-check-circle"></i>
-        <h4>No completed appointments today</h4>
-        <p>Completed appointment sessions will appear here after using End Session.</p>
+      <div class="d-flex flex-column align-items-center justify-content-center py-5 text-success">
+        <i class="fa-solid fa-circle-check fs-1 mb-2"></i>
+        <p class="fw-semibold mb-0">{{ _('all_stock_ok') }}</p>
       </div>
       {% endif %}
-
     </div>
-  </section>
-  <!-- /Done Today Section -->
-</main>
-
-<!-- Include Chart.js and Dashboard Script -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const ctx = document.getElementById('dashboardOverviewChart').getContext('2d');
-    const isDark = document.documentElement.getAttribute('data-bs-theme') === 'dark';
-    const legendColor = isDark ? '#e2e8f0' : '#475569';
-    const isArabic = document.documentElement.getAttribute('lang') === 'ar';
-    const statusLabels = isArabic ? ['مجدول', 'منجز', 'ملغى'] : ['Scheduled', 'Completed', 'Cancelled'];
-    const financialLabels = isArabic ? ['المدفوعات المسددة', 'الديون المستحقة'] : ['Paid Payments', 'Outstanding Balances'];
-    
-    // Injecting values from backend
-    const scheduled = {{ scheduled_appointments }};
-    const completed = {{ done_appointments }};
-    const total = {{ total_appointments }};
-    const cancelled = Math.max(0, total - scheduled - completed);
-    
-    const paid = {{ total_paid }};
-    const debt = {{ total_outstanding }};
-    
-    let currentChart = null;
-
-    function renderStatusChart() {
-        if (currentChart) currentChart.destroy();
-        currentChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: statusLabels,
-                datasets: [{
-                    data: [scheduled, completed, cancelled],
-                    backgroundColor: [
-                        '#175cdd',   // Scheduled - Royal Blue
-                        '#10b981',   // Completed - Green
-                        '#f43f5e'    // Cancelled - Rose Red
-                    ],
-                    borderWidth: 0,
-                    hoverOffset: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '72%',
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: legendColor,
-                            font: { weight: '600', size: 11 },
-                            padding: 12,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const unit = isArabic ? ' جلسات' : ' sessions';
-                                return ' ' + context.label + ': ' + context.raw + unit;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    function renderFinancialsChart() {
-        if (currentChart) currentChart.destroy();
-        currentChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: financialLabels,
-                datasets: [{
-                    data: [paid, debt],
-                    backgroundColor: [
-                        '#10b981',   // Paid - Green
-                        '#f43f5e'    // Debt - Rose Red
-                    ],
-                    borderWidth: 0,
-                    hoverOffset: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '72%',
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: legendColor,
-                            font: { weight: '600', size: 11 },
-                            padding: 12,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return ' ' + context.label + ': ' + context.raw.toLocaleString('de-DE') + ' {{ currency_symbol }}';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    const btnStatus = document.getElementById('btn-show-status');
-    const btnFinancials = document.getElementById('btn-show-financials');
-    const btnToday = document.getElementById('btn-show-today');
-    const chartCanvas = document.getElementById('dashboardOverviewChart');
-    const todayContainer = document.getElementById('todayStatusContainer');
-
-    function updateClinicStatus() {
-        if (!todayContainer) return;
-        const workingDaysStr = todayContainer.getAttribute('data-working-days') || '0,1,2,3,4,6';
-        const minTimeStr = todayContainer.getAttribute('data-min-time') || '08:00';
-        const maxTimeStr = todayContainer.getAttribute('data-max-time') || '18:00';
-
-        const workingDays = workingDaysStr.split(',').map(Number);
-        
-        const now = new Date();
-        const currentDay = now.getDay();
-        
-        const dot = document.getElementById('clinicStatusDot');
-        const text = document.getElementById('clinicStatusText');
-        
-        if (!dot || !text) return;
-
-        // Check if today is a working day
-        if (!workingDays.includes(currentDay)) {
-            dot.className = 'spinner-grow spinner-grow-sm text-danger';
-            dot.style.animation = 'none';
-            dot.style.background = '#dc3545';
-            text.innerHTML = 'Closed <span class="text-muted fw-normal" style="font-size: 0.7rem;">(Weekend / Day Off)</span>';
-            return;
-        }
-
-        // Check if current time is within hours
-        const [minH, minM] = minTimeStr.split(':').map(Number);
-        const [maxH, maxM] = maxTimeStr.split(':').map(Number);
-        
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        const minMinutes = minH * 60 + minM;
-        const maxMinutes = maxH * 60 + maxM;
-
-        if (currentMinutes >= minMinutes && currentMinutes < maxMinutes) {
-            dot.className = 'spinner-grow spinner-grow-sm text-success';
-            dot.style.animation = 'spinner-grow 1.5s linear infinite';
-            dot.style.background = '#198754';
-            text.innerHTML = 'Open Now <span class="text-muted fw-normal" style="font-size: 0.7rem;">(Operating Hours)</span>';
-        } else {
-            dot.className = 'spinner-grow spinner-grow-sm text-warning';
-            dot.style.animation = 'none';
-            dot.style.background = '#ffc107';
-            text.innerHTML = 'Closed <span class="text-muted fw-normal" style="font-size: 0.7rem;">(Off Hours)</span>';
-        }
-    }
-
-    function setActiveTab(activeBtn, inactiveBtn1, inactiveBtn2) {
-        activeBtn.className = 'btn btn-primary btn-sm rounded-pill px-3 py-1 fw-bold border-0';
-        activeBtn.style.background = 'var(--accent-color, #0d6efd)';
-        activeBtn.style.color = '#ffffff';
-        activeBtn.style.boxShadow = '0 2px 6px rgba(13, 110, 253, 0.15)';
-
-        [inactiveBtn1, inactiveBtn2].forEach(btn => {
-            btn.className = 'btn btn-outline-secondary btn-sm rounded-pill px-3 py-1 fw-bold border-0 text-secondary';
-            btn.style.background = 'transparent';
-            btn.style.color = '';
-            btn.style.boxShadow = 'none';
-        });
-    }
-
-    btnStatus.addEventListener('click', function() {
-        setActiveTab(btnStatus, btnFinancials, btnToday);
-        todayContainer.style.display = 'none';
-        chartCanvas.style.display = 'block';
-        renderStatusChart();
-    });
-
-    btnFinancials.addEventListener('click', function() {
-        setActiveTab(btnFinancials, btnStatus, btnToday);
-        todayContainer.style.display = 'none';
-        chartCanvas.style.display = 'block';
-        renderFinancialsChart();
-    });
-
-    btnToday.addEventListener('click', function() {
-        setActiveTab(btnToday, btnStatus, btnFinancials);
-        chartCanvas.style.display = 'none';
-        todayContainer.style.display = 'block';
-        updateClinicStatus();
-    });
-
-    renderStatusChart();
-    updateClinicStatus();
-});
-</script>
+  </div>
+</div>
 {% endblock %}

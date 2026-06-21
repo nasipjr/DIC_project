@@ -1,126 +1,71 @@
 {% extends "base.html" %}
 
-{% block title %}Payments{% endblock %}
+{% block title %}{{ _('payments') }}{% endblock %}
 
 {% block content %}
-<br><br><br><br><br><br><br>
-
-<!-- Section Title -->
-<div class="container section-title" data-aos="fade-up">
-    <h2>Payments</h2>
-    <p>All patient payments recorded in the clinic.</p>
-</div>
-<!-- End Section Title -->
-
-
-<section id="payments-section" class="find-a-doctor section">
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-            <div>
-                <h2 class="mb-2">Payments List</h2>
-                <p class="mb-0">Manage all clinic payments from one place.</p>
-            </div>
-
-            <a href="{{ url_for('payments.add_patient_payment') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle me-1"></i>
-                Add New Payment
-            </a>
-        </div>
-
-        <div class="appointments-table-wrapper mb-4">
-            <form id="payments-filter-form" method="GET" action="{{ url_for('payments.payments_table') }}">
-                <div class="row gy-3 align-items-end">
-
-                    <div class="col-lg-7 col-md-8">
-                        <label for="search" class="form-label">Search Payments</label>
-                        <input
-                            type="text"
-                            id="search"
-                            name="search"
-                            class="form-control"
-                            placeholder="Search by patient, phone, payment number, date, amount, or notes"
-                            value="{{ search_query }}"
-                        >
-                    </div>
-
-                    <input type="hidden" name="sort" value="{{ sort_by }}">
-                    <input type="hidden" name="order" value="{{ order }}">
-
-                    <div class="col-lg-5 col-md-4 d-flex gap-2 flex-wrap">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-search me-1"></i>
-                            Search
-                        </button>
-
-                        <a href="{{ url_for('payments.payments') }}" class="btn btn-outline-light reset-filter-btn">
-                            Reset
-                        </a>
-                    </div>
-
-                </div>
-            </form>
-        </div>
-
-        <div id="payments-table-container">
-            {% include "partials/_payments_table.html" %}
-        </div>
-
+<div class="row gy-4 mb-4">
+  <div class="col-12 d-flex justify-content-between align-items-center">
+    <div>
+      <h2 class="fw-bold text-success mb-1">{{ _('payments') }}</h2>
+      <p class="text-muted">{{ _('payment_history') }}</p>
     </div>
-</section>
+    <a href="{{ url_for('payments.add_payment') }}" class="btn btn-success rounded-pill px-4">
+      <i class="fa-solid fa-circle-plus me-2"></i> {{ _('add_payment') }}
+    </a>
+  </div>
+</div>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const tableContainer = document.getElementById("payments-table-container");
-    const filterForm = document.getElementById("payments-filter-form");
+<!-- Time Range Tabs -->
+<ul class="nav nav-pills mb-4 gap-2">
+  <li class="nav-item">
+    <a class="nav-link {% if active_range == 'all' or not active_range %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('payments.payments', range='all', search=search_query, sort=sort_by, order=order) }}">
+      <i class="fa-solid fa-border-all me-1"></i> الجميع / All
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_range == 'today' %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('payments.payments', range='today', search=search_query, sort=sort_by, order=order) }}">
+      <i class="fa-solid fa-calendar-day me-1"></i> اليوم / Today
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_range == 'week' %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('payments.payments', range='week', search=search_query, sort=sort_by, order=order) }}">
+      <i class="fa-solid fa-calendar-week me-1"></i> الأسبوع / Week
+    </a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_range == 'month' %}active bg-success{% else %}text-success bg-success bg-opacity-10{% endif %} fw-semibold" href="{{ url_for('payments.payments', range='month', search=search_query, sort=sort_by, order=order) }}">
+      <i class="fa-solid fa-calendar-days me-1"></i> الشهر / Month
+    </a>
+  </li>
+</ul>
 
-    function loadPaymentsTable(url) {
-        fetch(url, {
-            headers: {
-                "X-Requested-With": "XMLHttpRequest"
-            }
-        })
-        .then(function (response) {
-            if (!response.ok) {
-                throw new Error("Failed to load payments table.");
-            }
-            return response.text();
-        })
-        .then(function (html) {
-            tableContainer.innerHTML = html;
-            if (window.initCustomTooltips) {
-                window.initCustomTooltips();
-            }
-        })
-        .catch(function (error) {
-            console.error(error);
-            window.location.href = url;
-        });
-    }
+<!-- Search Bar -->
+<div class="card card-premium p-3 mb-4">
+  <form method="GET" action="{{ url_for('payments.payments') }}">
+    <input type="hidden" name="sort" value="{{ sort_by }}">
+    <input type="hidden" name="order" value="{{ order }}">
+    <input type="hidden" name="range" value="{{ active_range }}">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-9">
+        <div class="input-group">
+          <span class="input-group-text text-muted border-end-0"><i class="fa-solid fa-magnifying-glass"></i></span>
+          <input type="text" name="search" class="form-control border-start-0 ps-0" placeholder="{{ _('search') }}..." value="{{ search_query }}">
+        </div>
+      </div>
+      <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-success w-100 fw-semibold">{{ _('search') }}</button>
+        {% if search_query %}
+        <a href="{{ url_for('payments.payments', sort=sort_by, order=order) }}" class="btn btn-outline-secondary w-50">{{ _('clear_btn') }}</a>
+        {% endif %}
+      </div>
+    </div>
+  </form>
+</div>
 
-    if (filterForm) {
-        filterForm.addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            const formData = new FormData(filterForm);
-            const queryString = new URLSearchParams(formData).toString();
-            const url = filterForm.getAttribute("action") + "?" + queryString;
-
-            loadPaymentsTable(url);
-        });
-    }
-
-    document.addEventListener("click", function (event) {
-        const link = event.target.closest(".payments-ajax-link");
-
-        if (!link) {
-            return;
-        }
-
-        event.preventDefault();
-        loadPaymentsTable(link.href);
-    });
-});
-</script>
-
+<!-- Payments Table Card -->
+<div class="card card-premium p-4">
+  <div id="payments-table-container">
+    {% include "partials/_payments_table.html" %}
+  </div>
+</div>
 {% endblock %}

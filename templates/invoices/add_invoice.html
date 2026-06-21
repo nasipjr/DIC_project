@@ -1,452 +1,745 @@
 {% extends "base.html" %}
 
-{% block title %}Add Manual Invoice{% endblock %}
+{% block title %}{{ _('add_invoice') }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  .autocomplete-wrapper {
+    position: relative;
+  }
+  .autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: var(--input-bg, #ffffff);
+    border: 1px solid var(--input-border, #ced4da);
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    margin-top: 4px;
+  }
+  .autocomplete-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    color: var(--text-dark, #000000);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(16, 185, 129, 0.05);
+    transition: background-color 0.15s, color 0.15s;
+  }
+  .autocomplete-item:last-child {
+    border-bottom: none;
+  }
+  .autocomplete-item:hover, .autocomplete-item.active {
+    background-color: rgba(5, 150, 105, 0.15); /* Emerald tint */
+    color: var(--primary-color, #059669);
+  }
+  .autocomplete-no-results {
+    padding: 12px 14px;
+    color: var(--text-muted, #64748b);
+    text-align: center;
+    font-style: italic;
+    font-size: 13px;
+  }
+  [data-bs-theme="dark"] .autocomplete-dropdown {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Section dividers and styling */
+  .form-section-card {
+    background: rgba(5, 150, 105, 0.015);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .form-section-card:hover {
+    border-color: rgba(5, 150, 105, 0.25);
+    background: rgba(5, 150, 105, 0.03);
+    box-shadow: 0 6px 18px rgba(5, 150, 105, 0.05);
+  }
+  .form-section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--primary-color, #059669);
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .form-section-title i {
+    font-size: 1.2rem;
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<br><br><br><br><br><br><br>
+<div class="row justify-content-center">
+  <div class="col-lg-10">
+    <div class="card card-premium p-4">
+      <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h4 class="fw-bold text-success mb-0">
+          <i class="fa-solid fa-file-signature me-1"></i> {{ _('add_invoice') }}
+        </h4>
+        <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-secondary btn-sm">{{ _('back_to_invoices') }}</a>
+      </div>
 
-<!-- Section Title -->
-<div class="container section-title" data-aos="fade-up">
-    <h2>Add Manual Invoice</h2>
-    <p>Create a walk-in invoice with one or more treatment items.</p>
-</div>
-<!-- End Section Title -->
-
-
-<section id="add-manual-invoice-section" class="section">
-    <div class="container" data-aos="fade-up" data-aos-delay="100">
-
-        <div class="add-patient-wrapper">
-
-            <div class="add-patient-header text-center" data-aos="fade-up" data-aos-delay="100">
-                <h2>Manual / Walk-in Invoice</h2>
-                <p>This will create a completed appointment, treatment items, and an invoice.</p>
+      <form method="POST" action="{{ url_for('invoices.add_invoice') }}" id="invoice-form">
+        <!-- Client Info Section -->
+        <div class="form-section-card">
+          <h5 class="form-section-title">
+            <i class="fa-solid fa-user-gear"></i> {{ _('billing_info') }}
+          </h5>
+          <div class="row g-3">
+            <!-- Input Method Radio Selection -->
+            <div class="col-12 mb-2">
+              <label class="form-label fw-semibold d-block">طريقة إدخال بيانات الزبون / Client Input Method</label>
+              <div class="form-check form-check-inline me-4">
+                <input class="form-check-input" type="radio" name="client_input_method" id="method_registered" value="registered" checked>
+                <label class="form-check-label fw-semibold text-white-50" for="method_registered">
+                  <i class="fa-solid fa-database text-success me-1"></i> زبون مسجل / Registered Client
+                </label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="client_input_method" id="method_manual" value="manual">
+                <label class="form-check-label fw-semibold text-white-50" for="method_manual">
+                  <i class="fa-solid fa-keyboard text-success me-1"></i> إدخال يدوي / Manual Entry
+                </label>
+              </div>
             </div>
 
-            {% if error_message %}
-            <div class="alert alert-danger mb-4">
-                {{ error_message }}
+            <!-- Select Client Wrapper -->
+            <div class="col-12" id="client_select_wrapper">
+              <label for="client_select" class="form-label fw-semibold">اختر زبون مسجل / Select Client</label>
+              <select class="form-select" id="client_select">
+                <option value="">-- اختر زبون من القائمة / Select Client --</option>
+                {% for client in clients %}
+                  <option value="{{ client.id }}" data-name="{{ client.name }}" data-phone="{{ client.phone or '' }}" data-address="{{ client.address or '' }}">
+                    {{ client.name }} {% if client.phone %}({{ client.phone }}){% endif %}
+                  </option>
+                {% endfor %}
+              </select>
             </div>
-            {% endif %}
 
-            <form method="POST">
-
-                <!-- Main Info -->
-                <div class="patient-info-grid mb-4">
-
-                    <div class="patient-info-box">
-                        <span class="info-label">Patient</span>
-
-                        <select name="patient_id" class="form-select" required>
-                            <option value="">Select patient</option>
-
-                            {% for patient in patients %}
-                            <option value="{{ patient.id }}">
-                                {{ patient.first_name }} {{ patient.last_name }}
-                                {% if patient.phone %}
-                                - {{ patient.phone }}
-                                {% endif %}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="patient-info-box">
-                        <span class="info-label">Visit Date</span>
-
-                        <input type="datetime-local"
-                            name="appointment_date"
-                            class="form-control"
-                            value="{{ default_visit_datetime }}"
-                            required>
-                    </div>
-
-                    <div class="patient-info-box">
-                        <span class="info-label">Appointment Reason</span>
-                        <p>Manual</p>
-                    </div>
-
-                    <div class="patient-info-box">
-                        <span class="info-label">Appointment Status</span>
-                        <p>
-                            <span class="appointment-status status-done">
-                                Done
-                            </span>
-                        </p>
-                    </div>
-
+            <!-- Selected Client Info Card (View Only) -->
+            <div class="col-12 d-none" id="client_info_card">
+              <div class="card p-3 rounded-3 shadow-sm" style="background-color: var(--input-bg); border: 1px solid var(--input-border) !important;">
+                <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-user-check me-2"></i>{{ _('selected_client_info') }}</h6>
+                <div class="row text-white-50 small">
+                  <div class="col-md-4 mb-2 mb-md-0">
+                    <span class="text-muted d-block mb-1"><i class="fa-solid fa-user me-1 text-success text-opacity-75"></i>{{ _('client_name') }}</span>
+                    <strong class="text-white fs-6" id="info_name">-</strong>
+                  </div>
+                  <div class="col-md-4 mb-2 mb-md-0">
+                    <span class="text-muted d-block mb-1"><i class="fa-solid fa-phone me-1 text-success text-opacity-75"></i>{{ _('client_phone') }}</span>
+                    <strong class="text-white fs-6" id="info_phone">-</strong>
+                  </div>
+                  <div class="col-md-4">
+                    <span class="text-muted d-block mb-1"><i class="fa-solid fa-location-dot me-1 text-success text-opacity-75"></i>{{ _('client_address') }}</span>
+                    <strong class="text-white fs-6" id="info_address">-</strong>
+                  </div>
                 </div>
-                <!-- /Main Info -->
+              </div>
+            </div>
 
-
-                <!-- Invoice Items -->
-                <div class="container section-title" style="margin-top: 35px;" data-aos="fade-up">
-                    <h2>Invoice Items</h2>
-                    <p>Add one or more procedures to this invoice.</p>
+            <!-- Editable Input Fields (Hidden in Registered Mode) -->
+            <div class="col-12" id="manual_inputs_container">
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="client_name" class="form-label fw-semibold">{{ _('client_name') }} <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" id="client_name" name="client_name" placeholder="..." required>
                 </div>
 
-                <div class="appointments-table-wrapper table-responsive mb-4">
-                    <table class="table appointments-table align-middle" id="invoice-items-table">
-                        <thead>
-                            <tr>
-                                <th>Procedure Type</th>
-                                <th>Tooth</th>
-                                <th>Notes</th>
-                                <th>Price</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-
-                        <tbody id="invoice-items-body">
-                            <tr class="invoice-item-row">
-                                <td>
-                                    <select name="procedure_type" class="form-select procedure-select" required>
-                                        <option value="">Select procedure</option>
-
-                                        {% for procedure_type, price in treatment_prices.items() %}
-                                        <option value="{{ procedure_type }}">
-                                            {{ procedure_type }}
-                                        </option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-
-                                <td>
-                                    <input type="text"
-                                        name="tooth_number"
-                                        class="form-control"
-                                        placeholder="Tooth number">
-                                </td>
-
-                                <td>
-                                    <input type="text"
-                                        name="notes"
-                                        class="form-control"
-                                        placeholder="Notes">
-                                </td>
-
-                                <td>
-                                    <span class="price-badge"><span class="item-price">0</span> {{ currency_symbol }}</span>
-                                </td>
-
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-outline-danger btn-sm remove-item-btn" disabled>
-                                        Remove
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-
-                        <tfoot>
-                            <tr>
-                                <th colspan="3" class="text-end">Subtotal</th>
-                                <th>
-                                    <span class="price-badge"><span id="invoice-subtotal">0.00</span> {{ currency_symbol }}</span>
-                                </th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="3" class="text-end">Discount</th>
-                                <th>
-                                    <div class="input-group input-group-sm rounded-3 overflow-hidden" style="width: 220px;">
-                                        <input type="number" step="any" min="0" name="discount" id="invoice-discount-input" class="form-control border-end-0" value="0">
-                                        <select name="discount_type" id="invoice-discount-type" class="form-select border-start-0 bg-light" style="max-width: 90px;">
-                                            <option value="value">{{ currency_symbol }}</option>
-                                            <option value="percentage">%</option>
-                                        </select>
-                                    </div>
-                                </th>
-                                <th></th>
-                            </tr>
-                            <tr>
-                                <th colspan="3" class="text-end">Invoice Total</th>
-                                <th>
-                                    <span class="price-badge"><span id="invoice-total">0.00</span> {{ currency_symbol }}</span>
-                                </th>
-                                <th></th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                <div class="col-md-6">
+                  <label for="client_phone" class="form-label fw-semibold">{{ _('client_phone') }}</label>
+                  <input type="text" class="form-control" id="client_phone" name="client_phone" placeholder="...">
                 </div>
 
-                <div class="d-flex justify-content-center mb-4">
-                    <button type="button" class="btn btn-outline-primary" id="add-item-btn">
-                        <i class="bi bi-plus-circle"></i>
-                        Add Item
-                    </button>
+                <div class="col-12">
+                  <label for="client_address" class="form-label fw-semibold">{{ _('client_address') }}</label>
+                  <input type="text" class="form-control" id="client_address" name="client_address" placeholder="...">
                 </div>
-                <!-- /Invoice Items -->
-
-
-                <!-- Payment Section -->
-                <div class="container section-title" style="margin-top: 35px;" data-aos="fade-up">
-                    <h2>Payment</h2>
-                    <p>Choose whether the patient paid now or not.</p>
-                </div>
-
-                <div class="patient-info-grid mb-4">
-
-                    <div class="patient-info-box">
-                        <span class="info-label">Payment Option</span>
-
-                        <select name="payment_option" id="payment-option" class="form-select">
-                            <option value="no_payment">No Payment</option>
-                            <option value="full_price">Full Price</option>
-                            <option value="custom_amount">Custom Amount</option>
-                        </select>
-                    </div>
-
-                    <div class="patient-info-box" id="custom-payment-box" style="display: none;">
-                        <span class="info-label">Custom Payment Amount</span>
-
-                        <input type="number"
-                            step="0.01"
-                            min="0"
-                            name="custom_payment_amount"
-                            id="custom-payment-amount"
-                            class="form-control"
-                            placeholder="Enter amount">
-                    </div>
-
-                    <div class="patient-info-box">
-                        <span class="info-label">Selected Payment</span>
-                        <p>
-                            <span class="price-badge"><span id="selected-payment-display">0</span> {{ currency_symbol }}</span>
-                        </p>
-                    </div>
-
-                    <div class="patient-info-box">
-                        <span class="info-label">Expected Status</span>
-                        <p>
-                            <span class="due-badge" id="expected-status-display">Unpaid</span>
-                        </p>
-                    </div>
-
-                </div>
-                <!-- /Payment Section -->
-
-
-                <!-- Actions -->
-                <div class="action-buttons justify-content-center gap-3 mt-4">
-
-                    <a href="{{ url_for('invoices.invoices') }}" class="btn-outline-main px-4">
-                        Cancel
-                    </a>
-
-                    <button type="submit" class="btn btn-primary px-4">
-                        Create Invoice
-                    </button>
-
-                </div>
-                <!-- /Actions -->
-
-            </form>
-
+              </div>
+            </div>
+          </div>
         </div>
 
+        <!-- Invoice Meta Section -->
+        <div class="form-section-card">
+          <h5 class="form-section-title">
+            <i class="fa-solid fa-sliders"></i> {{ _('settings') }}
+          </h5>
+          <div class="row g-3">
+            <!-- Discount Type -->
+            <div class="col-md-3">
+              <label for="discount_type" class="form-label fw-semibold">{{ _('discount_type') }}</label>
+              <select name="discount_type" id="discount_type" class="form-select">
+                <option value="value">{{ _('fixed_value') }}</option>
+                <option value="percentage">{{ _('percentage') }}</option>
+              </select>
+            </div>
+
+            <!-- Discount Value -->
+            <div class="col-md-3">
+              <label for="discount" class="form-label fw-semibold">{{ _('discount') }}</label>
+              <input type="number" step="0.01" min="0" class="form-control" id="discount" name="discount" value="0">
+            </div>
+
+            <!-- Tax Rate -->
+            <div class="col-md-2">
+              <label for="tax_rate" class="form-label fw-semibold">{{ _('tax_rate') }} (%)</label>
+              <input type="number" step="0.01" min="0" class="form-control" id="tax_rate" name="tax_rate" value="0">
+            </div>
+
+            <!-- Payment Status -->
+            <div class="col-md-2">
+              <label for="status" class="form-label fw-semibold">{{ _('status') }}</label>
+              <select name="status" id="invoice_status" class="form-select">
+                <option value="Unpaid">{{ _('unpaid_due') }}</option>
+                <option value="Partially Paid">{{ _('partially_paid') }}</option>
+                <option value="Paid">{{ _('paid_clear') }}</option>
+              </select>
+            </div>
+
+            <!-- Amount Paid (Dynamically toggled) -->
+            <div class="col-md-2 d-none" id="amount_paid_wrapper">
+              <label for="amount_paid" class="form-label fw-semibold">{{ _('amount_paid') }}</label>
+              <div class="input-group">
+                <input type="number" step="0.01" min="0.01" class="form-control" id="amount_paid" name="amount_paid" value="0">
+                <span class="input-group-text bg-dark border-secondary text-success" style="font-size: 0.8rem;">{{ currency_symbol }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items Section -->
+        <div class="form-section-card">
+          <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-10">
+            <h5 class="form-section-title mb-0 border-0 pb-0">
+              <i class="fa-solid fa-cubes"></i> {{ _('invoice_items') }}
+            </h5>
+            <button type="button" class="btn btn-outline-success btn-sm rounded-pill" id="add-item-btn">
+              <i class="fa-solid fa-plus-circle me-1"></i> {{ _('add_row') }}
+            </button>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12">
+              <div class="table-responsive">
+                <table class="table align-middle" id="items-table">
+                  <thead>
+                    <tr class="text-muted">
+                      <th>{{ _('description') }}</th>
+                      <th style="width: 120px;">{{ _('quantity') }}</th>
+                      <th style="width: 150px;">{{ _('unit_price') }}</th>
+                      <th style="width: 150px;">{{ _('total_price') }}</th>
+                      <th style="width: 50px;"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="items-tbody">
+                    <!-- First row default -->
+                    <tr>
+                      <td>
+                        <div class="autocomplete-wrapper">
+                          <input class="form-control item-desc" name="description" placeholder="{{ _('item_select_placeholder') }}" autocomplete="off" required>
+                        </div>
+                      </td>
+                      <td>
+                        <input type="number" min="1" class="form-control item-qty" name="quantity" value="1" required>
+                      </td>
+                      <td>
+                        <input type="number" step="0.01" min="0" class="form-control item-price" name="unit_price" value="0" required>
+                      </td>
+                      <td>
+                        <span class="fw-bold item-total-span text-success">0</span> {{ currency_symbol }}
+                      </td>
+                      <td class="text-center">
+                        <button type="button" class="btn btn-sm btn-outline-danger remove-row-btn" disabled><i class="fa-solid fa-xmark"></i></button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculations Summary -->
+        <div class="row justify-content-end mb-4">
+          <div class="col-md-5">
+            <div class="card p-3 rounded-3" style="background-color: var(--input-bg); border: 1px solid var(--input-border) !important;">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">{{ _('subtotal') }}:</span>
+                <div>
+                  <span class="fw-semibold" id="summary-subtotal">0</span> <span class="small text-muted">{{ currency_symbol }}</span>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">{{ _('discount') }}:</span>
+                <div>
+                  <span class="fw-semibold text-danger" id="summary-discount">0</span> <span class="small text-muted">{{ currency_symbol }}</span>
+                </div>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted small">{{ _('tax') }}:</span>
+                <div>
+                  <span class="fw-semibold" id="summary-tax">0</span> <span class="small text-muted">{{ currency_symbol }}</span>
+                </div>
+              </div>
+              <hr class="my-2">
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-success">{{ _('total_amount') }}:</span>
+                <div>
+                  <span class="fw-bold text-success fs-5" id="summary-total">0</span> <span class="small text-success fw-bold">{{ currency_symbol }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-flex gap-2 justify-content-end border-top pt-3">
+          <button type="submit" class="btn btn-success px-5 py-2.5 fs-5 fw-bold rounded-pill">
+            <i class="fa-solid fa-check-circle me-2"></i> {{ _('save_invoice') }}
+          </button>
+          <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-secondary px-4 py-2.5 rounded-pill">{{ _('cancel') }}</a>
+        </div>
+      </form>
     </div>
-</section>
+  </div>
+</div>
+{% endblock %}
 
-
+{% block extra_js %}
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const treatmentPrices = {{ dict(treatment_prices.items()) | tojson }};
+  document.addEventListener('DOMContentLoaded', function() {
+    const methodRegistered = document.getElementById('method_registered');
+    const methodManual = document.getElementById('method_manual');
+    const clientSelectWrapper = document.getElementById('client_select_wrapper');
+    const clientSelect = document.getElementById('client_select');
+    const clientInfoCard = document.getElementById('client_info_card');
+    const manualInputsContainer = document.getElementById('manual_inputs_container');
+    const clientNameInput = document.getElementById('client_name');
+    const clientPhoneInput = document.getElementById('client_phone');
+    const clientAddressInput = document.getElementById('client_address');
+    const infoName = document.getElementById('info_name');
+    const infoPhone = document.getElementById('info_phone');
+    const infoAddress = document.getElementById('info_address');
 
-    const itemsBody = document.getElementById("invoice-items-body");
-    const addItemButton = document.getElementById("add-item-btn");
-    const invoiceTotalElement = document.getElementById("invoice-total");
-    const invoiceSubtotalElement = document.getElementById("invoice-subtotal");
-    const discountInput = document.getElementById("invoice-discount-input");
-    const discountTypeSelect = document.getElementById("invoice-discount-type");
+    // Payment status & amount elements
+    const invoiceStatus = document.getElementById('invoice_status');
+    const amountPaidWrapper = document.getElementById('amount_paid_wrapper');
+    const amountPaidInput = document.getElementById('amount_paid');
 
-    const paymentOption = document.getElementById("payment-option");
-    const customPaymentBox = document.getElementById("custom-payment-box");
-    const customPaymentAmount = document.getElementById("custom-payment-amount");
-    const selectedPaymentDisplay = document.getElementById("selected-payment-display");
-    const expectedStatusDisplay = document.getElementById("expected-status-display");
-
-    function getProcedurePrice(procedureType) {
-        if (!procedureType || !treatmentPrices[procedureType]) {
-            return 0;
-        }
-
-        return Number(treatmentPrices[procedureType]);
-    }
-
-    function updateRemoveButtons() {
-        const rows = itemsBody.querySelectorAll(".invoice-item-row");
-        const removeButtons = itemsBody.querySelectorAll(".remove-item-btn");
-
-        removeButtons.forEach(function (button) {
-            button.disabled = rows.length <= 1;
-        });
-    }
-
-    function calculateTotal() {
-        let subtotal = 0;
-
-        const rows = itemsBody.querySelectorAll(".invoice-item-row");
-
-        rows.forEach(function (row) {
-            const procedureSelect = row.querySelector(".procedure-select");
-            const priceElement = row.querySelector(".item-price");
-
-            const price = getProcedurePrice(procedureSelect.value);
-
-            priceElement.textContent = price.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-            subtotal += price;
-        });
-
-        invoiceSubtotalElement.textContent = subtotal.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-        
-        let discount = Number(discountInput.value || 0);
-        let discountType = discountTypeSelect.value;
-        if (discount < 0) {
-            discount = 0;
-            discountInput.value = 0;
-        }
-        
-        let discountAmount = 0;
-        if (discountType === "percentage") {
-            if (discount > 100) {
-                discount = 100;
-                discountInput.value = 100;
-            }
-            discountAmount = (subtotal * discount) / 100;
-        } else {
-            if (discount > subtotal) {
-                discount = subtotal;
-                discountInput.value = subtotal;
-            }
-            discountAmount = discount;
-        }
-        
-        const total = subtotal - discountAmount;
-
-        invoiceTotalElement.textContent = total.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-        updatePaymentDisplay();
-    }
-
-    function updatePaymentDisplay() {
-        const total = Number(invoiceTotalElement.textContent.replace(/\./g, '') || 0);
-        const option = paymentOption.value;
-
-        let selectedPayment = 0;
-        let statusText = "Unpaid";
-        let statusClass = "due-badge";
-
-        if (option === "full_price") {
-            selectedPayment = total;
-
-            if (total > 0) {
-                statusText = "Paid";
-                statusClass = "paid-badge";
-            }
-        } else if (option === "custom_amount") {
-            customPaymentBox.style.display = "block";
-            selectedPayment = Number(customPaymentAmount.value || 0);
-
-            if (selectedPayment <= 0) {
-                statusText = "Unpaid";
-                statusClass = "due-badge";
-            } else if (selectedPayment < total) {
-                statusText = "Partial";
-                statusClass = "due-badge";
-            } else if (selectedPayment === total) {
-                statusText = "Paid";
-                statusClass = "paid-badge";
+    function toggleAmountPaidField() {
+      if (invoiceStatus && invoiceStatus.value === 'Partially Paid') {
+        if (amountPaidWrapper) amountPaidWrapper.classList.remove('d-none');
+        if (amountPaidInput) {
+          amountPaidInput.setAttribute('required', 'true');
+          const summaryTotalEl = document.getElementById('summary-total');
+          if (summaryTotalEl) {
+            const grandTotal = parseFloat(summaryTotalEl.innerText.replace(/\./g, '').replace(',', '.')) || 0;
+            if (grandTotal > 0) {
+              amountPaidInput.max = grandTotal.toFixed(2);
+              amountPaidInput.min = "0.01";
+              if (parseFloat(amountPaidInput.value) <= 0 || amountPaidInput.value === '0') {
+                amountPaidInput.value = (grandTotal * 0.5).toFixed(0);
+              }
             } else {
-                statusText = "Too High";
-                statusClass = "due-badge";
+              amountPaidInput.removeAttribute('max');
+              amountPaidInput.removeAttribute('min');
             }
-        } else {
-            customPaymentBox.style.display = "none";
-            customPaymentAmount.value = "";
-            selectedPayment = 0;
-            statusText = "Unpaid";
-            statusClass = "due-badge";
+          }
         }
-
-        selectedPaymentDisplay.textContent = selectedPayment.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0});
-
-        expectedStatusDisplay.textContent = statusText;
-        expectedStatusDisplay.className = statusClass;
+      } else {
+        if (amountPaidWrapper) amountPaidWrapper.classList.add('d-none');
+        if (amountPaidInput) {
+          amountPaidInput.removeAttribute('required');
+          amountPaidInput.value = '0';
+        }
+      }
     }
 
-    function createItemRow() {
-        const row = document.createElement("tr");
-        row.className = "invoice-item-row";
+    if (invoiceStatus) {
+      invoiceStatus.addEventListener('change', toggleAmountPaidField);
+    }
+ 
+    function toggleInputMethod() {
+      if (methodRegistered && methodRegistered.checked) {
+        if (clientSelectWrapper) clientSelectWrapper.classList.remove('d-none');
+        if (manualInputsContainer) manualInputsContainer.classList.add('d-none');
+        
+        if (clientSelect) clientSelect.setAttribute('required', 'true');
+        if (clientNameInput) clientNameInput.removeAttribute('required');
+        
+        if (clientSelect) {
+          clientSelect.dispatchEvent(new Event('change'));
+        }
+      } else {
+        if (clientSelectWrapper) clientSelectWrapper.classList.add('d-none');
+        if (clientInfoCard) clientInfoCard.classList.add('d-none');
+        if (manualInputsContainer) manualInputsContainer.classList.remove('d-none');
+        
+        if (clientSelect) clientSelect.removeAttribute('required');
+        if (clientNameInput) clientNameInput.setAttribute('required', 'true');
+        
+        if (clientNameInput) clientNameInput.value = '';
+        if (clientPhoneInput) clientPhoneInput.value = '';
+        if (clientAddressInput) clientAddressInput.value = '';
+      }
+    }
+ 
+    if (methodRegistered && methodManual) {
+      methodRegistered.addEventListener('change', toggleInputMethod);
+      methodManual.addEventListener('change', toggleInputMethod);
+    }
+ 
+    if (clientSelect) {
+      clientSelect.addEventListener('change', function() {
+        if (methodRegistered && methodRegistered.checked) {
+          const selectedOption = this.selectedIndex >= 0 ? this.options[this.selectedIndex] : null;
+          if (!selectedOption || this.value === '') {
+            if (clientNameInput) clientNameInput.value = '';
+            if (clientPhoneInput) clientPhoneInput.value = '';
+            if (clientAddressInput) clientAddressInput.value = '';
+            if (infoName) infoName.innerText = '-';
+            if (infoPhone) infoPhone.innerText = '-';
+            if (infoAddress) infoAddress.innerText = '-';
+            if (clientInfoCard) clientInfoCard.classList.add('d-none');
+          } else {
+            const name = selectedOption.getAttribute('data-name') || '';
+            const phone = selectedOption.getAttribute('data-phone') || '-';
+            const address = selectedOption.getAttribute('data-address') || '-';
+            
+            if (clientNameInput) clientNameInput.value = name;
+            if (clientPhoneInput) clientPhoneInput.value = phone === '-' ? '' : phone;
+            if (clientAddressInput) clientAddressInput.value = address === '-' ? '' : address;
+            
+            if (infoName) infoName.innerText = name;
+            if (infoPhone) infoPhone.innerText = phone;
+            if (infoAddress) infoAddress.innerText = address;
+            if (clientInfoCard) clientInfoCard.classList.remove('d-none');
+          }
+        }
+      });
+    }
 
-        let procedureOptions = '<option value="">Select procedure</option>';
+    // Initialize toggle state
+    toggleInputMethod();
+    toggleAmountPaidField();
+ 
+    // Inventory Items serialization for autocompletion
+    const inventoryItems = [
+      {% for item in inventory %}
+        {
+          name: {{ item.name | tojson }},
+          sku: {{ item.sku | tojson }},
+          price: {{ item.unit_price }},
+          qty: {{ item.quantity }}
+        },
+      {% endfor %}
+    ];
 
-        Object.keys(treatmentPrices).forEach(function (procedureType) {
-            procedureOptions += `<option value="${procedureType}">${procedureType}</option>`;
+    function setupAutocomplete(input) {
+      let dropdown = null;
+      let activeIndex = -1;
+      let items = [];
+
+      function closeDropdown() {
+        if (dropdown) {
+          dropdown.remove();
+          dropdown = null;
+        }
+        activeIndex = -1;
+        window.removeEventListener('scroll', handleScroll, true);
+        window.removeEventListener('resize', closeDropdown);
+      }
+
+      function handleScroll(e) {
+        if (dropdown && dropdown.contains(e.target)) {
+          return;
+        }
+        closeDropdown();
+      }
+
+      function repositionDropdown() {
+        if (!dropdown) return;
+        const rect = input.getBoundingClientRect();
+        const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        dropdown.style.left = (rect.left + scrollLeft) + 'px';
+        dropdown.style.top = (rect.bottom + scrollTop) + 'px';
+        dropdown.style.width = rect.width + 'px';
+      }
+
+      function renderDropdown() {
+        closeDropdown();
+        
+        const filterVal = input.value.trim().toLowerCase();
+        
+        // Filter items matching name or SKU
+        items = inventoryItems.filter(item => 
+          item.name.toLowerCase().includes(filterVal) || 
+          item.sku.toLowerCase().includes(filterVal)
+        );
+
+        // If field is focused and empty, display first 15 items as helper select
+        if (items.length === 0 && filterVal === '') {
+          items = inventoryItems.slice(0, 15);
+        }
+
+        if (items.length === 0) {
+          dropdown = document.createElement('div');
+          dropdown.className = 'autocomplete-dropdown';
+          dropdown.innerHTML = `<div class="autocomplete-no-results">{{ _('no_items_found') }}</div>`;
+          document.body.appendChild(dropdown);
+          repositionDropdown();
+          window.addEventListener('scroll', handleScroll, true);
+          window.addEventListener('resize', closeDropdown);
+          return;
+        }
+
+        dropdown = document.createElement('div');
+        dropdown.className = 'autocomplete-dropdown';
+        
+        items.forEach((item, index) => {
+          const itemEl = document.createElement('div');
+          itemEl.className = 'autocomplete-item';
+          itemEl.dataset.index = index;
+          
+          itemEl.innerHTML = `
+            <div>
+              <span class="text-success fw-bold me-1">[${item.sku}]</span>
+              <strong class="text-white">${item.name}</strong>
+            </div>
+            <span class="badge rounded-pill" style="background-color: rgba(5, 150, 105, 0.18); color: #34d399; border: 1px solid rgba(5, 150, 105, 0.3); font-size: 0.75rem; font-weight: 500;">
+              {{ _('quantity') }}: ${item.qty}
+            </span>
+          `;
+          
+          itemEl.addEventListener('click', function(e) {
+            e.stopPropagation();
+            selectItem(item);
+          });
+          
+          dropdown.appendChild(itemEl);
         });
 
-        row.innerHTML = `
-            <td>
-                <select name="procedure_type" class="form-select procedure-select" required>
-                    ${procedureOptions}
-                </select>
-            </td>
+        document.body.appendChild(dropdown);
+        repositionDropdown();
+        window.addEventListener('scroll', handleScroll, true);
+        window.addEventListener('resize', closeDropdown);
+      }
 
-            <td>
-                <input type="text"
-                    name="tooth_number"
-                    class="form-control"
-                    placeholder="Tooth number">
-            </td>
+      function selectItem(item) {
+        input.value = item.name;
+        const row = input.closest('tr');
+        if (row) {
+          const priceInput = row.querySelector('.item-price');
+          if (priceInput) {
+            priceInput.value = item.price;
+          }
+          calculateRowTotal(row);
+        }
+        closeDropdown();
+      }
 
-            <td>
-                <input type="text"
-                    name="notes"
-                    class="form-control"
-                    placeholder="Notes">
-            </td>
+      input.addEventListener('input', function() {
+        renderDropdown();
+      });
 
-            <td>
-                <span class="price-badge"><span class="item-price">0</span> {{ currency_symbol }}</span>
-            </td>
+      input.addEventListener('focus', function() {
+        renderDropdown();
+      });
 
-            <td class="text-center">
-                <button type="button" class="btn btn-outline-danger btn-sm remove-item-btn">
-                    Remove
-                </button>
-            </td>
-        `;
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function(e) {
+        if (e.target !== input && (!dropdown || !dropdown.contains(e.target))) {
+          closeDropdown();
+        }
+      });
 
-        return row;
+      // Keyboard navigation
+      input.addEventListener('keydown', function(e) {
+        if (!dropdown) return;
+        
+        const itemEls = dropdown.querySelectorAll('.autocomplete-item');
+        if (itemEls.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          if (activeIndex >= 0 && activeIndex < itemEls.length) itemEls[activeIndex].classList.remove('active');
+          activeIndex = (activeIndex + 1) % itemEls.length;
+          itemEls[activeIndex].classList.add('active');
+          itemEls[activeIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          if (activeIndex >= 0 && activeIndex < itemEls.length) itemEls[activeIndex].classList.remove('active');
+          activeIndex = (activeIndex - 1 + itemEls.length) % itemEls.length;
+          itemEls[activeIndex].classList.add('active');
+          itemEls[activeIndex].scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+          if (activeIndex >= 0 && activeIndex < items.length) {
+            e.preventDefault();
+            selectItem(items[activeIndex]);
+          }
+        } else if (e.key === 'Escape') {
+          closeDropdown();
+        }
+      });
     }
 
-    addItemButton.addEventListener("click", function () {
-        const newRow = createItemRow();
-        itemsBody.appendChild(newRow);
+    const tbody = document.getElementById('items-tbody');
+    const addItemBtn = document.getElementById('add-item-btn');
+    const discountInput = document.getElementById('discount');
+    const discountType = document.getElementById('discount_type');
+    const taxInput = document.getElementById('tax_rate');
+ 
+    // Initialize autocomplete for default row(s)
+    document.querySelectorAll('.item-desc').forEach(setupAutocomplete);
+
+    // Add new item row
+    addItemBtn.addEventListener('click', function() {
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td>
+          <div class="autocomplete-wrapper">
+            <input class="form-control item-desc" name="description" placeholder="{{ _('item_select_placeholder') }}" autocomplete="off" required>
+          </div>
+        </td>
+        <td>
+          <input type="number" min="1" class="form-control item-qty" name="quantity" value="1" required>
+        </td>
+        <td>
+          <input type="number" step="0.01" min="0" class="form-control item-price" name="unit_price" value="0" required>
+        </td>
+        <td>
+          <span class="fw-bold item-total-span text-success">0</span> {{ currency_symbol }}
+        </td>
+        <td class="text-center">
+          <button type="button" class="btn btn-sm btn-outline-danger remove-row-btn"><i class="fa-solid fa-xmark"></i></button>
+        </td>
+      `;
+      tbody.appendChild(newRow);
+      updateRemoveButtons();
+      const newInput = newRow.querySelector('.item-desc');
+      setupAutocomplete(newInput);
+      newInput.focus();
+    });
+ 
+    // Listen to changes in items
+    tbody.addEventListener('input', function(e) {
+      const row = e.target.closest('tr');
+      if (row) {
+        if (e.target.classList.contains('item-desc')) {
+          const val = e.target.value;
+          const match = inventoryItems.find(item => item.name === val);
+          if (match) {
+            row.querySelector('.item-price').value = match.price;
+          }
+        }
+        calculateRowTotal(row);
+      }
+    });
+ 
+    tbody.addEventListener('click', function(e) {
+      const btn = e.target.closest('.remove-row-btn');
+      if (btn) {
+        const row = btn.closest('tr');
+        row.remove();
         updateRemoveButtons();
-        calculateTotal();
+        calculateAllTotals();
+      }
     });
-
-    itemsBody.addEventListener("change", function (event) {
-        if (event.target.classList.contains("procedure-select")) {
-            calculateTotal();
+ 
+    // Inputs updates totals
+    discountInput.addEventListener('input', calculateAllTotals);
+    discountType.addEventListener('change', calculateAllTotals);
+    taxInput.addEventListener('input', calculateAllTotals);
+ 
+    function updateRemoveButtons() {
+      const rows = tbody.querySelectorAll('tr');
+      rows.forEach((row, index) => {
+        const btn = row.querySelector('.remove-row-btn');
+        if (rows.length === 1) {
+          btn.setAttribute('disabled', 'true');
+        } else {
+          btn.removeAttribute('disabled');
         }
-    });
+      });
+    }
+ 
+    function calculateRowTotal(row) {
+      const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+      const price = parseFloat(row.querySelector('.item-price').value) || 0;
+      const total = qty * price;
+      row.querySelector('.item-total-span').innerText = total.toLocaleString('de-DE', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+      calculateAllTotals();
+    }
+ 
+    function calculateAllTotals() {
+      const rows = tbody.querySelectorAll('tr');
+      let subtotal = 0;
+      
+      rows.forEach(row => {
+        const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+        const price = parseFloat(row.querySelector('.item-price').value) || 0;
+        subtotal += qty * price;
+      });
+ 
+      // Discount calculation
+      const discVal = parseFloat(discountInput.value) || 0;
+      const discType = discountType.value;
+      let discountAmt = 0;
+      if (discType === 'percentage') {
+        discountAmt = subtotal * (discVal / 100);
+      } else {
+        discountAmt = discVal;
+      }
+      discountAmt = Math.min(discountAmt, subtotal);
+ 
+      // Tax calculation
+      const taxRate = parseFloat(taxInput.value) || 0;
+      const netBeforeTax = Math.max(0, subtotal - discountAmt);
+      const taxAmt = netBeforeTax * (taxRate / 100);
+ 
+      // Grand total
+      const grandTotal = netBeforeTax + taxAmt;
+ 
+      // Update Summary Cards
+      document.getElementById('summary-subtotal').innerText = subtotal.toLocaleString('de-DE', {minimumFractionDigits: 0});
+      document.getElementById('summary-discount').innerText = discountAmt.toLocaleString('de-DE', {minimumFractionDigits: 0});
+      document.getElementById('summary-tax').innerText = taxAmt.toLocaleString('de-DE', {minimumFractionDigits: 0});
+      document.getElementById('summary-total').innerText = grandTotal.toLocaleString('de-DE', {minimumFractionDigits: 0});
 
-    itemsBody.addEventListener("click", function (event) {
-        if (event.target.classList.contains("remove-item-btn")) {
-            event.target.closest(".invoice-item-row").remove();
-            updateRemoveButtons();
-            calculateTotal();
+      // Update max/min constraints on amount paid field dynamically
+      const amountPaidInput = document.getElementById('amount_paid');
+      if (amountPaidInput) {
+        if (grandTotal > 0) {
+          amountPaidInput.max = grandTotal.toFixed(2);
+          amountPaidInput.min = "0.01";
+          if (parseFloat(amountPaidInput.value) > grandTotal) {
+            amountPaidInput.value = grandTotal.toFixed(0);
+          }
+        } else {
+          amountPaidInput.removeAttribute('max');
+          amountPaidInput.removeAttribute('min');
         }
-    });
-
-    paymentOption.addEventListener("change", updatePaymentDisplay);
-    customPaymentAmount.addEventListener("input", updatePaymentDisplay);
-    discountInput.addEventListener("input", calculateTotal);
-    discountTypeSelect.addEventListener("change", calculateTotal);
-
-    updateRemoveButtons();
-    calculateTotal();
-});
+      }
+    }
+ 
+    // Initial load check
+    calculateAllTotals();
+  });
 </script>
-
 {% endblock %}

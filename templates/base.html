@@ -1,1072 +1,936 @@
 <!DOCTYPE html>
-{% set current_lang = request.cookies.get('lang', 'en') %}
-<html lang="{{ current_lang }}" dir="{% if current_lang == 'ar' %}rtl{% else %}ltr{% endif %}">
-
+<html lang="{{ current_lang }}" dir="{% if current_lang == 'ar' %}rtl{% else %}ltr{% endif %}" data-bs-theme="{{ current_theme }}">
 <head>
-  <script>
-    (function() {
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-bs-theme', savedTheme);
-      
-      // Sync local storage lang with server side cookie
-      localStorage.setItem('lang', '{{ current_lang }}');
-    })();
-  </script>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>HomePage</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
-
+  <title>{% block title %}{% endblock %} - {{ clinic_name }}</title>
+  
   <!-- Favicons -->
-  <link href="{{ url_for('static', filename='assets/img/favicon.png') }}" rel="icon">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/img/favicon.png') }}">
 
-  <link href="{{ url_for('static', filename='assets/img/apple-touch-icon.png') }}" rel="apple-touch-icon">
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap"
-    rel="stylesheet">
-
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  {% if current_lang == 'ar' %}
-  <link href="{{ url_for('static', filename='assets/vendor/bootstrap/css/bootstrap.rtl.min.css') }}" rel="stylesheet">
-  {% else %}
   <link href="{{ url_for('static', filename='assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-  {% endif %}
   <link href="{{ url_for('static', filename='assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='assets/vendor/aos/aos.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
   <link href="{{ url_for('static', filename='assets/vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
 
   <!-- Main CSS File -->
+  <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
   <link href="{{ url_for('static', filename='assets/css/main.css') }}" rel="stylesheet">
-  <link href="{{ url_for('static', filename='styles.css') }}?v=1.6" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #059669; /* Emerald Green */
+      --primary-hover: #047857;
+      --secondary-color: #0284c7; /* Water Blue */
+      --secondary-hover: #0369a1;
+      --bg-light: #f4fbf7;
+      --text-dark: #0f172a;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --input-bg: #ffffff;
+      --input-border: #ced4da;
+      --text-muted: #64748b;
+      font-family: 'Cairo', 'Outfit', sans-serif;
+    }
 
+    [data-bs-theme="dark"] {
+      --bg-light: #06120e;
+      --text-dark: #f8fafc;
+      --card-bg: #0c2018;
+      --border-color: rgba(16, 185, 129, 0.08);
+      --input-bg: #091812;
+      --input-border: rgba(16, 185, 129, 0.15);
+      --text-muted: #94a3b8;
+    }
+    
+    body {
+      background-color: var(--bg-light);
+      color: var(--text-dark);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
 
+    /* Navbar styling */
+    .navbar-custom {
+      background-color: #064e3b; /* Forest Green */
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      padding: 0.8rem 1.5rem;
+    }
 
-  <!-- =======================================================
-  * Template Name: Clinic
-  * Template URL: https://bootstrapmade.com/clinic-bootstrap-template/
-  * Updated: Jul 23 2025 with Bootstrap v5.3.7
-  * Author: BootstrapMade.com
-  * License: https://bootstrapmade.com/license/
-  ======================================================== -->
+    .navbar-custom .navbar-brand {
+      color: #ffffff;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .navbar-custom .nav-link {
+      color: #e2e8f0;
+      font-weight: 500;
+      border-radius: 0.375rem;
+      padding: 0.5rem 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .navbar-custom .nav-link:hover, .navbar-custom .nav-link.active {
+      color: #ffffff;
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Card premium styling */
+    .card-premium {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card-premium:hover {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .badge-paid {
+      background-color: #d1fae5;
+      color: #065f46;
+      font-weight: 600;
+    }
+
+    .badge-unpaid {
+      background-color: #fee2e2;
+      color: #991b1b;
+      font-weight: 600;
+    }
+
+    .badge-partial {
+      background-color: #fef3c7;
+      color: #92400e;
+      font-weight: 600;
+    }
+
+    /* Premium Footer Styles */
+    .premium-footer {
+      background: radial-gradient(circle at top right, #092c27, #041a17);
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      border-top: 3px solid var(--primary-color);
+      position: relative;
+    }
+
+    .premium-footer .footer-title {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 1.25rem;
+      position: relative;
+      padding-bottom: 0.5rem;
+    }
+
+    .premium-footer .footer-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      width: 30px;
+      height: 2px;
+      background-color: var(--primary-color);
+    }
+    
+    [dir="rtl"] .premium-footer .footer-title::after {
+      right: 0;
+    }
+    
+    [dir="ltr"] .premium-footer .footer-title::after {
+      left: 0;
+    }
+
+    .premium-footer a.footer-link {
+      color: #94a3b8;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .premium-footer a.footer-link:hover {
+      color: #ffffff;
+      transform: translateX({% if current_lang == 'ar' %}-4px{% else %}4px{% endif %});
+    }
+
+    .premium-footer .social-icons {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .premium-footer .social-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .premium-footer .social-icon-btn:hover {
+      background-color: var(--primary-color);
+      color: #ffffff;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.4);
+    }
+
+    .premium-footer .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .premium-footer .info-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .premium-footer .info-list li i {
+      color: var(--primary-color);
+      font-size: 1rem;
+      margin-top: 3px;
+    }
+
+    .premium-footer .footer-bottom {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      color: #94a3b8 !important;
+    }
+    
+    .premium-footer .footer-bottom .text-muted {
+      color: #94a3b8 !important;
+    }
+    
+    .premium-footer .footer-bottom strong {
+      color: #ffffff !important;
+    }
+    
+    .scroll-to-top {
+      position: fixed;
+      bottom: 25px;
+      left: 25px;
+      width: 42px;
+      height: 42px;
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      cursor: pointer;
+      opacity: 0.8;
+      transition: all 0.2s ease;
+      z-index: 1000;
+      border: none;
+    }
+    
+    .sortable-header-cell {
+      position: relative;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    .sortable-header-cell:hover {
+      background-color: rgba(52, 211, 153, 0.08) !important;
+      color: var(--primary-color) !important;
+    }
+    [data-bs-theme="dark"] .sortable-header-cell:hover {
+      background-color: rgba(16, 185, 129, 0.1) !important;
+      color: #34d399 !important;
+    }
+    
+    /* Project-wide styling for table sort indicators to prevent wrapping and improve design */
+    thead th {
+      white-space: normal !important;
+      vertical-align: middle;
+    }
+    thead th a {
+      white-space: normal !important;
+    }
+    
+    /* Compact elegant table styles to fit all columns fully on screen without scrollbars */
+    .table {
+      font-size: 0.88rem !important;
+    }
+    .table th, .table td {
+      padding: 0.6rem 0.5rem !important; /* Tighter padding for a premium, compact layout */
+    }
+    @media (max-width: 768px) {
+      .card-premium {
+        padding: 1rem !important; /* Reduce card padding on smaller screens for more table space */
+      }
+    }
+    
+    .sort-indicator, 
+    thead th i.fa-sort, 
+    thead th i.fa-sort-up, 
+    thead th i.fa-sort-down {
+      display: inline-flex !important;
+      align-items: center;
+      vertical-align: middle;
+      font-size: 0.65rem !important;
+      margin-inline-start: 5px !important;
+      margin-inline-end: 0 !important;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+    .sortable-header-cell:hover .sort-indicator,
+    thead th:hover i.fa-sort,
+    thead th:hover i.fa-sort-up,
+    thead th:hover i.fa-sort-down {
+      opacity: 0.95 !important;
+    }
+
+    /* Dashboard Premium Metric Cards Styling */
+    .dashboard-metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 1rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .dashboard-metric-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dashboard-metric-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      inset-inline-start: 0;
+    }
+    
+    /* Specific indicator accents for each card type */
+    .metric-blue::after { background-color: #3b82f6; }
+    .metric-blue:hover { border-color: rgba(59, 130, 246, 0.3) !important; }
+    .metric-green::after { background-color: #10b981; }
+    .metric-green:hover { border-color: rgba(16, 185, 129, 0.3) !important; }
+    .metric-teal::after { background-color: #0d9488; }
+    .metric-teal:hover { border-color: rgba(13, 148, 136, 0.3) !important; }
+    .metric-red::after { background-color: #f43f5e; }
+    .metric-red:hover { border-color: rgba(244, 63, 94, 0.3) !important; }
+    .metric-orange::after { background-color: #f59e0b; }
+    .metric-orange:hover { border-color: rgba(245, 158, 11, 0.3) !important; }
+    .metric-cyan::after { background-color: #06b6d4; }
+    .metric-cyan:hover { border-color: rgba(6, 182, 212, 0.3) !important; }
+    .metric-amber::after { background-color: #d97706; }
+    .metric-amber:hover { border-color: rgba(217, 119, 6, 0.3) !important; }
+    
+    /* Premium glow effect for icon containers */
+    .metric-icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      transition: all 0.25s ease;
+    }
+    
+    .metric-blue .metric-icon-box {
+      background-color: rgba(59, 130, 246, 0.08);
+      color: #3b82f6;
+      border: 1px solid rgba(59, 130, 246, 0.15);
+    }
+    .metric-green .metric-icon-box {
+      background-color: rgba(16, 185, 129, 0.08);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.15);
+    }
+    .metric-teal .metric-icon-box {
+      background-color: rgba(13, 148, 136, 0.08);
+      color: #0d9488;
+      border: 1px solid rgba(13, 148, 136, 0.15);
+    }
+    .metric-red .metric-icon-box {
+      background-color: rgba(244, 63, 94, 0.08);
+      color: #f43f5e;
+      border: 1px solid rgba(244, 63, 94, 0.15);
+    }
+    .metric-orange .metric-icon-box {
+      background-color: rgba(245, 158, 11, 0.08);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.15);
+    }
+    .metric-cyan .metric-icon-box {
+      background-color: rgba(6, 182, 212, 0.08);
+      color: #06b6d4;
+      border: 1px solid rgba(6, 182, 212, 0.15);
+    }
+    .metric-amber .metric-icon-box {
+      background-color: rgba(217, 119, 6, 0.08);
+      color: #d97706;
+      border: 1px solid rgba(217, 119, 6, 0.15);
+    }
+    
+    /* Enhance card labels for premium dashboard look */
+    .metric-card-label {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      display: block;
+      margin-bottom: 6px;
+    }
+    
+    /* Custom Premium Tooltips */
+    .custom-tooltip {
+      position: fixed;
+      z-index: 9999;
+      background-color: var(--card-bg);
+      color: var(--text-dark);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      opacity: 0;
+      transform: scale(0.95);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      display: none;
+      max-width: 250px;
+      white-space: pre-wrap;
+      border-inline-start: 3px solid var(--primary-color);
+      font-family: 'Cairo', 'Outfit', sans-serif;
+    }
+    [data-bs-theme="dark"] .custom-tooltip {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+      background-color: #091812;
+      color: #e2e8f0;
+      border-color: rgba(16, 185, 129, 0.2) !important;
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
 </head>
+<body>
 
-<body class="index-page">
-
-  <header id="header" class="header fixed-top">
-
-    <div class="topbar d-flex align-items-center dark-background">
-      <div class="container d-flex justify-content-center justify-content-md-between">
-        <div class="contact-info d-flex align-items-center">
-          <i class="bi bi-envelope d-flex align-items-center"><a
-              href="mailto:{{ clinic_email }}">{{ clinic_email }}</a></i>
-          <i class="bi bi-phone d-flex align-items-center ms-4"><span>{{ clinic_phone }}</span></i>
-        </div>
-        <div class="social-links d-none d-md-flex align-items-center gap-3">
-          {% if current_user %}
-            <span class="text-white me-2" style="font-size: 13px;">
-              <i class="bi bi-person-circle me-1"></i>
-              {{ current_user.first_name or current_user.username }} ({{ current_user.role|capitalize }})
+  <!-- Top Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('dashboard.home') }}">
+        <i class="fa-solid fa-droplet text-info fs-4"></i>
+        <span>{{ clinic_name }}</span>
+      </a>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          {% if session.get('user_id') %}
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'dashboard.home' %}active{% endif %}" href="{{ url_for('dashboard.home') }}">
+              <i class="fa-solid fa-chart-line me-1"></i> {{ _('dashboard') }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'dashboard.view_calendar' %}active{% endif %}" href="{{ url_for('dashboard.view_calendar') }}">
+              <i class="fa-solid fa-calendar-days me-1"></i> {{ _('calendar') }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint == 'stock.list_stock' %}active{% endif %}" href="{{ url_for('stock.list_stock') }}">
+              <i class="fa-solid fa-boxes-stacked me-1"></i> {{ _('inventory') }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint and request.endpoint.startswith('invoices.') %}active{% endif %}" href="{{ url_for('invoices.invoices') }}">
+              <i class="fa-solid fa-file-invoice-dollar me-1"></i> {{ _('invoices') }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint and request.endpoint.startswith('clients.') %}active{% endif %}" href="{{ url_for('clients.list_clients') }}">
+              <i class="fa-solid fa-users me-1"></i> {{ _('clients') }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint and request.endpoint.startswith('payments.') %}active{% endif %}" href="{{ url_for('payments.payments') }}">
+              <i class="fa-solid fa-wallet me-1"></i> {{ _('payments') }}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link {% if request.endpoint and request.endpoint.startswith('settings.') %}active{% endif %}" href="{{ url_for('settings.settings') }}">
+              <i class="fa-solid fa-gears me-1"></i> {{ _('settings') }}
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+        
+        <div class="d-flex align-items-center gap-3">
+          {% if session.get('user_id') %}
+            <span class="text-white small">
+              <i class="fa-solid fa-user-tie me-1 text-info"></i> {{ _('role_label') }}: {{ session.get('role') }}
             </span>
-            <a href="{{ url_for('auth.logout') }}" class="topbar-logout-btn">
-              <i class="bi bi-box-arrow-right me-1"></i>Logout
+            <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+              <i class="fa-solid fa-right-from-bracket me-1"></i> {{ _('logout') }}
             </a>
           {% else %}
-            <a href="#!" class="twitter"><i class="bi bi-twitter-x"></i></a>
-            <a href="https://www.facebook.com/nasip.jabbara" class="facebook"><i class="bi bi-facebook"></i></a>
-            <a href="https://www.instagram.com/nasip_j/?hl=en" class="instagram"><i class="bi bi-instagram"></i></a>
-            <a href="#!" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-light btn-sm rounded-pill px-3">
+              <i class="fa-solid fa-right-to-bracket me-1"></i> {{ _('login') }}
+            </a>
           {% endif %}
         </div>
       </div>
-    </div><!-- End Top Bar -->
+    </div>
+  </nav>
 
-    <div class="branding d-flex align-items-cente">
+  <!-- Main Container -->
+  <main class="container my-5">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-      <div class="container position-relative d-flex align-items-center justify-content-between">
-        <a href="/" class="logo d-flex align-items-center">
-          <!-- Uncomment the line below if you also wish to use an image logo -->
-          <!-- <img src="assets/img/logo.webp" alt=""> -->
-          <h1 class="sitename">{{ clinic_name }}</h1>
-        </a>
+    {% block content %}{% endblock %}
+  </main>
 
-        <nav id="navmenu" class="navmenu">
-          <ul>
-            {% if current_user %}
+  <!-- Footer -->
+  <footer class="premium-footer pt-5">
+    <div class="container pb-4">
+      <div class="row g-4">
+        <!-- Column 1: Brand -->
+        <div class="col-lg-4 col-md-6">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <i class="fa-solid fa-droplet text-info fs-3"></i>
+            <span class="fs-4 fw-bold text-white">{{ clinic_name }}</span>
+          </div>
+          <p class="text-secondary-muted small mb-4" style="color: #94a3b8; line-height: 1.6; text-align: justify;">
+            {{ _('footer_default_description') }}
+          </p>
+        </div>
+
+        <!-- Column 2: Quick Access -->
+        <div class="col-lg-2 col-md-3 col-6">
+          <h6 class="footer-title">{{ _('quick_access') }}</h6>
+          <ul class="list-unstyled d-flex flex-column gap-2">
             <li>
-              <a href="/" class="{% if request.path == '/' %}active{% endif %}">
-                Dashboard
+              <a href="{{ url_for('dashboard.home') }}" class="footer-link small">
+                <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %} {% if current_lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+                {{ _('dashboard') }}
               </a>
             </li>
-
             <li>
-              <a href="/patients" class="{% if request.path.startswith('/patients') %}active{% endif %}">
-                Patients
+              <a href="{{ url_for('stock.list_stock') }}" class="footer-link small">
+                <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %} {% if current_lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+                {{ _('inventory') }}
               </a>
             </li>
-
             <li>
-              <a href="/appointments" class="{% if request.path.startswith('/appointments') %}active{% endif %}">
-                Appointments
-                {% if pending_count > 0 %}
-                <span class="badge bg-danger ms-1" style="border-radius: 50%; padding: 4px 7px; font-size: 10px; font-weight: bold; vertical-align: middle;">{{ pending_count }}</span>
-                {% endif %}
+              <a href="{{ url_for('invoices.invoices') }}" class="footer-link small">
+                <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %} {% if current_lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+                {{ _('invoices') }}
               </a>
             </li>
-
             <li>
-              <a href="/calendar" class="{% if request.path.startswith('/calendar') %}active{% endif %}">
-                Calendar
+              <a href="{{ url_for('payments.payments') }}" class="footer-link small">
+                <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %} {% if current_lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+                {{ _('payments') }}
               </a>
             </li>
-
             <li>
-              <a href="{{ url_for('archive.list_archive') }}" class="{% if request.path.startswith('/archive') %}active{% endif %}">
-                Archive
+              <a href="{{ url_for('dashboard.view_calendar') }}" class="footer-link small">
+                <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %} {% if current_lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+                {{ _('calendar') or 'التقويم' }}
               </a>
             </li>
-
-            {% if current_user.role in ('admin', 'receptionist') %}
             <li>
-              <a href="{{ url_for('stock.list_stock') }}" class="{% if request.path.startswith('/stock') %}active{% endif %}">
-                Stock
+              <a href="{{ url_for('settings.settings') }}" class="footer-link small">
+                <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %} {% if current_lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+                {{ _('settings') }}
               </a>
             </li>
+          </ul>
+        </div>
 
+        <!-- Column 3: Center Tools -->
+        <div class="col-lg-2 col-md-3 col-6">
+          <h6 class="footer-title">{{ _('center_tools') }}</h6>
+          <ul class="list-unstyled d-flex flex-column gap-2">
             <li>
-              <a href="{{ url_for('invoices.invoices') }}"
-                class="{% if request.path.startswith('/invoices') %}active{% endif %}">
-                Invoices
+              <a href="{{ url_for('invoices.add_invoice') }}" class="footer-link small">
+                <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %} {% if current_lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+                {{ _('add_invoice') }}
               </a>
             </li>
-
             <li>
-              <a href="{{ url_for('payments.payments') }}"
-                class="{% if request.path.startswith('/payments') %}active{% endif %}">
-                Payments
+              <a href="{{ url_for('stock.add_item') }}" class="footer-link small">
+                <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %} {% if current_lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+                {{ _('add_item') }}
               </a>
+            </li>
+            <li>
+              <a href="{{ url_for('settings.settings') }}" class="footer-link small">
+                <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %} {% if current_lang == 'ar' %}ms-1{% else %}me-1{% endif %}"></i>
+                {{ _('settings') }}
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Column 4: Contact Info -->
+        <div class="col-lg-4 col-md-6">
+          <h6 class="footer-title">{{ _('contact_info') }}</h6>
+          <ul class="info-list small mb-4">
+            {% if clinic_email %}
+            <li>
+              <i class="fa-solid fa-envelope"></i>
+              <a href="mailto:{{ clinic_email }}" class="text-decoration-none text-muted-hover" style="color: #94a3b8;">{{ clinic_email }}</a>
             </li>
             {% endif %}
-
-            {% if current_user.role == 'admin' %}
+            {% if clinic_phone %}
             <li>
-              <a href="{{ url_for('reports.reports_dashboard') }}" class="{% if request.path.startswith('/reports') %}active{% endif %}">
-                Reports
-              </a>
-            </li>
-
-            <li>
-              <a href="{{ url_for('settings.settings_page') }}" class="{% if request.path.startswith('/settings') %}active{% endif %}">
-                Settings
-              </a>
+              <i class="fa-solid fa-phone"></i>
+              <span dir="ltr" style="color: #94a3b8;">{{ clinic_phone }}</span>
             </li>
             {% endif %}
-
-            <li class="d-xl-none border-top pt-2 mt-2">
-              <span class="nav-link text-muted" style="cursor: default; padding: 10px 14px;">
-                Logged in: <strong>{{ current_user.first_name or current_user.username }}</strong>
-              </span>
-            </li>
-            <li class="d-xl-none">
-              <a href="{{ url_for('auth.logout') }}" class="text-danger">
-                Logout
-              </a>
+            {% if clinic_address %}
+            <li>
+              <i class="fa-solid fa-location-dot"></i>
+              <span style="color: #94a3b8;">{{ clinic_address }}</span>
             </li>
             {% endif %}
           </ul>
 
-          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-        </nav>
-
-      </div>
-
-    </div>
-
-  </header>
-
-  <main class="main">
-    {% block content %}
-    {% endblock %}
-  </main>
-
-  <footer id="footer" class="footer-16 footer position-relative dark-background">
-
-    <div class="container footer-main">
-      <div class="row gy-5">
-
-        <div class="col-lg-4 col-md-6">
-          <div class="brand-section">
-            <a href="{{ url_for('dashboard.home') }}" class="logo d-flex align-items-center mb-3 text-decoration-none">
-              <i class="fa-solid fa-droplet me-2 fs-3 text-success footer-logo-glow"></i>
-              <span class="sitename">{{ clinic_name }}</span>
-            </a>
-
-            <p class="brand-description">
-              نظام إدارة المركز التقني للري بالتنقيط لتتبع الحجوزات، الزبائن، الخدمات، المستودع والأرشيف.
-            </p>
-
-            <div class="footer-social-links d-flex gap-3 mt-4">
-              <a href="https://facebook.com" target="_blank" class="footer-social-icon-btn" title="Facebook"><i class="bi bi-facebook"></i></a>
-              <a href="https://instagram.com" target="_blank" class="footer-social-icon-btn" title="Instagram"><i class="bi bi-instagram"></i></a>
-              <a href="https://linkedin.com" target="_blank" class="footer-social-icon-btn" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-              <a href="https://wa.me/963958948727" target="_blank" class="footer-social-icon-btn" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
-            </div>
-          </div>
+          <h6 class="footer-title pt-2" style="font-size: 0.95rem; margin-bottom: 0.75rem;">{{ _('operating_hours') }}</h6>
+          <ul class="info-list small">
+            <li>
+              <i class="fa-regular fa-clock"></i>
+              <span style="color: #94a3b8;">{{ operating_hours_weekdays if operating_hours_weekdays else _('footer_default_weekdays') }}</span>
+            </li>
+            <li>
+              <i class="fa-regular fa-calendar-xmark"></i>
+              <span style="color: #94a3b8;">{{ operating_hours_weekend if operating_hours_weekend else _('footer_default_weekend') }}</span>
+            </li>
+          </ul>
         </div>
-
-        <div class="col-lg-2 col-md-6">
-          <div class="nav-column">
-            <h6>Quick Access</h6>
-            <nav class="footer-nav">
-              <a href="{{ url_for('dashboard.home') }}"><i class="bi bi-chevron-right me-1 small"></i> Dashboard</a>
-              <a href="{{ url_for('patients.patients') }}"><i class="bi bi-chevron-right me-1 small"></i> Patients</a>
-              <a href="{{ url_for('appointments.appointments') }}"><i class="bi bi-chevron-right me-1 small"></i> Appointments</a>
-              <a href="{{ url_for('appointments.calendar') }}"><i class="bi bi-chevron-right me-1 small"></i> Calendar</a>
-              {% if current_user and current_user.role in ('admin', 'receptionist') %}
-              <a href="{{ url_for('invoices.invoices') }}"><i class="bi bi-chevron-right me-1 small"></i> Invoices</a>
-              {% endif %}
-            </nav>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-          <div class="nav-column">
-            <h6>Clinic Tools</h6>
-            <nav class="footer-nav">
-              {% if current_user and current_user.role == 'admin' %}
-              <a href="{{ url_for('reports.reports_dashboard') }}"><i class="bi bi-chevron-right me-1 small"></i> Reports</a>
-              <a href="{{ url_for('settings.settings_page') }}"><i class="bi bi-chevron-right me-1 small"></i> Settings</a>
-              {% endif %}
-              <a href="{% if current_user and current_user.role == 'admin' %}{{ url_for('reports.reports_dashboard') }}#reports-dashboard-section{% else %}{{ url_for('invoices.invoices') }}{% endif %}"><i class="bi bi-chevron-right me-1 small"></i> Outstanding Balances</a>
-              {% if current_user and current_user.role in ('admin', 'doctor') %}
-              <a href="{{ url_for('appointments.appointments') }}"><i class="bi bi-chevron-right me-1 small"></i> Appointment Sessions</a>
-              {% endif %}
-            </nav>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6">
-          <div class="nav-column">
-            <h6>Clinic Info</h6>
-
-            <div class="footer-nav">
-              <a href="mailto:{{ clinic_email }}" class="d-flex align-items-center gap-2 py-1">
-                <i class="bi bi-envelope text-primary fs-5"></i>
-                <span>{{ clinic_email }}</span>
-              </a>
-
-              <a href="tel:{{ clinic_phone }}" class="d-flex align-items-center gap-2 py-1">
-                <i class="bi bi-phone text-primary fs-5"></i>
-                <span>{{ clinic_phone }}</span>
-              </a>
-
-              <span class="d-flex align-items-center gap-2 py-1 text-muted">
-                <i class="bi bi-geo-alt text-primary fs-5"></i>
-                <span>{{ clinic_address }}</span>
-              </span>
-            </div>
-
-            <h6 class="mt-4 mb-2 pt-2 text-white text-uppercase" style="font-size: 0.8rem; letter-spacing: 1px; font-weight: 600;">Operating Hours</h6>
-            <div class="footer-nav">
-              <span class="small d-flex align-items-center gap-2 text-muted">
-                <i class="bi bi-clock text-primary"></i> {{ operating_days }}: {{ operating_hours }}
-              </span>
-              {% if operating_closed != 'None' %}
-              <span class="small d-flex align-items-center gap-2 text-muted">
-                <i class="bi bi-calendar-x text-danger"></i> {{ operating_closed }}: Closed
-              </span>
-              {% endif %}
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
 
-    <div class="container footer-bottom">
-      <div class="row align-items-center gy-3">
-
-        <div class="col-lg-6">
-          <div class="copyright text-center text-lg-start">
-            <p class="mb-0">
-              © <span>2026</span>
-              <strong class="px-1 sitename">Dental Clinic MS</strong>. All rights reserved.
-            </p>
+    <!-- Footer Bottom -->
+    <div class="footer-bottom py-3">
+      <div class="container">
+        <div class="row align-items-center small">
+          <div class="col-md-6 text-center text-md-{% if current_lang == 'ar' %}right{% else %}left{% endif %} mb-2 mb-md-0" style="color: #cbd5e1 !important;">
+            © <span>2026</span> <strong style="color: #ffffff !important;">{{ clinic_name }}</strong>. {{ _('all_rights_reserved') }}
+          </div>
+          <div class="col-md-6 text-center text-md-{% if current_lang == 'ar' %}left{% else %}right{% endif %}" style="color: #cbd5e1 !important;">
+            <i class="fa-solid fa-shield-halved text-success me-1"></i> {{ _('built_for_irrigation') }}
           </div>
         </div>
-
-        <div class="col-lg-6 text-center text-lg-end">
-          <div class="legal-links d-inline-flex align-items-center gap-2">
-            <i class="bi bi-shield-check text-success"></i>
-            <span class="text-muted small">Built for professional clinic management.</span>
-          </div>
-        </div>
-
       </div>
     </div>
-
   </footer>
 
-  <!-- Scroll Top -->
-  <a href="#!" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
-      class="bi bi-arrow-up-short"></i></a>
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" id="btnScrollToTop" title="Scroll to top">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
 
-  <!-- Preloader -->
-  <div id="preloader"></div>
+  <script>
+    // Scroll to Top behavior
+    const btnScrollToTop = document.getElementById("btnScrollToTop");
+    if (btnScrollToTop) {
+      btnScrollToTop.style.display = "none";
+      window.addEventListener("scroll", function() {
+        if (window.scrollY > 300) {
+          btnScrollToTop.style.display = "flex";
+        } else {
+          btnScrollToTop.style.display = "none";
+        }
+      });
+      btnScrollToTop.addEventListener("click", function () {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      });
+    }
+
+    // Dynamic Table Sorting with Simulated AJAX Transition
+    document.addEventListener("DOMContentLoaded", function () {
+      const tables = document.querySelectorAll("table");
+      
+      tables.forEach((table) => {
+        // Skip editable form tables, interactive items table, and tables marked as no-sort
+        if (table.id === "items-table" || table.classList.contains("no-sort") || table.querySelector("input:not([type='hidden'])")) {
+          return;
+        }
+
+        const thead = table.querySelector("thead");
+        const tbody = table.querySelector("tbody");
+        if (!thead || !tbody) return;
+
+        const headers = thead.querySelectorAll("th");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        if (rows.length === 0 || rows[0].querySelector("td[colspan]")) return; // Skip empty tables
+
+        // Transition styling for tbody to simulate high-performance AJAX action
+        tbody.style.transition = "opacity 0.15s ease-in-out";
+
+        headers.forEach((th, colIndex) => {
+          // Skip actions columns or non-sortable columns
+          const text = th.textContent.trim().toLowerCase();
+          const isActionCol = text.includes("actions") || 
+                              text.includes("action") || 
+                              text.includes("العمليات") || 
+                              text.includes("الإجراءات") || 
+                              text.includes("adjust") || 
+                              th.classList.contains("no-sort") ||
+                              th.classList.contains("text-center") && colIndex === headers.length - 1; // Last columns tend to be actions
+          if (isActionCol) return;
+
+          // Set click cursor and styles
+          th.style.cursor = "pointer";
+          th.style.userSelect = "none";
+          th.classList.add("sortable-header-cell");
+
+          // Skip if the header already contains an anchor link or a sort icon (server-side sorted columns)
+          if (th.querySelector("a") || th.querySelector(".fa-sort") || th.querySelector("[class*='fa-sort']")) {
+            return;
+          }
+
+          // Add default sort icon next to text
+          if (!th.querySelector(".sort-indicator")) {
+            const iconSpan = document.createElement("span");
+            iconSpan.className = "sort-indicator text-muted opacity-50";
+            iconSpan.innerHTML = '<i class="fa-solid fa-sort"></i>';
+
+            // To prevent the sort icon from wrapping alone on a separate line,
+            // we wrap the last word of the header text and the iconSpan together inside a nowrap span.
+            const rawText = th.textContent.trim();
+            if (th.children.length === 0 && rawText.length > 0) {
+              const words = rawText.split(/\s+/);
+              if (words.length > 1) {
+                const lastWord = words.pop();
+                const remainingText = words.join(" ") + " ";
+                th.textContent = remainingText;
+
+                const noWrapSpan = document.createElement("span");
+                noWrapSpan.style.whiteSpace = "nowrap";
+                noWrapSpan.textContent = lastWord;
+                noWrapSpan.appendChild(iconSpan);
+                th.appendChild(noWrapSpan);
+              } else {
+                const noWrapSpan = document.createElement("span");
+                noWrapSpan.style.whiteSpace = "nowrap";
+                noWrapSpan.textContent = rawText;
+                noWrapSpan.appendChild(iconSpan);
+                th.textContent = "";
+                th.appendChild(noWrapSpan);
+              }
+            } else {
+              th.appendChild(iconSpan);
+            }
+          }
+
+          let sortDirection = 1; // 1 = Ascending, -1 = Descending
+
+          th.addEventListener("click", function () {
+            // Toggle direction
+            sortDirection = sortDirection === 1 ? -1 : 1;
+
+            // Update sorting icons
+            headers.forEach((otherTh) => {
+              const indicator = otherTh.querySelector(".sort-indicator");
+              if (indicator) {
+                if (otherTh === th) {
+                  indicator.innerHTML = sortDirection === 1 
+                    ? '<i class="fa-solid fa-sort-up text-success"></i>' 
+                    : '<i class="fa-solid fa-sort-down text-success"></i>';
+                  indicator.classList.remove("opacity-50");
+                  indicator.classList.add("opacity-100");
+                } else {
+                  indicator.innerHTML = '<i class="fa-solid fa-sort"></i>';
+                  indicator.classList.remove("opacity-100");
+                  indicator.classList.add("opacity-50");
+                }
+              }
+            });
+
+            // Simulate high-performance AJAX action by dimming the tbody
+            tbody.style.opacity = "0.3";
+
+            setTimeout(() => {
+              // Sorting rows logic
+              const sortedRows = rows.sort((a, b) => {
+                const aCell = a.querySelectorAll("td")[colIndex];
+                const bCell = b.querySelectorAll("td")[colIndex];
+                if (!aCell || !bCell) return 0;
+
+                let aVal = aCell.textContent.trim();
+                let bVal = bCell.textContent.trim();
+
+                // If badge or nested text, extract text
+                const aBadge = aCell.querySelector(".badge");
+                const bBadge = bCell.querySelector(".badge");
+                if (aBadge) aVal = aBadge.textContent.trim();
+                if (bBadge) bVal = bBadge.textContent.trim();
+
+                // Check for numeric/price values
+                const cleanNum = (str) => {
+                  let cleaned = str.replace(/[^\d\.,-]/g, "");
+                  if (cleaned.includes(".") && cleaned.includes(",")) {
+                    cleaned = cleaned.replace(/\./g, "").replace(/,/g, ".");
+                  } else if (cleaned.includes(".")) {
+                    const parts = cleaned.split(".");
+                    if (parts.length === 2 && parts[1].length === 3) {
+                      cleaned = cleaned.replace(/\./g, "");
+                    }
+                  }
+                  return parseFloat(cleaned);
+                };
+
+                const aNum = cleanNum(aVal);
+                const bNum = cleanNum(bVal);
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                  return (aNum - bNum) * sortDirection;
+                }
+
+                // Check for dates
+                const dateRegex = /^\d{4}-\d{2}-\d{2}(?:\s\d{2}:\d{2})?$/;
+                if (dateRegex.test(aVal) && dateRegex.test(bVal)) {
+                  return (new Date(aVal) - new Date(bVal)) * sortDirection;
+                }
+
+                // Check for Invoice numbers
+                if (aVal.startsWith("INV-") && bVal.startsWith("INV-")) {
+                  const aInvNum = parseInt(aVal.replace("INV-", ""), 10);
+                  const bInvNum = parseInt(bVal.replace("INV-", ""), 10);
+                  return (aInvNum - bInvNum) * sortDirection;
+                }
+
+                // Alphabetical localized sort (Arabic & English support)
+                return aVal.localeCompare(bVal, undefined, { numeric: true, sensitivity: 'base' }) * sortDirection;
+              });
+
+              // Re-append sorted rows to tbody
+              sortedRows.forEach((row) => tbody.appendChild(row));
+
+              // Fade back to complete transition
+              tbody.style.opacity = "1";
+            }, 180);
+          });
+        });
+      });
+    });
+  </script>
+
+  <!-- Global Custom Tooltip Container -->
+  <div id="global-custom-tooltip" class="custom-tooltip"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const tooltip = document.getElementById("global-custom-tooltip");
+      if (!tooltip) return;
+
+      let activeElement = null;
+
+      document.addEventListener("mouseover", function(e) {
+        const target = e.target.closest("[title], [data-tooltip]");
+        if (!target) return;
+
+        // Convert title to data-tooltip to block standard native popup
+        if (target.hasAttribute("title")) {
+          target.setAttribute("data-tooltip", target.getAttribute("title"));
+          target.removeAttribute("title");
+        }
+
+        const text = target.getAttribute("data-tooltip").trim();
+        if (!text) return;
+
+        activeElement = target;
+        tooltip.textContent = text;
+        tooltip.style.display = "block";
+        
+        // Force layout engine reflow for scale animation
+        tooltip.offsetHeight;
+        tooltip.style.opacity = "1";
+        tooltip.style.transform = "scale(1)";
+        
+        positionTooltip(e);
+      });
+
+      document.addEventListener("mousemove", function(e) {
+        if (!activeElement) return;
+        positionTooltip(e);
+      });
+
+      document.addEventListener("mouseout", function(e) {
+        if (!activeElement) return;
+        
+        const related = e.relatedTarget;
+        if (related && activeElement.contains(related)) return;
+
+        tooltip.style.opacity = "0";
+        tooltip.style.transform = "scale(0.95)";
+        
+        activeElement = null;
+        setTimeout(() => {
+          if (!activeElement && tooltip.style.opacity === "0") {
+            tooltip.style.display = "none";
+          }
+        }, 150);
+      });
+
+      function positionTooltip(e) {
+        const tooltipWidth = tooltip.offsetWidth;
+        const tooltipHeight = tooltip.offsetHeight;
+        
+        let x = e.clientX + 12;
+        let y = e.clientY + 12;
+
+        if (x + tooltipWidth > window.innerWidth) {
+          x = e.clientX - tooltipWidth - 12;
+        }
+        if (y + tooltipHeight > window.innerHeight) {
+          y = e.clientY - tooltipHeight - 12;
+        }
+
+        tooltip.style.left = x + "px";
+        tooltip.style.top = y + "px";
+      }
+    });
+  </script>
 
   <!-- Vendor JS Files -->
   <script src="{{ url_for('static', filename='assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='assets/vendor/php-email-form/validate.js') }}"></script>
-  <script src="{{ url_for('static', filename='assets/vendor/aos/aos.js') }}"></script>
-  <script src="{{ url_for('static', filename='assets/vendor/glightbox/js/glightbox.min.js') }}"></script>
-  <script src="{{ url_for('static', filename='assets/vendor/purecounter/purecounter_vanilla.js') }}"></script>
-  <script src="{{ url_for('static', filename='assets/vendor/swiper/swiper-bundle.min.js') }}"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-  <!-- Main JS File -->
-  <script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
-
-  <script>
-    // ── Translation Script for Arabic Language ──
-    (function() {
-        const arabicTranslations = {
-            "Sun": "الأحد",
-            "Mon": "الاثنين",
-            "No Patients Found": "لم يتم العثور على مرضى",
-            "You need to add at least one patient to the database before you can schedule an appointment.": "يجب عليك إضافة مريض واحد على الأقل إلى قاعدة البيانات لتتمكن من جدولة موعد.",
-            "Tue": "الثلاثاء",
-            "Wed": "الأربعاء",
-            "Thu": "الخميس",
-            "Fri": "الجمعة",
-            "Sat": "السبت",
-            "Sat - Thu": "السبت - الخميس",
-            "Sun - Thu": "الأحد - الخميس",
-            "Mon - Fri": "الاثنين - الجمعة",
-            "Mon - Sat": "الاثنين - السبت",
-            "Every day": "كل يوم",
-            "AM": "ص",
-            "PM": "م",
-            "Clinic Closed": "العيادة مغلقة",
-            "Appointments cannot be booked on holidays (Clinic is closed).": "لا يمكن حجز المواعيد في العطل الرسمية (العيادة مغلقة).",
-            "Invalid Date": "التاريخ غير صالح",
-            "Appointments cannot be booked in the past.": "لا يمكن حجز مواعيد في الماضي.",
-            "Invalid Time": "الوقت غير صالح",
-            "Selected time is in the past. Please choose a future time.": "الوقت المحدد في الماضي. يرجى اختيار وقت مستقبلي.",
-            "Outside Business Hours": "خارج أوقات العمل",
-            "Booking Period Exceeded": "تجاوزت فترة الحجز",
-            "Appointments cannot be booked more than 30 days in advance.": "لا يمكن حجز المواعيد قبل أكثر من 30 يوماً.",
-            "Clinic Closing Soon": "ستغلق العيادة قريباً",
-            "There are no remaining booking slots for today. Please select a future date.": "لا توجد فتحات حجز متبقية لليوم. يرجى اختيار تاريخ مستقبلي.",
-            "Creating Appointment...": "جاري إنشاء الموعد...",
-            "Redirecting to appointment form": "جاري التوجيه إلى نموذج الموعد",
-            "Month": "الشهر",
-            "Week": "الأسبوع",
-            "List": "قائمة",
-            "Today": "اليوم",
-            "Appointments must be scheduled between": "يجب جدولة المواعيد بين",
-            "and": "و",
-            "% Completed": "نسبة الإنجاز",
-            "(leave blank to keep current)": "(اتركه فارغاً للاحتفاظ بالمعلومات الحالية)",
-            "15 Minutes": "15 دقيقة",
-            "30 Minutes": "30 دقيقة",
-            "30-Day Booking Window": "نافذة حجز 30 يوماً",
-            "45 Minutes": "45 دقيقة",
-            "60 Minutes": "60 دقيقة",
-            "Action": "الإجراء",
-            "Actions": "الإجراءات",
-            "Add Appointment": "إضافة موعد",
-            "Add First Appointment": "إضافة الموعد الأول",
-            "Add First Treatment": "إضافة المعالجة الأولى",
-            "Add Invoice": "إضافة فاتورة",
-            "Add Item": "إضافة بند",
-            "Add Manual Invoice": "إضافة فاتورة يدوية",
-            "Add New Appointment": "إضافة موعد جديد",
-            "Add New Patient": "إضافة مريض جديد",
-            "Add New Payment": "إضافة دفعة جديدة",
-            "Add New Procedure": "إضافة إجراء جديد",
-            "Add New Treatment": "إضافة معالجة جديدة",
-            "Add New User": "إضافة مستخدم جديد",
-            "Add Patient": "إضافة مريض",
-            "Add Payment": "إضافة دفعة",
-            "Add Treatment": "إضافة معالجة",
-            "Add a treatment record for this appointment session": "إضافة سجل معالجة لجلسة الموعد هذه",
-            "Add any medical information about the patient": "إضافة أي معلومات طبية عن المريض",
-            "Add any notes about the patient": "إضافة أي ملاحظات عن المريض",
-            "Add any notes about the patient's appointment": "إضافة أي ملاحظات حول موعد المريض",
-            "Add one or more procedures to this invoice": "إضافة إجراء أو أكثر لهذه الفاتورة",
-            "Add treatment notes": "إضافة ملاحظات المعالجة",
-            "Address": "العنوان",
-            "Admin": "مدير",
-            "All Statuses": "جميع الحالات",
-            "All appointments related to this patient": "جميع المواعيد المتعلقة بهذا المريض",
-            "All clear! No patients have outstanding balances": "كل شيء تمام! لا يوجد ديون مستحقة على أي مريض",
-            "All invoices are fully paid": "جميع الفواتير مدفوعة بالكامل",
-            "All invoices generated from appointments with treatments": "جميع الفواتير التي تم إنشاؤها من المواعيد مع المعالجات",
-            "All patient payments recorded in the clinic": "جميع مدفوعات المرضى المسجلة في العيادة",
-            "All payments recorded for this patient": "جميع المدفوعات المسجلة لهذا المريض",
-            "All previous treatments recorded for this patient, ordered from newest to oldest": "جميع المعالجات السابقة المسجلة لهذا المريض، مرتبة من الأحدث إلى الأقدم",
-            "All recorded treatments across this patient's appointments": "جميع المعالجات المسجلة عبر مواعيد هذا المريض",
-            "All rights reserved": "جميع الحقوق محفوظة",
-            "All treatments recorded during this appointment session": "جميع المعالجات المسجلة خلال جلسة الموعد هذه",
-            "Allocated": "مخصص",
-            "Allocated Amount": "المبلغ المخصص",
-            "Amount": "المبلغ",
-            "Apply": "تطبيق",
-            "Apply Filter": "تطبيق الفلتر",
-            "Apply Search": "تطبيق البحث",
-            "Appointment": "الموعد",
-            "Appointment Calendar": "تقويم المواعيد",
-            "Appointment Date": "تاريخ الموعد",
-            "Appointment Date & Time": "تاريخ ووقت الموعد",
-            "Appointment Details": "تفاصيل الموعد",
-            "Appointment Notes": "ملاحظات الموعد",
-            "Appointment Reason": "سبب الموعد",
-            "Appointment Session": "جلسة الموعد",
-            "Appointment Sessions": "جلسات المواعيد",
-            "Appointment Status": "حالة الموعد",
-            "Appointment Statuses": "حالات المواعيد",
-            "Appointments": "المواعيد",
-            "Appointments List": "قائمة المواعيد",
-            "Appointments completed today with treatment and payment summary": "المواعيد المنجزة اليوم مع ملخص المعالجة والدفع",
-            "Appointments scheduled for today and still waiting to be completed": "المواعيد المجدولة لليوم وما زالت بانتظار الإنجاز",
-            "Are you sure you want to permanently delete this appointment?": "هل أنت متأكد من رغبتك في حذف هذا الموعد نهائياً؟",
-            "Are you sure you want to permanently delete this patient?": "هل أنت متأكد من رغبتك في حذف هذا المريض نهائياً؟",
-            "Are you sure you want to permanently delete this treatment?": "هل أنت متأكد من رغبتك في حذف هذه المعالجة نهائياً؟",
-            "Back": "رجوع",
-            "Back to Appointments": "العودة إلى المواعيد",
-            "Back to Home": "العودة إلى الرئيسية",
-            "Back to Invoices": "العودة إلى الفواتير",
-            "Back to Patient": "العودة إلى المريض",
-            "Back to Session": "العودة إلى الجلسة",
-            "Billing & Finance": "الفوترة والمالية",
-            "Billing & Finance Settings": "إعدادات الفوترة والمالية",
-            "Braces / Orthodontics": "تقويم الأسنان",
-            "Built for professional clinic management": "مبني للإدارة الاحترافية للعيادات",
-            "Calendar": "التقويم",
-            "Calendar & Appointment Settings": "إعدادات التقويم والمواعيد",
-            "Calendar Settings": "إعدادات التقويم",
-            "Cancel": "إلغاء",
-            "Cancelled": "ملغى",
-            "Cancelled appointment — treatments cannot be added": "موعد ملغى — لا يمكن إضافة معالجات",
-            "Check-up": "فحص دوري",
-            "Checked days represent active business days. Unchecked days will be styled as weekends/closed days in the interactive calendar and will prevent scheduling appointments": "تمثل الأيام المحددة أيام العمل الفعلية. الأيام غير المحددة ستظهر كعطلة نهاية أسبوع/مغلق في التقويم التفاعلي وتمنع جدولة المواعيد",
-            "Checking status": "تحقق من الحالة",
-            "Choose whether the patient paid now or not": "اختر ما إذا كان المريض قد سدد المبلغ الآن أم لا",
-            "City": "المدينة",
-            "Cleaning": "تنظيف وتلميع",
-            "Click any appointment to view details and manage the session": "انقر على أي موعد لعرض التفاصيل وإدارة الجلسة",
-            "Clinic Activity": "نشاط العيادة",
-            "Clinic Credit": "رصيد العيادة",
-            "Clinic Info": "معلومات العيادة",
-            "Clinic Staff": "الكادر الطبي",
-            "Staff Sign In": "دخول الكادر",
-            "Patient Sign In": "دخول المرضى",
-            "Clinic Management System Portal": "بوابة نظام إدارة العيادة",
-            "Clinic Name": "اسم العيادة",
-            "Clinic Overview": "نظرة عامة على العيادة",
-            "Clinic Profile": "ملف العيادة",
-            "Clinic Tools": "أدوات العيادة",
-            "Closed": "مغلق",
-            "Closed session — read-only mode": "جلسة مغلقة — وضع القراءة فقط",
-            "Complete overview of the patient's profile, appointments, treatments, and financial summary": "عرض كامل لملف المريض ومواعيده ومعالجاته والملخص المالي",
-            "Completed": "منجز",
-            "Completed Today": "منجز اليوم",
-            "Completed appointment sessions will appear here after using End Session": "تظهر جلسات المواعيد المكتملة هنا بعد إنهاء الجلسة",
-            "Comprehensive financial and operational analysis for your clinic": "تحليل مالي وتشغيلي شامل لعيادتك",
-            "Configure working hours and default durations": "تكوين ساعات العمل والمدد الافتراضية",
-            "Country": "البلد",
-            "Create Account": "إنشاء حساب",
-            "Create Invoice": "إنشاء فاتورة",
-            "Create User Account": "إنشاء حساب مستخدم",
-            "Create a walk-in invoice with one or more treatment items": "إنشاء فاتورة مباشرة مع بند معالجة واحد أو أكثر",
-            "Credit": "رصيد",
-            "Crown / Bridge": "تاج / جسر",
-            "Custom Amount": "مبلغ مخصص",
-            "Custom Currency Symbol": "رمز العملة المخصص",
-            "Custom Payment Amount": "مبلغ دفعة مخصص",
-            "Customize clinic profile, working hours, billing details, and treatment prices": "تخصيص ملف العيادة وساعات العمل وتفاصيل الفواتير وأسعار المعالجات",
-            "Customize the visual theme of the application": "تخصيص المظهر المرئي للتطبيق",
-            "Daily Working Hours End": "ساعة نهاية العمل اليومي",
-            "Daily Working Hours Start": "ساعة بداية العمل اليومي",
-            "Dark Mode": "الوضع الداكن",
-            "Dashboard": "لوحة التحكم",
-            "Date": "التاريخ",
-            "Date & Time": "التاريخ والوقت",
-            "Date Of Appointment": "تاريخ الموعد",
-            "Date Of Birth": "تاريخ الميلاد",
-            "Date of Birth": "تاريخ الميلاد",
-            "Default Price": "السعر الافتراضي",
-            "Default Session Duration": "المدة الافتراضية للجلسة",
-            "Delete All Cancelled": "حذف جميع المواعيد الملغاة",
-            "Delete Appointment": "حذف الموعد",
-            "Delete Patient": "حذف المريض",
-            "Delete Treatment": "حذف المعالجة",
-            "Dental Clinic MS": "نظام إدارة عيادة الأسنان",
-            "Dental Clinic Management System for managing patients, appointments": "نظام إدارة عيادة الأسنان لإدارة المرضى والمواعيد",
-            "Detailed invoice view with treatments, payments, and current invoice status": "عرض تفصيلي للفاتورة مع المعالجات والمدفوعات وحالة الفاتورة الحالية",
-            "Discount": "الخصم",
-            "Discount (%)": "الخصم (%)",
-            "Doctor": "طبيب",
-            "Done": "منجز",
-            "Done Appointments": "المواعيد المنجزة",
-            "Done Today": "منجز اليوم",
-            "Dr": "د.",
-            "Due": "مستحق",
-            "Edit": "تعديل",
-            "Edit Appointment": "تعديل الموعد",
-            "Edit Discount": "تعديل الخصم",
-            "Edit Patient": "تعديل المريض",
-            "Edit Treatment": "تعديل المعالجة",
-            "Edit User Account": "تعديل حساب المستخدم",
-            "Email": "البريد الإلكتروني",
-            "Email Address": "عنوان البريد الإلكتروني",
-            "Emergency Contact": "جهة اتصال الطوارئ",
-            "Emergency Pain": "ألم طارئ",
-            "End Session": "إنهاء الجلسة",
-            "English": "English (الإنجليزية)",
-            "Enter address": "أدخل العنوان",
-            "Enter amount": "أدخل المبلغ",
-            "Enter city": "أدخل المدينة",
-            "Enter country": "أدخل البلد",
-            "Enter email address": "أدخل البريد الإلكتروني",
-            "Enter emergency contact": "أدخل جهة اتصال الطوارئ",
-            "Enter first name": "أدخل الاسم الأول",
-            "Enter last name": "أدخل اسم العائلة",
-            "Enter medicare number": "أدخل رقم الرعاية الصحية",
-            "Enter new password (optional)": "أدخل كلمة مرور جديدة (اختياري)",
-            "Enter occupation": "أدخل المهنة",
-            "Enter password": "أدخل كلمة المرور",
-            "Enter payment amount": "أدخل مبلغ الدفعة",
-            "Enter phone number": "أدخل رقم الهاتف",
-            "Enter post code": "أدخل الرمز البريدي",
-            "Enter preferred first name": "أدخل الاسم الأول المفضل",
-            "Enter state": "أدخل الولاية / المحافظة",
-            "Enter username": "أدخل اسم المستخدم",
-            "Enter your password": "أدخل كلمة المرور",
-            "Enter your username": "أدخل اسم المستخدم",
-            "Example: 14": "مثال: 14",
-            "Expected Status": "الحالة المتوقعة",
-            ""New Patient": "زبون جديد",
-            "Next": "التالي",
-            "Next Upcoming Appointment": "الزيارة الميدانية القادمة",
-            "No Credit": "لا يوجد رصيد",
-            "No Payment": "لا يوجد دفع",
-            "No appointments found": "لم يتم العثور على حجوزات/زيارات",
-            "No appointments match your current filters": "لا توجد زيارات تطابق خيارات التصفية",
-            "No appointments yet": "لا توجد زيارات بعد",
-            "No completed appointments today": "لا توجد زيارات مكتملة اليوم",
-            "No invoices found": "لم يتم العثور على فواتير",
-            "No invoices match your search": "لا توجد فواتير تطابق بحثك",
-            "No more upcoming appointments scheduled for today": "لا توجد زيارات قادمة اليوم",
-            "No notes available": "لا تتوفر ملاحظات",
-            "No patients found": "لم يتم العثور على زبائن",
-            "No patients match your current search": "لا يوجد زبائن يطابقون بحثك الحالي",
-            "No payments found": "لم يتم العثور على مدفوعات",
-            "No payments match your search": "لا توجد مدفوعات تطابق بحثك",
-            "No payments yet": "لا توجد مدفوعات بعد",
-            "No previous treatments": "لا توجد خدمات سابقة",
-            "No scheduled appointments today": "لا توجد زيارات مجدولة اليوم",
-            "No treatments recorded yet": "لم يتم تسجيل خدمات بعد",
-            "No treatments yet": "لا توجد خدمات بعد",
-            "Notes": "الملاحظات",
-            "Occupation": "المهنة/النشاط",
-            "Open Patient": "فتح ملف الزبون",
-            "Open Session": "فتح الجلسة الفنية",
-            "Open Treatment Session": "فتح جلسة الخدمات",
-            "Open session — treatments can be added or modified": "جلسة مفتوحة — يمكن إضافة خدمات أو تعديلها",
-            "Operating Hours": "ساعات العمل",
-            "Optional notes about this payment": "ملاحظات اختيارية حول هذه الدفعة",
-            "Outstanding": "مستحق",
-            "Outstanding / Credit": "مستحق / رصيد",
-            "Outstanding Amount": "المبلغ المستحق",
-            "Outstanding Balance": "الرصيد المستحق",
-            "Outstanding Balances": "الأرصدة المستحقة",
-            "Outstanding Debt": "الديون المستحقة",
-            "PAY": "سداد",
-            "Paid": "مدفوع",
-            "Paid Ratio": "نسبة المدفوع",
-            "Partial": "جزئي",
-            "Password": "كلمة المرور",
-            "Patient": "الزبون",
-            "Patient Credit": "رصيد الزبون",
-            "Patient Details": "تفاصيل الزبون",
-            "Patient Gender Demographics": "إحصائيات الزبائن",
-            "Patient Name": "اسم الزبون",
-            "Patient Payments": "مدفوعات الزبون",
-            "Patient Phone": "هاتف الزبون",
-            "Patient name": "اسم الزبون",
-            "Patients": "الزبائن",
-            "Patients List": "قائمة الزبائن",
-            "Payment": "الدفعة",
-            "Payment #": "دفعة رقم #",
-            "Payment Allocations": "تخصيصات الدفع",
-            "Payment Amount": "مبلغ الدفعة",
-            "Payment Date": "تاريخ الدفع",
-            "Payment Notes": "ملاحظات الدفع",
-            "Payment Option": "خيارات الدفع",
-            "Payments": "المدفوعات",
-            "Payments List": "قائمة المدفوعات",
-            "Payments allocated to this invoice": "المدفوعات المخصصة لهذه الفاتورة",
-            "Payments will appear here after they are recorded for patients": "ستظهر المدفوعات هنا بعد تسجيلها للزبائن",
-            "Phone": "الهاتف",
-            "Phone Number": "رقم الهاتف",
-            "Post Code": "الرمز البريدي",
-            "Preferred First Name": "الاسم المفضل",
-            "Previous": "السابق",
-            "Previous Treatments": "الخدمات الفنية السابقة",
-            "Price": "السعر",
-            "Procedure Name": "اسم الخدمة",
-            "Procedure Price": "سعر الخدمة",
-            "Procedure Type": "نوع الخدمة",
-            "Quick Access": "وصول سريع",
-            "Quick Cancel": "إلغاء سريع",
-            "Quick Complete": "إنجاز سريع",
-            "Quick overview of this patient's financial balance": "نظرة عامة سريعة على الرصيد المالي للزبون",
-            "Realtime operational metrics": "مؤشرات التشغيل الفورية",
-            "Reason": "السبب",
-            "Receptionist": "موظف استقبال",
-            "Record a payment on the patient profile. The system will apply it to the oldest unpaid": "تسجيل دفعة في ملف الزبون الشخصي. سيقوم النظام بتطبيقها تلقائياً على الفواتير الأقدم غير المدفوعة",
-            "Remove": "إزالة",
-            "Reopen Session": "إعادة فتح الجلسة",
-            "Reports": "التقارير",
-            "Reports & Statistics": "التقارير والإحصائيات",
-            "Reports Dashboard": "لوحة التقارير",
-            "Reset": "إعادة تعيين",
-            "Reset Search": "إعادة تعيين البحث",
-            "Revenue": "الإيرادات",
-            "Review invoice totals, payments, and outstanding balances": "مراجعة إجماليات الفواتير والمدفوعات والأرصدة المستحقة",
-            "Role": "الدور",
-            "Root Canal": "تركيب خراطيم مياه",
-            "Saturday": "السبت",
-            "Save All Settings": "حفظ جميع الإعدادات",
-            "Save Appointment": "حفظ موعد الزيارة",
-            "Save Changes": "حفظ التغييرات",
-            "Save Patient": "حفظ بيانات الزبون",
-            "Save Payment": "حفظ الدفعة",
-            "Save Treatment": "حفظ الخدمة الفنية",
-            "Scheduled": "مجدول",
-            "Scheduled Appointments": "الزيارات المجدولة",
-            "Scheduled Today": "مجدول اليوم",
-            "Search": "بحث",
-            "Search Invoice": "بحث عن فاتورة",
-            "Search Patient": "البحث عن زبون",
-            "Search Payments": "البحث عن المدفوعات",
-            "Search by patient, phone, payment number, date, amount, or notes": "ابحث باسم الزبون، الهاتف، رقم الدفعة، التاريخ، المبلغ، أو الملاحظات",
-            "Select Gender": "اختر الجنس",
-            "Select Patient": "اختر الزبون",
-            "Select a Patient": "اختر زبوناً",
-            "Select a Procedure Type": "اختر نوع الخدمة",
-            "Select a Reason": "اختر السبب",
-            "Select a Status": "اختر الحالة",
-            "Select a Title": "اختر اللقب",
-            "Select a procedure type to show price": "اختر نوع الخدمة لعرض السعر",
-            "Select patient": "اختر الزبون",
-            "Select procedure": "اختر الخدمة",
-            "Selected Payment": "الدفعة المحددة",
-            "Session Mode": "وضع الجلسة",
-            "Session Status": "حالة الجلسة",
-            "Session Treatments": "خدمات الجلسة الفنية",
-            "Set the currency symbol used across invoices and reports": "تحديد رمز العملة المستخدم في الفواتير والتقارير",
-            "Settings": "الإعدادات",
-            "Sign In": "تسجيل الدخول",
-            "Start Session": "بدء الجلسة الفنية",
-            "State": "الولاية / المحافظة",
-            "Status": "الحالة",
-            "Subtotal": "المجموع الفرعي",
-            "Sunday": "الأحد",
-            "System Display Theme": "مظهر عرض النظام",
-            "System Interface Language": "لغة واجهة النظام",
-            "System Role": "دور النظام",
-            "System Settings": "إعدادات النظام",
-            "Theme & Appearance": "المظهر والثيم",
-            "There are no appointments yet": "لا توجد زيارات بعد",
-            "There are no patients yet": "لا يوجد زبائن بعد",
-            "There are no scheduled appointments waiting for today": "لا توجد زيارات مجدولة بانتظار البدء اليوم",
-            "This action cannot be undone": "هذا الإجراء لا يمكن التراجع عنه",
-            "This appointment is cancelled. Appointment is read-only": "هذا موعد زيارة ملغى. الزيارة للقراءة فقط",
-            "This appointment is cancelled. Treatment is read-only": "هذا موعد زيارة ملغى. الخدمة للقراءة فقط",
-            "This appointment is cancelled. Treatments cannot be added": "هذا موعد زيارة ملغى. لا يمكن إضافة خدمات",
-            "This appointment session is done. Appointment is read-only": "جلسة الزيارة هذه منتهية. الزيارة للقراءة فقط",
-            "This appointment session is done. Treatment is read-only": "جلسة الزيارة هذه منتهية. الخدمة للقراءة فقط",
-            "This invoice has an outstanding balance": "هذه الفاتورة تحتوي على رصيد مستحق غير مدفوع",
-            "This invoice has an overpayment credit": "هذه الفاتورة تحتوي على رصيد فائض مدفوع",
-            "This invoice is fully paid": "هذه الفاتورة مدفوعة بالكامل",
-            "This patient has an outstanding balance": "هذا الزبون لديه رصيد مستحق غير مدفوع",
-            "This patient has an overpayment credit": "هذا الزبون لديه رصيد فائض مدفوع",
-            "This patient has no appointments at the moment": "ليس لدى هذا الزبون أي مواعيد في الوقت الحالي",
-            "This patient has no recorded payments": "لم يتم تسجيل أي مدفوعات لهذا الزبون",
-            "This patient has no treatments from previous appointments": "ليس لدى هذا الزبون أي خدمات من مواعيد سابقة",
-            "This patient has no treatments yet. Treatments are added from appointment sessions": "ليس لدى هذا الزبون أي خدمات بعد. يتم إضافة الخدمات من الجلسات الفنية",
-            "This session is still open. You can add one or more treatments": "هذه الجلسة لا تزال مفتوحة. يمكنك إضافة خدمة واحدة أو أكثر",
-            "This session was ended without recorded treatments": "تم إنهاء هذه الجلسة دون تسجيل أي خدمات فنية",
-            "This symbol will be applied dynamically to all invoices, payments, and report pages": "سيتم تطبيق هذا الرمز ديناميكياً على جميع الفواتير والمدفوعات وصفحات التقارير",
-            "This will create a completed appointment, treatment items, and an invoice": "سيؤدي هذا إلى إنشاء موعد زيارة مكتمل وبنود خدمات وفاتورة",
-            "Thursday": "الخميس",
-            "Time": "الوقت",
-            "Title": "اللقب",
-            "Today's Paid": "المدفوع اليوم",
-            "Today's Progress": "تقدم اليوم",
-            "Today's Revenue": "إيرادات اليوم",
-            "Today's Status": "حالة اليوم",
-            "Today’s": "نظرة عامة على",
-            "Today’s Scheduled Appointments": "مواعيد اليوم المجدولة",
-            "Tooth": "المنطقة / قطاع الري",
-            "Tooth Number": "رقم المحبس / الموقع",
-            "Tooth number": "رقم المحبس / الموقع",
-            "Top 5 Procedure Types (by Volume)": "أهم 5 خدمات فنية (من حيث العدد)",
-            "Top Patient Outstanding Balances": "أعلى أرصدة ديون مستحقة على الزبائن",
-            "Total Billed": "إجمالي الفواتير",
-            "Total Invoiced": "إجمالي الفواتير",
-            "Total Invoices": "إجمالي الفواتير",
-            "Total Paid": "إجمالي المدفوعات",
-            "Total Patients": "إجمالي الزبائن",
-            "Total Payments": "إجمالي المدفوعات",
-            "Total Remaining": "الإجمالي المتبقي",
-            "Total Treatments": "إجمالي الخدمات الفنية",
-            "Track patients, appointments, treatments, payments, and outstanding balances": "تتبع الزبائن والمواعيد والخدمات والمدفوعات والأرصدة المستحقة",
-            "Treatment Date": "تاريخ الخدمة الفنية",
-            "Treatment Pricing": "أسعار الخدمات الفنية",
-            "Treatment Services & Prices": "الخدمات الفنية والأسعار",
-            "Treatments": "الخدمات الفنية",
-            "Treatments included in this invoice": "الخدمات المشمولة في هذه الفاتورة",
-            "Tuesday": "الثلاثاء",
-            "Unknown appointment status": "حالة الزيارة غير معروفة",
-            "Unpaid": "غير مدفوع",
-            "Update the appointment information": "تحديث معلومات الحجز",
-            "Update the treatment information": "تحديث معلومات الخدمة الفنية",
-            "Update your clinic's basic information": "تحديث المعلومات الأساسية لمركز الري بالتنقيط",
-            "User Accounts": "حسابات المستخدمين",
-            "Username": "اسم المستخدم",
-            "View Appointment": "عرض تفاصيل الزيارة",
-            "View Appointments": "عرض الزيارات والحجوزات",
-            "View Detail": "عرض التفاصيل",
-            "View Invoice": "عرض الفاتورة",
-            "View Patient": "عرض ملف الزبون",
-            "View Patient Invoices": "عرض فواتير الزبون",
-            "View Treatment": "عرض الخدمة الفنية",
-            "View and manage all your clinic appointments interactively from one dashboard": "عرض وإدارة جميع مواعيد مركزك تفاعلياً من لوحة تحكم واحدة",
-            "View appointment information without editing": "عرض معلومات الحجز بدون تعديل",
-            "View treatment information without editing": "عرض معلومات الخدمة الفنية بدون تعديل",
-            "Visit Date": "تاريخ الزيارة الميدانية",
-            "Wednesday": "الأربعاء",
-            "WhatsApp": "واتساب",
-            "Whitening": "تركيب صمامات ري ضغط",
-            "Working Days of the Week": "أيام العمل في الأسبوع",
-            "Working Hours": "ساعات العمل اليومية",
-            "Yes, Delete Appointment": "نعم، احذف الحجز",
-            "Yes, Delete Patient": "نعم، احذف الزبون",
-            "Yes, Delete Treatment": "نعم، احذف الخدمة",
-            "You": "أنت",
-            "done sessions": "جلسات منجزة",
-            "e.g., $, USD, EUR, SAR": "مثال: ل.س، USD، EUR",
-            "e.g., Cleaning": "مثال: تركيب شبكة ري",
-            "from one practical dashboard": "من لوحة تحكم عملية واحدة",
-            "invoiced treatments": "الخدمات المفوترة",
-            "invoices automatically": "الفواتير تلقائياً",
-            "payments collected": "المدفوعات المحصلة",
-            "treatments, and payments in one place": "الخدمات والمدفوعات في مكان واحد",
-            "waiting sessions": "جلسات قيد الانتظار",
-            "System Display Theme": "مظهر عرض النظام",
-            "System Interface Language": "لغة واجهة النظام",
-            "System Role": "دور النظام",
-            "System Settings": "إعدادات النظام",
-            "Theme & Appearance": "المظهر والثيم",
-            "There are no appointments yet": "لا توجد مواعيد بعد",
-            "There are no patients yet": "لا يوجد مرضى بعد",
-            "There are no scheduled appointments waiting for today": "لا توجد مواعيد مجدولة بانتظار البدء اليوم",
-            "This action cannot be undone": "هذا الإجراء لا يمكن التراجع عنه",
-            "This appointment is cancelled. Appointment is read-only": "هذا الموعد ملغى. الموعد للقراءة فقط",
-            "This appointment is cancelled. Treatment is read-only": "هذا الموعد ملغى. المعالجة للقراءة فقط",
-            "This appointment is cancelled. Treatments cannot be added": "هذا الموعد ملغى. لا يمكن إضافة معالجات",
-            "This appointment session is done. Appointment is read-only": "جلسة الموعد هذه منتهية. الموعد للقراءة فقط",
-            "This appointment session is done. Treatment is read-only": "جلسة الموعد هذه منتهية. المعالجة للقراءة فقط",
-            "This invoice has an outstanding balance": "هذه الفاتورة تحتوي على رصيد مستحق غير مدفوع",
-            "This invoice has an overpayment credit": "هذه الفاتورة تحتوي على رصيد فائض مدفوع",
-            "This invoice is fully paid": "هذه الفاتورة مدفوعة بالكامل",
-            "This patient has an outstanding balance": "هذا المريض لديه رصيد مستحق غير مدفوع",
-            "This patient has an overpayment credit": "هذا المريض لديه رصيد فائض مدفوع",
-            "This patient has no appointments at the moment": "ليس لدى هذا المريض أي مواعيد في الوقت الحالي",
-            "This patient has no recorded payments": "لم يتم تسجيل أي مدفوعات لهذا المريض",
-            "This patient has no treatments from previous appointments": "ليس لدى هذا المريض أي معالجات من مواعيد سابقة",
-            "This patient has no treatments yet. Treatments are added from appointment sessions": "ليس لدى هذا المريض أي معالجات بعد. يتم إضافة المعالجات من جلسات المواعيد",
-            "This session is still open. You can add one or more treatments": "هذه الجلسة لا تزال مفتوحة. يمكنك إضافة معالجة واحدة أو أكثر",
-            "This session was ended without recorded treatments": "تم إنهاء هذه الجلسة دون تسجيل أي معالجات",
-            "This symbol will be applied dynamically to all invoices, payments, and report pages": "سيتم تطبيق هذا الرمز ديناميكياً على جميع الفواتير والمدفوعات وصفحات التقارير",
-            "This will create a completed appointment, treatment items, and an invoice": "سيؤدي هذا إلى إنشاء موعد مكتمل وبنود معالجة وفاتورة",
-            "Thursday": "الخميس",
-            "Time": "الوقت",
-            "Title": "اللقب",
-            "Today's Paid": "المدفوع اليوم",
-            "Today's Progress": "تقدم اليوم",
-            "Today's Revenue": "إيرادات اليوم",
-            "Today's Status": "حالة اليوم",
-            "Today’s": "نظرة عامة على",
-            "Today’s Scheduled Appointments": "مواعيد اليوم المجدولة",
-            "Tooth": "السن",
-            "Tooth Number": "رقم السن",
-            "Tooth number": "رقم السن",
-            "Top 5 Procedure Types (by Volume)": "أهم 5 معالجات (من حيث العدد)",
-            "Top Patient Outstanding Balances": "أعلى أرصدة ديون مستحقة على المرضى",
-            "Total Billed": "إجمالي الفواتير",
-            "Total Invoiced": "إجمالي الفواتير",
-            "Total Invoices": "إجمالي الفواتير",
-            "Total Paid": "إجمالي المدفوعات",
-            "Total Patients": "إجمالي المرضى",
-            "Total Payments": "إجمالي المدفوعات",
-            "Total Remaining": "الإجمالي المتبقي",
-            "Total Treatments": "إجمالي المعالجات",
-            "Track patients, appointments, treatments, payments, and outstanding balances": "تتبع المرضى والمواعيد والمعالجات والمدفوعات والأرصدة المستحقة",
-            "Treatment Date": "تاريخ المعالجة",
-            "Treatment Pricing": "أسعار المعالجات",
-            "Treatment Services & Prices": "خدمات وأسعار المعالجات",
-            "Treatments": "المعالجات",
-            "Treatments included in this invoice": "المعالجات المشمولة في هذه الفاتورة",
-            "Tuesday": "الثلاثاء",
-            "Unknown appointment status": "حالة الموعد غير معروفة",
-            "Unpaid": "غير مدفوع",
-            "Update the appointment information": "تحديث معلومات الموعد",
-            "Update the treatment information": "تحديث معلومات المعالجة",
-            "Update your clinic's basic information": "تحديث المعلومات الأساسية لعيادتك",
-            "User Accounts": "حسابات المستخدمين",
-            "Username": "اسم المستخدم",
-            "View Appointment": "عرض الموعد",
-            "View Appointments": "عرض المواعيد",
-            "View Detail": "عرض التفاصيل",
-            "View Invoice": "عرض الفاتورة",
-            "View Patient": "عرض ملف المريض",
-            "View Patient Invoices": "عرض فواتير المريض",
-            "View Treatment": "عرض المعالجة",
-            "View and manage all your clinic appointments interactively from one dashboard": "عرض وإدارة جميع مواعيد عيادتك تفاعلياً من لوحة تحكم واحدة",
-            "View appointment information without editing": "عرض معلومات الموعد بدون تعديل",
-            "View treatment information without editing": "عرض معلومات المعالجة بدون تعديل",
-            "Visit Date": "تاريخ الزيارة",
-            "Wednesday": "الأربعاء",
-            "WhatsApp": "واتساب",
-            "Whitening": "تبييض الأسنان",
-            "Working Days of the Week": "أيام العمل في الأسبوع",
-            "Working Hours": "ساعات العمل",
-            "Yes, Delete Appointment": "نعم، احذف الموعد",
-            "Yes, Delete Patient": "نعم، احذف المريض",
-            "Yes, Delete Treatment": "نعم، احذف المعالجة",
-            "You": "أنت",
-            "done sessions": "جلسات منجزة",
-            "e.g., $, USD, EUR, SAR": "مثال: $, USD, EUR, SAR",
-            "e.g., Cleaning": "مثال: تنظيف وتلميع",
-            "from one practical dashboard": "من لوحة تحكم عملية واحدة",
-            "invoiced treatments": "المعالجات المفوترة",
-            "invoices automatically": "الفواتير تلقائياً",
-            "payments collected": "المدفوعات المحصلة",
-            "treatments, and payments in one place": "المعالجات، والمدفوعات في مكان واحد",
-            "waiting sessions": "جلسات قيد الانتظار",
-            "العربية": "العربية",
-            "System Backups": "نسخ النظام الاحتياطية",
-            "Create database backups and manage historical restore points": "إنشاء نسخ احتياطية لقاعدة البيانات وإدارة نقاط الاستعادة التاريخية",
-            "Create Backup Now": "إنشاء نسخة احتياطية الآن",
-            "Backup File Name": "اسم ملف النسخة الاحتياطية",
-            "Creation Date": "تاريخ الإنشاء",
-            "Size": "الحجم",
-            "Download Backup": "تحميل النسخة الاحتياطية",
-            "Delete Backup": "حذف النسخة الاحتياطية",
-            "No backup files found. Click \"Create Backup Now\" to make a new database snapshot.": "لم يتم العثور على ملفات نسخ احتياطي. انقر فوق \"إنشاء نسخة احتياطية الآن\" لإنشاء لقطة جديدة لقاعدة البيانات.",
-            "Are you sure you want to delete this backup file?": "هل أنت متأكد من رغبتك في حذف ملف النسخة الاحتياطية هذا؟",
-            "Backup created successfully:": "تم إنشاء النسخة الاحتياطية بنجاح:",
-            "Failed to create database backup:": "فشل إنشاء النسخة الاحتياطية لقاعدة البيانات:",
-            "Backup file not found.": "ملف النسخة الاحتياطية غير موجود.",
-            "Backup file deleted successfully.": "تم حذف ملف النسخة الاحتياطية بنجاح.",
-            "Failed to delete backup file.": "فشل حذف ملف النسخة الاحتياطية.",
-            "Create Backup": "إنشاء نسخة احتياطية",
-            "Notifications & Reminders": "الإشعارات والتذكيرات",
-            "Notifications": "الإشعارات",
-            "Configure automated reminders via Email, SMS, and WhatsApp": "تهيئة التذكيرات التلقائية عبر البريد الإلكتروني ورسائل SMS والواتساب",
-            "Setup & API Keys": "الإعداد ومفاتيح الواجهة البرمجية (API)",
-            "Sent Notification Log": "سجل الإشعارات المرسلة",
-            "Enable Channels": "تفعيل القنوات",
-            "Enable SMS Reminders (Twilio)": "تفعيل التذكير عبر رسائل SMS (تويليو)",
-            "Sends text messages to patient mobile numbers 24 hours and 2 hours before their appointments.": "يرسل رسائل نصية إلى أرقام هواتف المرضى المحمولة قبل 24 ساعة وساعتين من مواعيدهم.",
-            "Enable WhatsApp Reminders (Twilio WhatsApp API)": "تفعيل التذكير عبر واتساب (تويليو واتساب API)",
-            "Sends automated WhatsApp notifications to patient phone numbers.": "يرسل إشعارات واتساب تلقائية إلى أرقام هواتف المرضى.",
-            "Enable Email Reminders (SMTP)": "تفعيل التذكير عبر البريد الإلكتروني (SMTP)",
-            "Sends HTML/Text emails to patient email addresses.": "يرسل رسائل بريد إلكتروني نصية/HTML إلى عناوين البريد الإلكتروني للمرضى.",
-            "Twilio SMS & WhatsApp Credentials": "بيانات اعتماد SMS وواتساب من تويليو",
-            "If Twilio keys are not provided, reminders will be logged to local logs for testing purposes without sending actual messages.": "إذا لم يتم توفير مفاتيح تويليو، فسيتم تسجيل التذكيرات في السجلات المحلية لأغراض الاختبار دون إرسال رسائل فعلية.",
-            "Twilio Account SID": "معرف الحساب (Account SID) من تويليو",
-            "Twilio Auth Token": "رمز المصادقة (Auth Token) من تويليو",
-            "Twilio From Number (SMS)": "رقم المرسل من تويليو (SMS)",
-            "Twilio WhatsApp Sandbox/Number": "صندوق رمل / رقم واتساب من تويليو",
-            "SMTP Email Server Credentials": "بيانات اعتماد خادم البريد الإلكتروني SMTP",
-            "SMTP Host": "مضيف SMTP",
-            "SMTP Port": "منفذ SMTP",
-            "SMTP Username (Email)": "اسم مستخدم SMTP (البريد الإلكتروني)",
-            "SMTP Password / App Password": "كلمة مرور SMTP / كلمة مرور التطبيق",
-            "From Email Address": "عنوان البريد الإلكتروني للمرسل",
-            "Recipient": "المستلم",
-            "Channel": "القناة",
-            "Type": "النوع",
-            "Sent Time": "وقت الإرسال",
-            "Sent": "تم الإرسال",
-            "Failed": "فشل",
-            "No notification logs recorded yet. Reminders are checked every 5 minutes.": "لم يتم تسجيل أي سجلات إشعارات بعد. يتم فحص التذكيرات كل 5 دقائق.",
-            "Detailed invoice view with treatments, payments, and current invoice status.": "عرض تفصيلي للفاتورة مع المعالجات والمدفوعات وحالة الفاتورة الحالية.",
-            "Invoice Summary": "ملخص الفاتورة",
-            "Remaining Balance Due": "الرصيد المتبقي المستحق",
-            "Receipt #": "رقم الإيصال #",
-            "Date Paid": "تاريخ الدفع",
-            "Amount Paid": "المبلغ المدفوع",
-            "Installment / Payment History": "سجل الأقساط / الدفع",
-            "Authorized Signature & Seal": "التوقيع والختم المعتمد",
-            "Bill To:": "فاتورة إلى:",
-            "Date:": "التاريخ:",
-            "Treatment / Procedure": "المعالجة / الإجراء",
-            "Print Invoice": "طباعة الفاتورة",
-            "Download PDF": "تحميل PDF",
-            "No date": "بلا تاريخ",
-            "No phone number": "لا يوجد رقم هاتف",
-            "No notes": "بلا ملاحظات",
-            "No invoice": "لا توجد فاتورة"
-};
-
-        // Sort keys by length descending to match longer phrases before shorter substrings
-        const sortedTranslationKeys = Object.keys(arabicTranslations).sort((a, b) => b.length - a.length);
-
-        function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
-        }
-
-        // Helper to safely replace substrings in a text node value
-        function safeReplace(text, key, translation) {
-            const escapedKey = escapeRegExp(key);
-            // Match the key only if it is not surrounded by alphanumeric characters
-            const regex = new RegExp('(?<![a-zA-Z0-9])' + escapedKey + '(?![a-zA-Z0-9])', 'gi');
-            return text.replace(regex, translation);
-        }
-
-        function translateDOM(node) {
-            if (node.nodeType === Node.TEXT_NODE) {
-                let rawText = node.nodeValue;
-                let originalText = rawText;
-                
-                // Translate key phrases inside text node
-                for (const key of sortedTranslationKeys) {
-                    rawText = safeReplace(rawText, key, arabicTranslations[key]);
-                }
-                
-                // Format phone numbers to prevent visual reversal in RTL/Arabic mode
-                const phoneRegex = /(\+[\d\s-]{5,18}\d|\b09\d[\d\s-]{4,15}\d)/g;
-                rawText = rawText.replace(phoneRegex, (match) => {
-                    if (match.startsWith('\u2066') && match.endsWith('\u2069')) {
-                        return match;
-                    }
-                    return '\u2066' + match + '\u2069';
-                });
-                
-                if (rawText !== originalText) {
-                    node.nodeValue = rawText;
-                }
-            } else if (node.nodeType === Node.ELEMENT_NODE) {
-                // Skip translating the script blocks, style blocks, and values inside actual input textareas/selects
-                if (node.tagName === 'SCRIPT' || node.tagName === 'STYLE') return;
-                
-                // Avoid modifying the value attribute of input fields, but placeholders can be translated
-                const placeholder = node.getAttribute('placeholder');
-                if (placeholder) {
-                    let translatedPlaceholder = placeholder;
-                    for (const key of sortedTranslationKeys) {
-                        translatedPlaceholder = safeReplace(translatedPlaceholder, key, arabicTranslations[key]);
-                    }
-                    if (translatedPlaceholder !== placeholder) {
-                        node.setAttribute('placeholder', translatedPlaceholder);
-                    }
-                }
-                
-                const titleAttr = node.getAttribute('title');
-                if (titleAttr) {
-                    let translatedTitle = titleAttr;
-                    for (const key of sortedTranslationKeys) {
-                        translatedTitle = safeReplace(translatedTitle, key, arabicTranslations[key]);
-                    }
-                    if (translatedTitle !== titleAttr) {
-                        node.setAttribute('title', translatedTitle);
-                    }
-                }
-
-                const tooltipAttr = node.getAttribute('data-tooltip');
-                if (tooltipAttr) {
-                    let translatedTooltip = tooltipAttr;
-                    for (const key of sortedTranslationKeys) {
-                        translatedTooltip = safeReplace(translatedTooltip, key, arabicTranslations[key]);
-                    }
-                    if (translatedTooltip !== tooltipAttr) {
-                        node.setAttribute('data-tooltip', translatedTooltip);
-                    }
-                }
-
-                const bsTitle = node.getAttribute('data-bs-title');
-                if (bsTitle) {
-                    let translatedBsTitle = bsTitle;
-                    for (const key of sortedTranslationKeys) {
-                        translatedBsTitle = safeReplace(translatedBsTitle, key, arabicTranslations[key]);
-                    }
-                    if (translatedBsTitle !== bsTitle) {
-                        node.setAttribute('data-bs-title', translatedBsTitle);
-                    }
-                }
-
-                const origTitle = node.getAttribute('data-original-title');
-                if (origTitle) {
-                    let translatedOrigTitle = origTitle;
-                    for (const key of sortedTranslationKeys) {
-                        translatedOrigTitle = safeReplace(translatedOrigTitle, key, arabicTranslations[key]);
-                    }
-                    if (translatedOrigTitle !== origTitle) {
-                        node.setAttribute('data-original-title', translatedOrigTitle);
-                    }
-                }
-                
-                for (let child of node.childNodes) {
-                    translateDOM(child);
-                }
-            }
-        }
-
-        let observer = null;
-        function startObserver() {
-            if (!observer) {
-                observer = new MutationObserver((mutations) => {
-                    observer.disconnect();
-                    for (let mutation of mutations) {
-                        for (let node of mutation.addedNodes) {
-                            translateDOM(node);
-                        }
-                    }
-                    observer.observe(document.body, { childList: true, subtree: true });
-                });
-            }
-            observer.observe(document.body, { childList: true, subtree: true });
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const currentLang = document.documentElement.getAttribute('lang') || 'en';
-            if (currentLang === 'ar') {
-                translateDOM(document.body);
-                const title = document.title.trim();
-                if (arabicTranslations[title]) {
-                    document.title = arabicTranslations[title];
-                }
-                startObserver();
-            }
-        });
-    })();
-  </script>
+  {% block extra_js %}{% endblock %}
 
 </body>
-
 </html>

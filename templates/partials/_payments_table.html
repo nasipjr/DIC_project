@@ -1,232 +1,121 @@
-{% if payments %}
-<div class="appointments-table-wrapper table-responsive">
-    <table class="table appointments-table align-middle">
-        <thead>
-            <tr>
-                <th>
-                    <a class="payments-ajax-link" href="{{ url_for(
-                        'payments.payments_table',
-                        search=search_query,
-                        sort='id',
-                        order='asc' if sort_by != 'id' or order == 'desc' else 'desc'
-                    ) }}">
-                        Payment #
-                        {% if sort_by == 'id' %}
-                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
-                        {% endif %}
-                    </a>
-                </th>
-
-                <th>
-                    <a class="payments-ajax-link" href="{{ url_for(
-                        'payments.payments_table',
-                        search=search_query,
-                        sort='date',
-                        order='asc' if sort_by != 'date' or order == 'desc' else 'desc'
-                    ) }}">
-                        Date
-                        {% if sort_by == 'date' %}
-                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
-                        {% endif %}
-                    </a>
-                </th>
-
-                <th>
-                    <a class="payments-ajax-link" href="{{ url_for(
-                        'payments.payments_table',
-                        search=search_query,
-                        sort='patient',
-                        order='asc' if sort_by != 'patient' or order == 'desc' else 'desc'
-                    ) }}">
-                        Patient
-                        {% if sort_by == 'patient' %}
-                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
-                        {% endif %}
-                    </a>
-                </th>
-
-                <th>
-                    <a class="payments-ajax-link" href="{{ url_for(
-                        'payments.payments_table',
-                        search=search_query,
-                        sort='amount',
-                        order='asc' if sort_by != 'amount' or order == 'desc' else 'desc'
-                    ) }}">
-                        Amount
-                        {% if sort_by == 'amount' %}
-                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
-                        {% endif %}
-                    </a>
-                </th>
-
-                <th>
-                    <a class="payments-ajax-link" href="{{ url_for(
-                        'payments.payments_table',
-                        search=search_query,
-                        sort='allocated',
-                        order='asc' if sort_by != 'allocated' or order == 'desc' else 'desc'
-                    ) }}">
-                        Allocated
-                        {% if sort_by == 'allocated' %}
-                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
-                        {% endif %}
-                    </a>
-                </th>
-
-                <th>
-                    <a class="payments-ajax-link" href="{{ url_for(
-                        'payments.payments_table',
-                        search=search_query,
-                        sort='credit',
-                        order='asc' if sort_by != 'credit' or order == 'desc' else 'desc'
-                    ) }}">
-                        Credit
-                        {% if sort_by == 'credit' %}
-                        <i class="bi {% if order == 'asc' %}bi-arrow-up{% else %}bi-arrow-down{% endif %}"></i>
-                        {% endif %}
-                    </a>
-                </th>
-
-                <th>Notes</th>
-
-                <th class="text-center">Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            {% for payment in payments %}
-            <tr>
-                <td>
-                    <strong>PAY-{{ payment.id }}</strong>
-                </td>
-
-                <td>
-                    {{ payment.payment_date.strftime('%Y-%m-%d %H:%M') if payment.payment_date else 'No date' }}
-                </td>
-
-                <td>
-                    <strong>
-                        {{ payment.patient.first_name }} {{ payment.patient.last_name }}
-                    </strong>
-                    <br>
-                    <small>{{ payment.patient.phone or 'No phone number' }}</small>
-                </td>
-
-                <td>
-                    <span class="price-badge">
-                        {{ payment.amount | format_price }} {{ currency_symbol }}
-                    </span>
-                </td>
-
-                <td>
-                    <span class="remaining-clear">
-                        {{ payment.allocated_amount | format_price }} {{ currency_symbol }}
-                        <span class="paid-badge">Allocated</span>
-                    </span>
-                </td>
-
-                <td>
-                    {% if payment.unallocated_amount > 0 %}
-                    <span class="credit-amount">
-                        {{ payment.unallocated_amount | format_price }} {{ currency_symbol }}
-                        <span class="credit-badge">Credit</span>
-                    </span>
-                    {% else %}
-                    <span class="remaining-clear">
-                        0.00 {{ currency_symbol }}
-                        <span class="paid-badge">No Credit</span>
-                    </span>
-                    {% endif %}
-                </td>
-
-                <td>
-                    {{ payment.notes or 'No notes available' }}
-                </td>
-
-                <td class="text-center">
-                    <div class="appointments-actions">
-
-                        <a href="{{ url_for('patients.patient_detail', patient_id=payment.patient_id) }}"
-                           class="table-action-btn view-btn"
-                           title="Open Patient">
-                            <i class="bi bi-person"></i>
-                        </a>
-
-                        <a href="{{ url_for('invoices.invoices', search=payment.patient.phone or payment.patient.first_name) }}"
-                           class="table-action-btn session-btn"
-                           title="View Patient Invoices">
-                            <i class="bi bi-receipt"></i>
-                        </a>
-
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="table-responsive">
+  <table class="table align-middle">
+    <thead>
+      <tr class="text-muted">
+        <th>
+          <a href="{{ url_for('payments.payments', sort='id', order='asc' if sort_by == 'id' and order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-muted">
+            {{ _('receipt_no') }}
+            {% if sort_by == 'id' %}
+              <i class="fa-solid fa-sort-{{ 'up' if order == 'asc' else 'down' }} ms-1"></i>
+            {% else %}
+              <i class="fa-solid fa-sort ms-1 opacity-50"></i>
+            {% endif %}
+          </a>
+        </th>
+        <th>
+          <a href="{{ url_for('payments.payments', sort='client', order='asc' if sort_by == 'client' and order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-muted">
+            {{ _('client_name') }}
+            {% if sort_by == 'client' %}
+              <i class="fa-solid fa-sort-{{ 'up' if order == 'asc' else 'down' }} ms-1"></i>
+            {% else %}
+              <i class="fa-solid fa-sort ms-1 opacity-50"></i>
+            {% endif %}
+          </a>
+        </th>
+        <th>
+          <a href="{{ url_for('payments.payments', sort='amount', order='asc' if sort_by == 'amount' and order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-muted">
+            {{ _('amount_paid') }}
+            {% if sort_by == 'amount' %}
+              <i class="fa-solid fa-sort-{{ 'up' if order == 'asc' else 'down' }} ms-1"></i>
+            {% else %}
+              <i class="fa-solid fa-sort ms-1 opacity-50"></i>
+            {% endif %}
+          </a>
+        </th>
+        <th>
+          <a href="{{ url_for('payments.payments', sort='date', order='asc' if sort_by == 'date' and order == 'desc' else 'desc', search=search_query) }}" class="text-decoration-none text-muted">
+            {{ _('payment_date') }}
+            {% if sort_by == 'date' %}
+              <i class="fa-solid fa-sort-{{ 'up' if order == 'asc' else 'down' }} ms-1"></i>
+            {% else %}
+              <i class="fa-solid fa-sort ms-1 opacity-50"></i>
+            {% endif %}
+          </a>
+        </th>
+        <th>{{ _('notes') }}</th>
+        <th class="text-end">{{ _('actions') }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td class="text-secondary small fw-bold">
+          <a href="{{ url_for('payments.view_payment', payment_id=p.id) }}" class="text-info text-decoration-none">
+            PAY-{{ "%04d" | format(p.id) }}
+          </a>
+        </td>
+        <td>
+          {% if p.client %}
+            <a href="{{ url_for('clients.view_client', client_id=p.client.id) }}" class="fw-bold text-success text-decoration-none">
+              {{ p.client.name }}
+            </a>
+          {% else %}
+            <span class="text-muted">-</span>
+          {% endif %}
+        </td>
+        <td class="fw-bold text-success">{{ p.amount | format_price }} {{ currency_symbol }}</td>
+        <td class="text-white-50 small">{{ p.payment_date.strftime('%Y-%m-%d %H:%M') if p.payment_date else 'N/A' }}</td>
+        <td class="text-truncate text-secondary small" style="max-width: 250px;" title="{{ p.notes or '' }}">
+          {{ p.notes or '-' }}
+        </td>
+        <td class="text-end">
+          <div class="d-inline-flex gap-2">
+            <a href="{{ url_for('payments.view_payment', payment_id=p.id) }}" class="btn btn-sm btn-outline-success" title="{{ _('view') }}">
+              <i class="fa-solid fa-eye"></i>
+            </a>
+            <form method="POST" action="{{ url_for('payments.delete_payment', payment_id=p.id) }}" onsubmit="return confirm('{{ _('delete_payment_confirm') }}');" class="d-inline">
+              <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ _('delete') }}">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" class="text-center py-5 text-muted">
+          <i class="fa-solid fa-receipt fs-1 d-block mb-3"></i>
+          {{ _('no_payments') }}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
+<!-- Pagination -->
 {% if pagination.pages > 1 %}
-<nav class="appointments-pagination mt-4">
-    <ul class="pagination justify-content-center">
-
-        <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-            {% if pagination.has_prev %}
-            <a class="page-link payments-ajax-link"
-                href="{{ url_for('payments.payments_table', page=pagination.prev_num, search=search_query, sort=sort_by, order=order) }}">
-                Previous
-            </a>
-            {% else %}
-            <span class="page-link">Previous</span>
-            {% endif %}
+<nav aria-label="Page navigation" class="mt-4">
+  <ul class="pagination justify-content-center">
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('payments.payments', page=pagination.prev_num, search=search_query, sort=sort_by, order=order, range=active_range) }}" tabindex="-1">
+        <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}left{% else %}right{% endif %}"></i>
+      </a>
+    </li>
+    {% for p in pagination.iter_pages() %}
+      {% if p %}
+        <li class="page-item {% if p == pagination.page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('payments.payments', page=p, search=search_query, sort=sort_by, order=order, range=active_range) }}">{{ p }}</a>
         </li>
-
-        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-        {% if page_num %}
-        <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
-            <a class="page-link payments-ajax-link"
-                href="{{ url_for('payments.payments_table', page=page_num, search=search_query, sort=sort_by, order=order) }}">
-                {{ page_num }}
-            </a>
-        </li>
-        {% else %}
-        <li class="page-item disabled">
-            <span class="page-link">...</span>
-        </li>
-        {% endif %}
-        {% endfor %}
-
-        <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-            {% if pagination.has_next %}
-            <a class="page-link payments-ajax-link"
-                href="{{ url_for('payments.payments_table', page=pagination.next_num, search=search_query, sort=sort_by, order=order) }}">
-                Next
-            </a>
-            {% else %}
-            <span class="page-link">Next</span>
-            {% endif %}
-        </li>
-
-    </ul>
+      {% else %}
+        <li class="page-item disabled"><span class="page-link">...</span></li>
+      {% endif %}
+    {% endfor %}
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('payments.payments', page=pagination.next_num, search=search_query, sort=sort_by, order=order, range=active_range) }}">
+        <i class="fa-solid fa-angle-{% if current_lang == 'ar' %}right{% else %}left{% endif %}"></i>
+      </a>
+    </li>
+  </ul>
 </nav>
-{% endif %}
-
-{% else %}
-<div class="empty-state-card text-center">
-    <i class="bi bi-cash-coin"></i>
-    <h4>No payments found</h4>
-
-    {% if search_query %}
-    <p>No payments match your search.</p>
-    <a href="{{ url_for('payments.payments') }}" class="btn btn-primary mt-3">
-        Reset Search
-    </a>
-    {% else %}
-    <p>Payments will appear here after they are recorded for patients.</p>
-
-    <a href="{{ url_for('payments.add_patient_payment') }}" class="btn btn-primary mt-3">
-        Add New Payment
-    </a>
-    {% endif %}
-</div>
 {% endif %}

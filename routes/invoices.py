@@ -1,461 +1,256 @@
 from datetime import datetime
-from sqlalchemy import func, or_
-
 from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash
-
-from models import db, Patient, Appointment, Treatment, Invoice, Payment, PaymentAllocation
-from services.invoice_service import sync_invoice_for_appointment
-from services.payment_service import allocate_patient_payments_to_invoices
-from utils.constants import TREATMENT_PRICES, TREATMENT_PROCEDURE_TYPES
+from models import db, Invoice, InvoiceItem, InventoryItem
 from utils.auth_helper import role_required
-
+from decimal import Decimal
+from services.payment_service import allocate_client_payments_to_invoices
 
 invoices_bp = Blueprint("invoices", __name__)
 
 
-def get_invoices_context():
-    search_query = request.args.get("search", "").strip()
-    sort_by = request.args.get("sort", "date")
-    order = request.args.get("order", "desc")
-    page = request.args.get("page", 1, type=int)
-    per_page = 10
-
-    query = Invoice.query.join(Invoice.patient).join(Invoice.appointment)
-
-    if search_query:
-        clean_search = search_query
-        if search_query.lower().startswith("inv-"):
-            clean_search = search_query[4:]
-
-        filter_conds = [
-            Patient.first_name.ilike(f"%{search_query}%"),
-            Patient.last_name.ilike(f"%{search_query}%"),
-            Patient.phone.ilike(f"%{search_query}%"),
-            Appointment.status.ilike(f"%{search_query}%")
-        ]
-
-        try:
-            invoice_id_val = int(clean_search)
-            filter_conds.append(Invoice.id == invoice_id_val)
-        except ValueError:
-            pass
-
-        try:
-            appt_id_val = int(search_query)
-            filter_conds.append(Invoice.appointment_id == appt_id_val)
-        except ValueError:
-            pass
-
-        query = query.filter(or_(*filter_conds))
-
-    treatments_count_sub = (
-        db.select(func.count(Treatment.id))
-        .where(Treatment.appointment_id == Invoice.appointment_id)
-        .scalar_subquery()
-    )
-
-    total_amount_sub = (
-        db.select(func.coalesce(func.sum(Treatment.total_cost), 0.0))
-        .where(Treatment.appointment_id == Invoice.appointment_id)
-        .scalar_subquery()
-    )
-
-    total_paid_sub = (
-        db.select(func.coalesce(func.sum(PaymentAllocation.amount), 0.0))
-        .where(PaymentAllocation.invoice_id == Invoice.id)
-        .scalar_subquery()
-    )
-
-    sort_columns = {
-        "id": Invoice.id,
-        "patient": [Patient.first_name, Patient.last_name],
-        "date": Appointment.appointment_date,
-        "treatments": treatments_count_sub,
-        "total": total_amount_sub,
-        "payments": total_paid_sub,
-        "outstanding": total_amount_sub - total_paid_sub,
-        "status": total_amount_sub - total_paid_sub,
-    }
-
-    sort_col = sort_columns.get(sort_by, Appointment.appointment_date)
-
-    if isinstance(sort_col, list):
-        if order == "asc":
-            query = query.order_by(*(c.asc() for c in sort_col))
-        else:
-            query = query.order_by(*(c.desc() for c in sort_col))
-    else:
-        if order == "asc":
-            query = query.order_by(sort_col.asc())
-        else:
-            query = query.order_by(sort_col.desc())
-
-    pagination = query.paginate(
-        page=page,
-        per_page=per_page,
-        error_out=False,
-    )
-
-    return {
-        "invoices": pagination.items,
-        "pagination": pagination,
-        "search_query": search_query,
-        "sort_by": sort_by,
-        "order": order,
-    }
-
-
 @invoices_bp.route("/invoices")
-@role_required("admin", "doctor", "receptionist")
+@role_required("admin")
 def invoices():
     current_app.logger.info("Invoices page opened")
+    search_query = request.args.get("search", "").strip()
+    status_filter = request.args.get("status", "").strip()
+    active_range = request.args.get("range", "all").strip().lower()
 
-    try:
-        context = get_invoices_context()
-        return render_template("invoices/invoices.html", **context)
+    query = Invoice.query
 
-    except Exception:
-        current_app.logger.exception("Failed to load invoices page")
-        return render_template(
-            "error_message.html",
-            title="Error",
-            message="Failed to load invoices.",
-            back_url=url_for("dashboard.home"),
-        ), 500
-
-
-@invoices_bp.route("/invoices/table")
-@role_required("admin", "doctor", "receptionist")
-def invoices_table():
-    current_app.logger.info("Invoices table partial requested")
-
-    try:
-        context = get_invoices_context()
-        return render_template("partials/_invoices_table.html", **context)
-
-    except Exception:
-        current_app.logger.exception("Failed to load invoices table")
-        return render_template(
-            "error_message.html",
-            title="Error",
-            message="Failed to load invoices table.",
-            back_url=url_for("dashboard.home"),
-        ), 500
-        
-@invoices_bp.route("/invoices/add", methods=["GET", "POST"])
-@role_required("admin", "receptionist")
-def add_invoice():
-    current_app.logger.info("Add manual invoice page/request")
-
-    try:
-        patients = (
-            Patient.query
-            .order_by(Patient.first_name.asc(), Patient.last_name.asc())
-            .all()
+    if search_query:
+        query = query.filter(
+            (Invoice.client_name.ilike(f"%{search_query}%")) |
+            (Invoice.client_phone.ilike(f"%{search_query}%"))
         )
 
-        default_visit_datetime = datetime.now().replace(second=0, microsecond=0)
+    if status_filter:
+        query = query.filter(Invoice.status == status_filter)
 
-        if request.method == "POST":
-            patient_id = request.form.get("patient_id", type=int)
-            appointment_date_raw = request.form.get("appointment_date", "").strip()
+    # Apply date range filter
+    if active_range in ("today", "week", "month"):
+        from datetime import datetime, date, timedelta
+        today_val = date.today()
+        today_start = datetime.combine(today_val, datetime.min.time())
+        if active_range == "today":
+            query = query.filter(Invoice.issue_date >= today_start)
+        elif active_range == "week":
+            # Week start on Saturday: Offset = (weekday + 2) % 7
+            week_start = today_start - timedelta(days=(today_val.weekday() + 2) % 7)
+            query = query.filter(Invoice.issue_date >= week_start)
+        elif active_range == "month":
+            month_start = datetime(today_val.year, today_val.month, 1)
+            query = query.filter(Invoice.issue_date >= month_start)
 
-            procedure_types = request.form.getlist("procedure_type")
-            tooth_numbers = request.form.getlist("tooth_number")
-            notes_list = request.form.getlist("notes")
+    invoices_list = query.order_by(Invoice.issue_date.desc()).all()
 
-            payment_option = request.form.get("payment_option", "no_payment").strip()
-            custom_payment_amount_raw = request.form.get("custom_payment_amount", "").strip()
+    return render_template(
+        "invoices/invoices.html",
+        invoices=invoices_list,
+        search_query=search_query,
+        status_filter=status_filter,
+        active_range=active_range
+    )
 
-            patient = Patient.query.get(patient_id)
 
-            if not patient:
-                return render_template(
-                    "invoices/add_invoice.html",
-                    patients=patients,
-                    treatment_prices=dict(TREATMENT_PRICES),
-                    default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                    error_message="Please select a valid patient.",
-                ), 400
+@invoices_bp.route("/invoices/add", methods=["GET", "POST"])
+@role_required("admin")
+def add_invoice():
+    if request.method == "POST":
+        client_name = request.form.get("client_name", "").strip()
+        client_phone = request.form.get("client_phone", "").strip()
+        client_address = request.form.get("client_address", "").strip()
+        
+        discount_raw = request.form.get("discount", "0").strip()
+        discount_type = request.form.get("discount_type", "value").strip()
+        tax_rate_raw = request.form.get("tax_rate", "0").strip()
+        status = request.form.get("status", "Unpaid").strip()
 
-            if not appointment_date_raw:
-                return render_template(
-                    "invoices/add_invoice.html",
-                    patients=patients,
-                    treatment_prices=dict(TREATMENT_PRICES),
-                    default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                    error_message="Visit date is required.",
-                ), 400
+        descriptions = request.form.getlist("description")
+        quantities = request.form.getlist("quantity")
+        unit_prices = request.form.getlist("unit_price")
 
-            try:
-                appointment_date = datetime.strptime(appointment_date_raw, "%Y-%m-%dT%H:%M")
-            except ValueError:
-                return render_template(
-                    "invoices/add_invoice.html",
-                    patients=patients,
-                    treatment_prices=dict(TREATMENT_PRICES),
-                    default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                    error_message="Visit date must be valid.",
-                ), 400
+        if not client_name:
+            flash("Client name is required.", "danger")
+            return redirect(url_for("invoices.add_invoice"))
 
-            invoice_items = []
+        if not descriptions or len(descriptions) == 0:
+            flash("At least one invoice item is required.", "danger")
+            return redirect(url_for("invoices.add_invoice"))
 
-            for index, procedure_type in enumerate(procedure_types):
-                procedure_type = procedure_type.strip()
+        try:
+            discount = Decimal(discount_raw)
+            tax_rate = Decimal(tax_rate_raw)
+        except ValueError:
+            flash("Invalid discount or tax rate.", "danger")
+            return redirect(url_for("invoices.add_invoice"))
 
-                if not procedure_type:
+        try:
+            # Automatically save client details to Client table if it doesn't exist
+            if client_name:
+                from models import Client
+                existing_client = Client.query.filter_by(name=client_name).first()
+                if not existing_client:
+                    new_client = Client(
+                        name=client_name,
+                        phone=client_phone,
+                        address=client_address
+                    )
+                    db.session.add(new_client)
+                    db.session.flush()
+
+            # Create Invoice first
+            invoice = Invoice(
+                client_name=client_name,
+                client_phone=client_phone,
+                client_address=client_address,
+                discount=discount,
+                discount_type=discount_type,
+                tax_rate=tax_rate,
+                status=status
+            )
+            db.session.add(invoice)
+            db.session.flush()  # to get invoice.id
+
+            subtotal = Decimal('0.00')
+
+            for i in range(len(descriptions)):
+                desc = descriptions[i].strip()
+                if not desc:
                     continue
 
-                if procedure_type not in TREATMENT_PROCEDURE_TYPES:
-                    return render_template(
-                        "invoices/add_invoice.html",
-                        patients=patients,
-                        treatment_prices=dict(TREATMENT_PRICES),
-                        default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                        error_message="Invalid treatment procedure type.",
-                    ), 400
-
-                tooth_number = tooth_numbers[index].strip() if index < len(tooth_numbers) else ""
-                if len(tooth_number) > 50:
-                    return render_template(
-                        "invoices/add_invoice.html",
-                        patients=patients,
-                        treatment_prices=dict(TREATMENT_PRICES),
-                        default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                        error_message="Tooth number cannot exceed 50 characters.",
-                    ), 400
-                notes = notes_list[index].strip() if index < len(notes_list) else ""
-
-                invoice_items.append({
-                    "procedure_type": procedure_type,
-                    "tooth_number": tooth_number,
-                    "notes": notes,
-                    "total_cost": TREATMENT_PRICES[procedure_type],
-                })
-
-            if not invoice_items:
-                return render_template(
-                    "invoices/add_invoice.html",
-                    patients=patients,
-                    treatment_prices=dict(TREATMENT_PRICES),
-                    default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                    error_message="Please add at least one invoice item.",
-                ), 400
-
-            appointment = Appointment(
-                patient_id=patient.id,
-                appointment_date=appointment_date,
-                reason="Manual",
-                status="Done",
-            )
-
-            db.session.add(appointment)
-            db.session.flush()
-
-            for item in invoice_items:
-                treatment = Treatment(
-                    appointment_id=appointment.id,
-                    treatment_date=appointment.appointment_date,
-                    procedure_type=item["procedure_type"],
-                    tooth_number=item["tooth_number"],
-                    notes=item["notes"],
-                    total_cost=item["total_cost"],
-                )
-
-                db.session.add(treatment)
-
-            db.session.flush()
-
-            invoice = sync_invoice_for_appointment(appointment)
-            
-            discount_type = request.form.get("discount_type", "value").strip()
-            if discount_type not in {"value", "percentage"}:
-                discount_type = "value"
-                
-            discount_val = 0.0
-            discount_raw = request.form.get("discount", "0").strip()
-            if discount_raw:
                 try:
-                    discount_val = float(discount_raw)
-                    if discount_val < 0:
-                        discount_val = 0.0
-                except ValueError:
-                    pass
-            
-            if discount_type == "percentage" and discount_val > 100.0:
-                discount_val = 100.0
-            elif discount_type == "value" and discount_val > float(invoice.subtotal):
-                discount_val = float(invoice.subtotal)
-                
-            from decimal import Decimal
-            invoice.discount = Decimal(str(discount_val))
-            invoice.discount_type = discount_type
+                    qty = int(quantities[i])
+                    price = Decimal(unit_prices[i])
+                except (ValueError, IndexError):
+                    continue
+
+                total_item_price = Decimal(str(qty)) * price
+                subtotal += total_item_price
+
+                invoice_item = InvoiceItem(
+                    invoice_id=invoice.id,
+                    description=desc,
+                    quantity=qty,
+                    unit_price=price,
+                    total_price=total_item_price
+                )
+                db.session.add(invoice_item)
+
+                # Deduct inventory stock if name matches exactly (optional convenience feature)
+                inv_item = InventoryItem.query.filter_by(name=desc).first()
+                if inv_item:
+                    inv_item.quantity = max(0, inv_item.quantity - qty)
+
+            # Flush to calculate properties
             db.session.flush()
 
-            invoice_total = invoice.total_amount
+            # Set total_amount
+            invoice.total_amount = invoice.calculated_total
+            db.session.flush()
 
-            if payment_option not in {"no_payment", "full_price", "custom_amount"}:
-                return render_template(
-                    "invoices/add_invoice.html",
-                    patients=patients,
-                    treatment_prices=dict(TREATMENT_PRICES),
-                    default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                    error_message="Invalid payment option.",
-                ), 400
+            # If Paid or Partially Paid, dynamically create a payment transaction
+            if status in ("Paid", "Partially Paid"):
+                from models import Payment, Client
+                payment_amount = Decimal("0.00")
+                
+                if status == "Paid":
+                    payment_amount = invoice.total_amount
+                elif status == "Partially Paid":
+                    amount_paid_raw = request.form.get("amount_paid", "0").strip()
+                    try:
+                        payment_amount = Decimal(amount_paid_raw)
+                    except ValueError:
+                        payment_amount = Decimal("0.00")
+                    
+                    # Validate: if it exceeds total, cap it or change status
+                    if payment_amount >= invoice.total_amount:
+                        payment_amount = invoice.total_amount
+                        invoice.status = "Paid"
+                    elif payment_amount <= 0:
+                        payment_amount = Decimal("0.00")
+                        invoice.status = "Unpaid"
+                
+                if payment_amount > 0:
+                    client_obj = Client.query.filter_by(name=client_name).first()
+                    new_payment = Payment(
+                        client_id=client_obj.id if client_obj else None,
+                        amount=payment_amount,
+                        payment_date=invoice.issue_date or datetime.now(),
+                        notes=f"دفعة تلقائية للفاتورة {invoice.invoice_number} ({'كاملة' if invoice.status == 'Paid' else 'جزئية'})"
+                    )
+                    db.session.add(new_payment)
+                    db.session.flush()
 
-            payment_amount = 0
-
-            if payment_option == "full_price":
-                payment_amount = invoice_total
-
-            elif payment_option == "custom_amount":
-                if not custom_payment_amount_raw:
-                    return render_template(
-                        "invoices/add_invoice.html",
-                        patients=patients,
-                        treatment_prices=dict(TREATMENT_PRICES),
-                        default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                        error_message="Custom payment amount is required.",
-                    ), 400
-
-                try:
-                    payment_amount = float(custom_payment_amount_raw)
-                except ValueError:
-                    return render_template(
-                        "invoices/add_invoice.html",
-                        patients=patients,
-                        treatment_prices=dict(TREATMENT_PRICES),
-                        default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                        error_message="Custom payment amount must be a valid number.",
-                    ), 400
-
-                if payment_amount <= 0:
-                    return render_template(
-                        "invoices/add_invoice.html",
-                        patients=patients,
-                        treatment_prices=dict(TREATMENT_PRICES),
-                        default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                        error_message="Custom payment amount must be greater than 0.",
-                    ), 400
-
-                if payment_amount > invoice_total:
-                    return render_template(
-                        "invoices/add_invoice.html",
-                        patients=patients,
-                        treatment_prices=dict(TREATMENT_PRICES),
-                        default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-                        error_message="Custom payment amount cannot be greater than invoice total.",
-                    ), 400
-
-            if payment_amount > 0:
-                payment = Payment(
-                    patient_id=patient.id,
-                    amount=payment_amount,
-                    notes=f"Manual invoice payment for {invoice.invoice_number}",
-                )
-
-                db.session.add(payment)
-                db.session.flush()
-
-            allocate_patient_payments_to_invoices(patient.id)
+            from models import Client
+            client_obj = Client.query.filter_by(name=client_name).first()
+            if client_obj:
+                allocate_client_payments_to_invoices(client_obj.id)
 
             db.session.commit()
 
-            current_app.logger.info(
-                f"Manual invoice created successfully | invoice_id={invoice.id}, patient_id={patient.id}"
-            )
-
+            flash(f"Invoice {invoice.invoice_number} created successfully.", "success")
             return redirect(url_for("invoices.view_invoice", invoice_id=invoice.id))
 
-        return render_template(
-            "invoices/add_invoice.html",
-            patients=patients,
-            treatment_prices=dict(TREATMENT_PRICES),
-            default_visit_datetime=default_visit_datetime.strftime("%Y-%m-%dT%H:%M"),
-        )
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.exception(f"Failed to save invoice: {e}")
+            flash("Failed to save invoice due to a database error.", "danger")
+            return redirect(url_for("invoices.add_invoice"))
 
-    except Exception:
-        db.session.rollback()
-        current_app.logger.exception("Failed to create manual invoice")
-        return render_template(
-            "error_message.html",
-            title="Error",
-            message="Failed to create manual invoice.",
-            back_url=url_for("invoices.invoices"),
-        ), 500
+    # GET request - load inventory items for autocompletion
+    from models import Client
+    clients = Client.query.order_by(Client.name.asc()).all()
+    inventory = InventoryItem.query.order_by(InventoryItem.name.asc()).all()
+    return render_template("invoices/add_invoice.html", inventory=inventory, clients=clients)
 
 
 @invoices_bp.route("/invoices/<int:invoice_id>")
-@role_required("admin", "doctor", "receptionist")
+@role_required("admin")
 def view_invoice(invoice_id):
-    current_app.logger.info(f"Invoice detail page opened | invoice_id={invoice_id}")
+    invoice = Invoice.query.get_or_404(invoice_id)
+    from models import Client
+    client = Client.query.filter_by(name=invoice.client_name).first()
+    return render_template("invoices/invoice_detail.html", invoice=invoice, client=client)
 
+
+@invoices_bp.route("/invoices/delete/<int:invoice_id>", methods=["POST"])
+@role_required("admin")
+def delete_invoice(invoice_id):
+    invoice = Invoice.query.get_or_404(invoice_id)
+    num = invoice.invoice_number
+    
+    from models import Client
+    client_obj = Client.query.filter_by(name=invoice.client_name).first()
+    
     try:
-        invoice = Invoice.query.get_or_404(invoice_id)
-
-        return render_template(
-            "invoices/invoice_detail.html",
-            invoice=invoice,
-            appointment=invoice.appointment,
-            patient=invoice.patient,
-            treatments=invoice.treatments,
-        )
-
-    except Exception:
-        current_app.logger.exception(
-            f"Failed to load invoice detail | invoice_id={invoice_id}"
-        )
-        return render_template(
-            "error_message.html",
-            title="Error",
-            message="Failed to load invoice.",
-            back_url=url_for("invoices.invoices"),
-        ), 500
-
-
-@invoices_bp.route("/invoices/<int:invoice_id>/discount", methods=["POST"])
-@role_required("admin", "receptionist")
-def update_invoice_discount(invoice_id):
-    current_app.logger.info(f"Update discount request | invoice_id={invoice_id}")
-    try:
-        invoice = Invoice.query.get_or_404(invoice_id)
-        
-        discount_type = request.form.get("discount_type", "value").strip()
-        if discount_type not in {"value", "percentage"}:
-            discount_type = "value"
-            
-        discount_raw = request.form.get("discount", "0").strip()
-        discount_val = 0.0
-        if discount_raw:
-            try:
-                discount_val = float(discount_raw)
-                if discount_val < 0:
-                    discount_val = 0.0
-            except ValueError:
-                flash("Invalid discount amount.", "danger")
-                return redirect(url_for("invoices.view_invoice", invoice_id=invoice.id))
-        
-        if discount_type == "percentage" and discount_val > 100.0:
-            flash("Discount percentage cannot exceed 100%.", "danger")
-            return redirect(url_for("invoices.view_invoice", invoice_id=invoice.id))
-        elif discount_type == "value" and discount_val > float(invoice.subtotal):
-            flash("Discount cannot exceed the subtotal.", "danger")
-            return redirect(url_for("invoices.view_invoice", invoice_id=invoice.id))
-            
-        from decimal import Decimal
-        invoice.discount = Decimal(str(discount_val))
-        invoice.discount_type = discount_type
+        db.session.delete(invoice)
         db.session.flush()
         
-        # Recalculate allocations for the patient since invoice total has changed
-        allocate_patient_payments_to_invoices(invoice.patient_id)
+        if client_obj:
+            allocate_client_payments_to_invoices(client_obj.id)
+            
         db.session.commit()
-        
-        flash("Discount updated successfully!", "success")
-    except Exception:
+        flash(f"Invoice '{num}' has been deleted.", "success")
+    except Exception as e:
         db.session.rollback()
-        current_app.logger.exception(f"Failed to update discount for invoice {invoice_id}")
-        flash("Failed to update discount.", "danger")
-        
-    return redirect(url_for("invoices.view_invoice", invoice_id=invoice_id))
+        current_app.logger.exception(f"Failed to delete invoice {invoice_id}: {e}")
+        flash("Failed to delete invoice due to database error.", "danger")
+    return redirect(url_for("invoices.invoices"))
 
+
+@invoices_bp.route("/invoices/status/<int:invoice_id>", methods=["POST"])
+@role_required("admin")
+def update_status(invoice_id):
+    invoice = Invoice.query.get_or_404(invoice_id)
+    new_status = request.form.get("status", "Unpaid").strip()
+    if new_status in {"Paid", "Unpaid"}:
+        try:
+            invoice.status = new_status
+            db.session.commit()
+            flash(f"Invoice status updated to '{new_status}' successfully.", "success")
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.exception(f"Failed to update status for invoice {invoice_id}: {e}")
+            flash("Failed to update status.", "danger")
+    return redirect(url_for("invoices.view_invoice", invoice_id=invoice.id))

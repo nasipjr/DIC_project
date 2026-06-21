@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}{{ client.name }}{% endblock %}
+
+{% block content %}
+<div class="row gy-4 mb-4">
+  <div class="col-12 d-flex justify-content-between align-items-center border-bottom pb-3 border-secondary border-opacity-10">
+    <div>
+      <h2 class="fw-bold text-success mb-1">{{ client.name }}</h2>
+      <p class="text-muted mb-0"><i class="fa-solid fa-user-tag me-1"></i> {{ _('client_details') }}</p>
+    </div>
+    <a href="{{ url_for('clients.list_clients') }}" class="btn btn-outline-secondary rounded-pill px-4">
+      <i class="fa-solid fa-circle-chevron-{% if current_lang == 'ar' %}right{% else %}left{% endif %} me-2"></i> {{ _('back') }}
+    </a>
+  </div>
+</div>
+
+<!-- Financial Summary Cards -->
+<div class="row g-4 mb-4">
+  <!-- Card 1: Total Invoiced -->
+  <div class="col-md-4">
+    <div class="card card-premium p-4 shadow border-0 text-center d-flex flex-column align-items-center justify-content-center h-100">
+      <div class="bg-primary bg-opacity-10 text-primary rounded-circle p-3 mb-3 fs-4 d-inline-flex">
+        <i class="fa-solid fa-file-invoice-dollar"></i>
+      </div>
+      <span class="text-muted small fw-semibold">{{ _('total_revenue') }}</span>
+      <h3 class="fw-bold text-white mt-2 mb-0">{{ total_invoiced | format_price }} <span class="fs-6 fw-normal">{{ currency_symbol }}</span></h3>
+    </div>
+  </div>
+
+  <!-- Card 2: Total Payments -->
+  <div class="col-md-4">
+    <div class="card card-premium p-4 shadow border-0 text-center d-flex flex-column align-items-center justify-content-center h-100">
+      <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 mb-3 fs-4 d-inline-flex">
+        <i class="fa-solid fa-wallet"></i>
+      </div>
+      <span class="text-muted small fw-semibold">{{ _('total_paid') }}</span>
+      <h3 class="fw-bold text-success mt-2 mb-0">{{ total_paid | format_price }} <span class="fs-6 fw-normal">{{ currency_symbol }}</span></h3>
+    </div>
+  </div>
+
+  <!-- Card 3: Outstanding / Credit Balance -->
+  <div class="col-md-4">
+    <div class="card card-premium p-4 shadow border-0 text-center d-flex flex-column align-items-center justify-content-center h-100"
+         style="{% if outstanding_balance > 0 %}border: 1px solid rgba(220, 53, 69, 0.4) !important;{% elif credit_balance > 0 %}border: 1px solid rgba(13, 110, 253, 0.4) !important;{% else %}border: 1px solid rgba(25, 135, 84, 0.4) !important;{% endif %}">
+      {% if credit_balance > 0 %}
+        <div class="bg-info bg-opacity-10 text-info rounded-circle p-3 mb-3 fs-4 d-inline-flex">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <span class="text-muted small fw-semibold">{{ _('credit_balance') }}</span>
+        <h3 class="fw-bold text-info mt-2 mb-1">{{ credit_balance | format_price }} <span class="fs-6 fw-normal">{{ currency_symbol }}</span></h3>
+        <span class="text-muted small mt-1" style="font-size: 0.8rem;">{{ _('credit_available_sub') }}</span>
+      {% else %}
+        <div class="{% if outstanding_balance > 0 %}bg-danger text-danger{% else %}bg-success text-success{% endif %} bg-opacity-10 rounded-circle p-3 mb-3 fs-4 d-inline-flex">
+          <i class="fa-solid fa-{% if outstanding_balance > 0 %}circle-xmark{% else %}circle-check{% endif %}"></i>
+        </div>
+        <span class="text-muted small fw-semibold">{{ _('balance_due') }}</span>
+        <h3 class="fw-bold {% if outstanding_balance > 0 %}text-danger{% else %}text-success{% endif %} mt-2 mb-1">
+          {{ outstanding_balance | format_price }} <span class="fs-6 fw-normal">{{ currency_symbol }}</span>
+        </h3>
+        <span class="text-muted small mt-1" style="font-size: 0.8rem;">
+          {% if outstanding_balance > 0 %}
+            {{ _('balance_unpaid_sub') }}
+          {% else %}
+            {{ _('balance_paid_sub') }}
+          {% endif %}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left Side: Profile & Stats Card -->
+  <div class="col-lg-4">
+    <!-- Client Info -->
+    <div class="card card-premium p-4 mb-4 shadow border-0">
+      <h5 class="fw-bold text-success border-bottom border-secondary border-opacity-10 pb-2 mb-3">
+        <i class="fa-solid fa-circle-info me-2"></i>{{ _('client_details') }}
+      </h5>
+      <ul class="list-unstyled mb-4 text-white-50">
+        <li class="mb-3 d-flex align-items-start gap-2">
+          <i class="fa-solid fa-user text-success mt-1"></i>
+          <div>
+            <span class="text-muted small d-block">{{ _('client_name') }}</span>
+            <strong class="text-white">{{ client.name }}</strong>
+          </div>
+        </li>
+        <li class="mb-3 d-flex align-items-start gap-2">
+          <i class="fa-solid fa-phone text-success mt-1"></i>
+          <div>
+            <span class="text-muted small d-block">{{ _('client_phone') }}</span>
+            <span class="text-white">{{ client.phone or '-' }}</span>
+          </div>
+        </li>
+        <li class="mb-0 d-flex align-items-start gap-2">
+          <i class="fa-solid fa-location-dot text-success mt-1"></i>
+          <div>
+            <span class="text-muted small d-block">{{ _('client_address') }}</span>
+            <span class="text-white">{{ client.address or '-' }}</span>
+          </div>
+        </li>
+      </ul>
+      <div class="d-grid gap-2">
+        <a href="{{ url_for('payments.add_payment', client_id=client.id) }}" class="btn btn-success fw-bold py-2 rounded-pill">
+          <i class="fa-solid fa-circle-plus me-1"></i>{{ _('add_payment') }}
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Attached Files, Invoices & Payments -->
+  <div class="col-lg-8">
+    <div class="card card-premium p-4 shadow border-0 mb-4">
+      <ul class="nav nav-tabs border-bottom-0 mb-4 gap-2" id="clientProfileTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active btn btn-outline-success rounded-pill px-4 py-2 border-0 fw-semibold" id="invoices-tab" data-bs-toggle="tab" data-bs-target="#invoices-pane" type="button" role="tab" aria-controls="invoices-pane" aria-selected="true">
+            <i class="fa-solid fa-file-invoice-dollar me-2"></i>{{ _('invoices') }}
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link btn btn-outline-success rounded-pill px-4 py-2 border-0 fw-semibold" id="payments-tab" data-bs-toggle="tab" data-bs-target="#payments-pane" type="button" role="tab" aria-controls="payments-pane" aria-selected="false">
+            <i class="fa-solid fa-wallet me-2"></i>{{ _('payment_history') }}
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link btn btn-outline-success rounded-pill px-4 py-2 border-0 fw-semibold" id="files-tab" data-bs-toggle="tab" data-bs-target="#files-pane" type="button" role="tab" aria-controls="files-pane" aria-selected="false">
+            <i class="fa-solid fa-folder-open me-2"></i>{{ _('files_and_documents') }}
+          </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="clientProfileTabsContent">
+        <!-- Invoices Tab -->
+        <div class="tab-pane fade show active" id="invoices-pane" role="tabpanel" aria-labelledby="invoices-tab" tabindex="0">
+          <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
+              <thead>
+                <tr class="text-secondary small border-bottom border-secondary border-opacity-20 text-uppercase">
+                  <th scope="col">{{ _('invoice_number') }}</th>
+                  <th scope="col" class="text-center">{{ _('status') }}</th>
+                  <th scope="col" class="text-center">{{ _('total_amount') }}</th>
+                  <th scope="col" class="text-center">{{ _('total_paid') }}</th>
+                  <th scope="col" class="text-center">{{ _('balance_due') }}</th>
+                  <th scope="col" class="text-center">{{ _('issue_date') }}</th>
+                  <th scope="col" class="text-end">{{ _('actions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if invoices %}
+                  {% for inv in invoices %}
+                  <tr class="border-bottom border-secondary border-opacity-10">
+                    <td class="fw-semibold text-white-50"><i class="fa-solid fa-file-pdf text-danger me-2"></i>{{ inv.invoice_number }}</td>
+                    <td class="text-center">
+                      {% if inv.status.lower() == 'paid' %}
+                      <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2.5 py-1 small">
+                        {{ _('paid') }}
+                      </span>
+                      {% elif inv.status.lower() == 'partially paid' %}
+                      <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-2.5 py-1 small">
+                        {{ _('partially_paid') if _('partially_paid') != 'partially_paid' else 'Partially Paid' }}
+                      </span>
+                      {% else %}
+                      <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-2.5 py-1 small">
+                        {{ _('unpaid') }}
+                      </span>
+                      {% endif %}
+                    </td>
+                    <td class="text-center text-success fw-bold">{{ inv.total_amount | format_price }} {{ currency_symbol }}</td>
+                    <td class="text-center text-info fw-bold">{{ inv.total_paid | format_price }} {{ currency_symbol }}</td>
+                    <td class="text-center text-warning fw-bold">{{ inv.outstanding_amount | format_price }} {{ currency_symbol }}</td>
+                    <td class="text-center text-secondary small">{{ inv.issue_date.strftime('%Y-%m-%d') if inv.issue_date else 'N/A' }}</td>
+                    <td class="text-end">
+                      <a href="{{ url_for('invoices.view_invoice', invoice_id=inv.id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                        <i class="fa-solid fa-eye me-1"></i> {{ _('view_invoice') }}
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="7" class="text-center py-4 text-muted small">
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> {{ _('no_recent_invoices') }}
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Payments Tab -->
+        <div class="tab-pane fade" id="payments-pane" role="tabpanel" aria-labelledby="payments-tab" tabindex="0">
+          <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
+              <thead>
+                <tr class="text-secondary small border-bottom border-secondary border-opacity-20 text-uppercase">
+                  <th scope="col">{{ _('receipt_no') }}</th>
+                  <th scope="col" class="text-center">{{ _('amount_paid') }}</th>
+                  <th scope="col" class="text-center">{{ _('allocated') }}</th>
+                  <th scope="col" class="text-center">{{ _('unallocated') }}</th>
+                  <th scope="col" class="text-center">{{ _('payment_date') }}</th>
+                  <th scope="col">{{ _('notes') }}</th>
+                  <th scope="col" class="text-end">{{ _('actions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if payments %}
+                  {% for p in payments %}
+                  <tr class="border-bottom border-secondary border-opacity-10">
+                    <td class="fw-semibold text-white-50">
+                      <a href="{{ url_for('payments.view_payment', payment_id=p.id) }}" class="text-info fw-bold text-decoration-none">
+                        <i class="fa-solid fa-receipt text-success me-2"></i>PAY-{{ "%04d" | format(p.id) }}
+                      </a>
+                    </td>
+                    <td class="text-center text-success fw-bold">{{ p.amount | format_price }} {{ currency_symbol }}</td>
+                    <td class="text-center text-info fw-semibold">{{ p.allocated_amount | format_price }} {{ currency_symbol }}</td>
+                    <td class="text-center text-warning fw-semibold">{{ p.unallocated_amount | format_price }} {{ currency_symbol }}</td>
+                    <td class="text-center text-secondary small">{{ p.payment_date.strftime('%Y-%m-%d') if p.payment_date else 'N/A' }}</td>
+                    <td class="text-white-50 text-truncate" style="max-width: 150px;" title="{{ p.notes or '' }}">{{ p.notes or '-' }}</td>
+                    <td class="text-end">
+                      <div class="d-inline-flex gap-2">
+                        <a href="{{ url_for('payments.view_payment', payment_id=p.id) }}" class="btn btn-sm btn-outline-success rounded-circle" title="{{ _('view') }}">
+                          <i class="fa-solid fa-eye"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('payments.delete_payment', payment_id=p.id) }}" class="d-inline" onsubmit="return confirm('{{ _('delete_payment_confirm') }}');">
+                          <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="{{ _('delete') or 'حذف' }}">
+                            <i class="fa-solid fa-trash-can"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="7" class="text-center py-4 text-muted small">
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> {{ _('no_payments') }}
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Files Tab -->
+        <div class="tab-pane fade" id="files-pane" role="tabpanel" aria-labelledby="files-tab" tabindex="0">
+          <!-- Upload File Form -->
+          <form method="POST" action="{{ url_for('clients.upload_file', client_id=client.id) }}" enctype="multipart/form-data" class="mb-4 bg-black bg-opacity-20 p-3 rounded-3 border border-secondary border-opacity-10">
+            <label class="form-label text-muted small fw-semibold mb-2">{{ _('upload_file') }} (مخططات ري، صور الموقع، عقود، إلخ)</label>
+            <div class="input-group">
+              <input type="file" name="file" class="form-control" required>
+              <button type="submit" class="btn btn-success fw-bold">
+                <i class="fa-solid fa-cloud-arrow-up me-1"></i>{{ _('upload_btn') }}
+              </button>
+            </div>
+          </form>
+
+          <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
+              <thead>
+                <tr class="text-secondary small border-bottom border-secondary border-opacity-20 text-uppercase">
+                  <th scope="col" style="width: 50%;">{{ _('file_name') }}</th>
+                  <th scope="col" class="text-center" style="width: 15%;">{{ _('file_size') }}</th>
+                  <th scope="col" class="text-center" style="width: 20%;">{{ _('upload_date') }}</th>
+                  <th scope="col" class="text-end" style="width: 15%;">{{ _('actions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% if files %}
+                  {% for file in files %}
+                  <tr class="border-bottom border-secondary border-opacity-10">
+                    <td class="fw-semibold text-white-50 text-truncate" style="max-width: 280px;" title="{{ file.filename }}">
+                      <i class="fa-solid fa-file-invoice text-secondary me-2 fs-5"></i>{{ file.filename }}
+                    </td>
+                    <td class="text-center text-secondary small">
+                      {% if file.file_size >= 1048576 %}
+                        {{ (file.file_size / 1048576) | round(2) }} MB
+                      {% else %}
+                        {{ (file.file_size / 1024) | round(1) }} KB
+                      {% endif %}
+                    </td>
+                    <td class="text-center text-secondary small">{{ file.uploaded_at.strftime('%Y-%m-%d %H:%M') if file.uploaded_at else 'N/A' }}</td>
+                    <td class="text-end">
+                      <div class="d-inline-flex gap-2">
+                        <a href="{{ url_for('clients.download_file', client_id=client.id, file_id=file.id) }}" class="btn btn-sm btn-outline-success rounded-circle" title="{{ _('download') or 'تحميل' }}">
+                          <i class="fa-solid fa-download"></i>
+                        </a>
+                        <form method="POST" action="{{ url_for('clients.delete_file', client_id=client.id, file_id=file.id) }}" class="d-inline" onsubmit="return confirm('{{ _('delete_file_confirm') }}');">
+                          <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="{{ _('delete') or 'حذف' }}">
+                            <i class="fa-solid fa-trash-can"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="4" class="text-center py-4 text-muted small">
+                      <i class="fa-solid fa-circle-exclamation me-1"></i> {{ _('no_files_found') }}
+                    </td>
+                  </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
